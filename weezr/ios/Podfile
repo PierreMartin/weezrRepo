@@ -28,6 +28,10 @@ target 'weezr' do
 
   pod 'react-native-location', :path => '../node_modules/react-native-location'
 
+  # React Native Maps dependencies
+  # rn_maps_path = '../node_modules/react-native-maps'
+  # pod 'react-native-google-maps', :path => rn_maps_path
+
   target 'weezrTests' do
     inherit! :complete
     # Pods for testing
