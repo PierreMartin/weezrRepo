@@ -1,0 +1,187 @@
+{
+  "success": {
+    "create": "{{field}} created successfully",
+    "update": "{{field}} updated successfully",
+    "upload": "{{field}} uploaded successfully",
+    "delete": "{{field}} deleted successfully"
+  },
+  "error": {
+    "create": "A error has occurred at the created of {{field}}",
+    "update": "A error has occurred at the updated of {{field}}",
+    "upload": "A error has occurred at the uploaded of {{field}}",
+    "delete": "A error has occurred at the deleted of {{field}}",
+    "noFound": "{{field}} not found",
+    "blockedProfile_seeProfile": "This user blocked you, or you blocked him. You cannot see his profile",
+    "blockedProfile_seeThread": "This user blocked you, or you blocked him. You cannot see his messages"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "joinUs": "Join Us",
+    "goBack": "Go Back",
+    "email": "E-mail",
+    "username": "Username",
+    "password": "Password"
+  },
+  "user": {
+    "email": "E-mail",
+
+    "gender": "Gender",
+    "gender_desc": "Please enter your gender",
+    "gender_m": "Male",
+    "gender_f": "Female",
+    "gender_everybody": "Everybody",
+
+    "birthAt": "Date of Birth",
+    "birthAt_desc": "Please enter your date of Birth",
+
+    "displayName": "Display name",
+    "about": {
+      "aboutMe": "About me",
+      "spokenLanguages": "Spoken languages",
+
+      "relationship": "relationship",
+      "relationship_single": "Single",
+      "relationship_married": "Married",
+
+      "desiredMeetingType": "Looking for",
+      "desiredMeetingType_desc": "Please enter what are you looking for",
+      "desiredMeetingType_friends": "Friends",
+      "desiredMeetingType_loveRelationship": "Love relationship",
+      "desiredMeetingType_fun": "Fun"
+    },
+    "physicalAppearance": {
+      "height": "Height",
+      "weight": "Weight"
+    },
+    "images": "My photos",
+    "images_desc": "Add photos",
+    "preferencesFilter": {
+      "_groupTitle": "Preference",
+
+      "desiredGender": "Desired gender",
+      "desiredGender_m": "Male",
+      "desiredGender_f": "Female",
+      "desiredGender_everybody": "Everybody",
+
+      "desiredAgeRange": "Desired age range",
+
+      "profileWithPhotoOnly": "Profile with photo only",
+      "profileWithPhotoOnly_true": "With photo only",
+      "profileWithPhotoOnly_false": "All"
+    },
+    "preferenceAccount": {
+      "_groupTitle": "Preference Account",
+
+      "unitSystem": "Unit system",
+      "unitSystem_imperial": "Imperial",
+      "unitSystem_metric": "Metric",
+
+      "language": "Language",
+      "language_fr": "French",
+      "language_en": "English"
+    },
+    "career": {
+      "job": "Job",
+      "employer": "Employer"
+    },
+    "isOnline": {
+      "true": "Online now",
+      "false": "Offline"
+    },
+    "basedLocation": "Live in",
+    "distanceComparedToMe": {
+      "unit": "Km away"
+    },
+    "userInteractions": {
+      "myLike": {
+        "received": "Sent you a like",
+        "received_sendtoo": "Like"
+      },
+      "myVisit": {
+        "received": "Visited your profile at"
+      },
+      "myFollow": {
+        "received": "Follow you"
+      },
+      "myBlock": {
+        "sent": "Blocked at",
+        "sent_blockedsProfiles": "Blocked users",
+        "sent_unblock": "Unblock",
+        "sent_unblock_confirm_title": "Unblock this profile?",
+        "sent_unblock_confirm_ok": "To confirm"
+      },
+      "myRequest": {
+        "received": "Made a request for access to private photos",
+        "sent": "You sent a request for access to private photos",
+
+        "sent_replyGranted": "This user has granted you access to his private photos",
+        "sent_replayDecline": "This user has declined you access to his private photos",
+        "received_replyGranted": "You granted your private photos",
+        "received_replyDecline": "You declined your private photos",
+
+        "received_description": "Sent you a request for access to private photos",
+        "received_privatePhotosGranted": "Accept",
+        "received_privatePhotosDecline": "Decline"
+      }
+    },
+    "detail": {
+      "aboutMe": {
+        "groupTitle": "About me"
+      },
+      "poi": {
+        "groupTitle": "Points of interest"
+      },
+      "generalInfo": {
+        "groupTitle": "General info"
+      },
+      "career": {
+        "groupTitle": "Employment and studies"
+      },
+      "physicalAppearance": {
+        "groupTitle": "Physical appearance",
+        "heightPrefix": "cm",
+        "weightPrefix": "kg"
+      }
+    }
+  },
+  "onboarding": {
+    "pagination": {
+      "groupMyInfos": "Infos",
+      "groupAppearance": "Appearance",
+      "groupMyPrefs": "Prefs",
+      "groupMyPhotos": "Photos"
+    },
+    "pagesContent": {
+      "lastPage": {
+        "header": "All is well",
+        "title": "All is well"
+      }
+    }
+  },
+  "userDetail": {
+    "secondaryActions": {
+      "close": "Close",
+      "cancel": "Cancel",
+
+      "block": {
+        "do": "Block this profile",
+        "confirmTitle": "Are you sure you want to block this user?",
+        "confirmDescription": "Blocking his profile will prevent you and this user from contacting and seeing each other.",
+        "confirmOk": "To confirm"
+      },
+      "report": {
+        "do": "Report this profile",
+        "confirmOk": "To confirm"
+      }
+    }
+  },
+  "filesBottomSheetPicker": {
+    "bottomActions": {
+      "sendSelectedPhoto": "Send selected photo",
+      "takePhoto": "Take photo",
+      "choosePhoto": "Choose from library",
+      "close": "Close"
+    }
+  }
+}

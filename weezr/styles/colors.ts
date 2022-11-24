@@ -1,0 +1,52 @@
+const tintColorLight = '#2f95dc';
+const tintColorDark = '#fff';
+
+/* TODO refacto dark mode
+const colors = {
+    primary: {
+        50: '#fef2f2',
+        100: '#fee2e2',
+        200: '#fecaca',
+        300: '#fca5a5',
+        400: '#f87171',
+        500: '#ef4444',
+        600: '#dc2626',
+        700: '#b91c1c',
+        800: '#991b1b',
+        900: '#7f1d1d',
+    },
+    secondary: {...}
+    ...
+};
+*/
+
+const colors = {
+    primary: '#ef4444',
+    secondary: '#254B5A',
+    tertiary: '#5DA6A7',
+
+    light: {
+        text: '#000',
+        background: '#fff',
+        tint: tintColorLight,
+        inactiveTint: 'gray',
+        tabIconDefault: '#ccc',
+        tabIconSelected: tintColorLight,
+        secondaryText: 'gray',
+        border: '#d9d9d9',
+        backgroundOpacity: 'rgba(52, 52, 52, 0.8)',
+    },
+    dark: {
+        text: '#fff',
+        background: '#000',
+        tint: tintColorDark,
+        inactiveTint: 'gray',
+        tabIconDefault: '#ccc',
+        tabIconSelected: tintColorDark,
+        secondaryText: 'gray',
+        border: '#d9d9d9',
+        backgroundOpacity: 'rgba(52, 52, 52, 0.8)',
+    }
+};
+
+export default colors;

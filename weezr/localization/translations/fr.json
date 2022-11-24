@@ -1,0 +1,187 @@
+{
+  "success": {
+    "create": "{{field}} créé avec succès",
+    "update": "{{field}} mis à jour avec succès",
+    "upload": "{{field}} téléchargé avec succès",
+    "delete": "{{field}} supprimé avec succès"
+  },
+  "error": {
+    "create": "Une erreur s'est produite lors de la création de {{field}}",
+    "update": "Une erreur s'est produite lors de l'édition de {{field}}",
+    "upload": "Une erreur s'est produite lors du téléchargement de {{field}}",
+    "delete": "Une erreur s'est produite lors de la suppression de {{field}}",
+    "noFound": "{{field}} non trouvé",
+    "blockedProfile_seeProfile": "Cet utilisateur t'a bloqué, ou tu l'a bloqué. Tu ne peux pas voir son profil",
+    "blockedProfile_seeThread": "Cet utilisateur t'a bloqué, ou tu l'a bloqué. Tu ne peux pas voir ses messages"
+  },
+  "auth": {
+    "signIn": "S'identifier",
+    "signOut": "Se déconnecter",
+    "joinUs": "Rejoignez-nous",
+    "goBack": "Retourner",
+    "email": "E-mail",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe"
+  },
+  "user": {
+    "email": "E-mail",
+
+    "gender": "Genre",
+    "gender_desc": "Veuillez saisir votre genre",
+    "gender_m": "Homme",
+    "gender_f": "Femme",
+    "gender_everybody": "Tout le monde",
+
+    "birthAt": "Date de naissance",
+    "birthAt_desc": "Veuillez saisir votre date de naissance",
+
+    "displayName": "Nom d'affichage",
+    "about": {
+      "aboutMe": "À propos de moi",
+      "spokenLanguages": "Langues parlées",
+
+      "relationship": "Relation",
+      "relationship_single": "Célibataire",
+      "relationship_married": "Marié",
+
+      "desiredMeetingType": "À la recherche de",
+      "desiredMeetingType_desc": "Veuillez saisir ce que vous recherchez",
+      "desiredMeetingType_friends": "Amis",
+      "desiredMeetingType_loveRelationship": "Relation amoureuse",
+      "desiredMeetingType_fun": "Fun"
+    },
+    "physicalAppearance": {
+      "height": "Taille",
+      "weight": "Poids"
+    },
+    "images": "Mes photos",
+    "images_desc": "Ajouter des photos",
+    "preferencesFilter": {
+      "_groupTitle": "Préférence",
+
+      "desiredGender": "Sexe recherché",
+      "desiredGender_m": "Homme",
+      "desiredGender_f": "Femme",
+      "desiredGender_everybody": "Tout le monde",
+
+      "desiredAgeRange": "Tranche d'âge recherché",
+
+      "profileWithPhotoOnly": "Profil avec photo seulement",
+      "profileWithPhotoOnly_true": "Avec photo seulement",
+      "profileWithPhotoOnly_false": "Tout le monde"
+    },
+    "preferenceAccount": {
+      "_groupTitle": "Préférence de compte",
+
+      "unitSystem": "Système d'unité",
+      "unitSystem_imperial": "Impérial",
+      "unitSystem_metric": "Métrique",
+
+      "language": "Langue",
+      "language_fr": "Francais",
+      "language_en": "Anglais"
+    },
+    "career": {
+      "job": "Emploi",
+      "employer": "Employeur"
+    },
+    "isOnline": {
+      "true": "En ligne",
+      "false": "Hors ligne"
+    },
+    "basedLocation": "Vit à",
+    "distanceComparedToMe": {
+      "unit": "km de distance"
+    },
+    "userInteractions": {
+      "myLike": {
+        "received": "T'a envoyé un like",
+        "received_sendtoo": "Like"
+      },
+      "myVisit": {
+        "received": "A visité ton profil à"
+      },
+      "myFollow": {
+        "received": "Te suit"
+      },
+      "myBlock": {
+        "sent": "Bloqué le",
+        "sent_blockedsProfiles": "Utilisateurs bloqués",
+        "sent_unblock": "Débloquer",
+        "sent_unblock_confirm_title": "Débloquer ce profil ?",
+        "sent_unblock_confirm_ok": "Confirmer"
+      },
+      "myRequest": {
+        "received": "T'a fait une demande d'accès aux photos privées",
+        "sent": "Tu as envoyé une demande d'accès aux photos privées",
+
+        "sent_replyGranted": "Cet utilisateur t'a accordé l'accès à ses photos privées",
+        "sent_replayDecline": "Cet utilisateur t'a refusé l'accès à ses photos privées",
+        "received_replyGranted": "Tu lui as accordé tes photos privées",
+        "received_replyDecline": "Tu lui as refusé tes photos privées",
+
+        "received_description": "T'a envoyé une demande d'accès aux photos privées",
+        "received_privatePhotosGranted": "Accepter",
+        "received_privatePhotosDecline": "Décliner"
+      }
+    },
+    "detail": {
+      "aboutMe": {
+        "groupTitle": "À propos de moi"
+      },
+      "poi": {
+        "groupTitle": "Points d'interêts"
+      },
+      "generalInfo": {
+        "groupTitle": "Informations générales"
+      },
+      "career": {
+        "groupTitle": "Emploi et études"
+      },
+      "physicalAppearance": {
+        "groupTitle": "Apparence physique",
+        "heightPrefix": "cm",
+        "weightPrefix": "kg"
+      }
+    }
+  },
+  "onboarding": {
+    "pagination": {
+      "groupMyInfos": "Infos",
+      "groupAppearance": "Apparence",
+      "groupMyPrefs": "Préférences",
+      "groupMyPhotos": "Photos"
+    },
+    "pagesContent": {
+      "lastPage": {
+        "header": "Tout est bon",
+        "title": "Tout est bon"
+      }
+    }
+  },
+  "userDetail": {
+    "secondaryActions": {
+      "close": "Fermer",
+      "cancel": "Annuler",
+
+      "block": {
+        "do": "Bloquer ce profil",
+        "confirmTitle": "Es-tu sûr de vouloir bloquer cet utilisateur ?",
+        "confirmDescription": "Bloquer son profil vous empêchera, à toi et à cet utilisateur, de vous contacter et de vous voir.",
+        "confirmOk": "Confirmer"
+      },
+      "report": {
+        "do": "Report this profile",
+        "confirmOk": "Confirmer"
+      }
+    }
+  },
+  "filesBottomSheetPicker": {
+    "bottomActions": {
+      "sendSelectedPhoto": "Envoyer la photo sélectionnée",
+      "takePhoto": "Prendre une photo",
+      "choosePhoto": "Choisir dans la bibliothèque",
+      "close": "Fermer"
+    }
+  }
+}

@@ -1,120 +1,136 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
+import 'react-native-gesture-handler';
+import React from 'react';
+import { bindActionCreators } from "redux";
+import { ColorSchemeName, StatusBar, useColorScheme } from 'react-native';
+import { connect } from 'react-redux';
+import { useTranslation } from "react-i18next";
+import { i18n as II18n } from "i18next";
+// import { Colors } from 'react-native/Libraries/NewAppScreen';
+import Navigation from './navigation';
+import useCachedResources from './hooks/useCachedResources';
+import { fetchMeProfileAction } from "./reduxActions/user";
+import { States } from "./reduxReducers/states";
+import { initRealtimeService } from "./services/realtimeManager";
+import { notificationsManager } from "./services/NotificationsManager";
+import config from "./config";
+import store from "./reduxStore";
+import { SocketEvents } from "./context/SocketEvents";
+import { NotificationsContext } from "./context/NotificationsContext";
+import { IUser } from "./entities";
+import "./localization/i18n.config";
 
-import React, {type PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+/*
+const Section = ({ children, title }: any) => {
+    const isDarkMode = useColorScheme() === 'dark';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-const Section: React.FC<
-  PropsWithChildren<{
-    title: string;
-  }>
-> = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
-
-const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+    return (
+        <View style={styles.sectionContainer}>
+            <Text
+                style={[
+                    styles.sectionTitle,
+                    {
+                        color: isDarkMode ? Colors.white : Colors.black,
+                    }
+                ]}
+            >
+                {title}
+            </Text>
+            <Text
+                style={[
+                    styles.sectionDescription,
+                    {
+                        color: isDarkMode ? Colors.light : Colors.dark,
+                    }
+                ]}
+            >
+                {children}
+            </Text>
         </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+    );
+};
+*/
+
+interface IApp {
+    me: IUser;
+    authenticatedState: States.IAuthenticatedState;
+    fetchMeProfileActionProps: (i18n: II18n) => any;
+}
+
+const socket = initRealtimeService(config.realtime, store);
+
+const App = ({
+                 me,
+                 authenticatedState,
+                 fetchMeProfileActionProps
+             }: IApp) => {
+    const colorScheme = useColorScheme() as NonNullable<ColorSchemeName>;
+    const isDarkMode = colorScheme === 'dark';
+    const isLoadingComplete = useCachedResources();
+    const { i18n } = useTranslation();
+
+    React.useEffect(() => {
+        fetchMeProfileActionProps(i18n);
+
+        socket.listenersAllEvents();
+        return () => socket.cleanupAllEvents();
+    }, []);
+
+    /*
+    React.useEffect(() => {
+        if (authenticatedState === 'connected' && me?._id) {
+            fetchMyBlockedProfilesActionProps({
+                filterMain: {
+                    $or: [
+                        { receiverId: me._id },
+                        { senderId: me._id }
+                    ]
+                }
+            });
+        }
+    }, [authenticatedState]);
+    */
+
+    /*
+    const backgroundStyle = {
+        backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    };
+    */
+
+    if (!isLoadingComplete || authenticatedState === 'loading') {
+        // return <SplashScreen />;
+        return null;
+    }
+
+    // Wrapper without native-base : <SafeAreaView style={[backgroundStyle, { flex: 1 }]}>...</SafeAreaView>
+    return (
+        <>
+            <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+
+            <SocketEvents.Provider value={socket.socketEvents()}>
+                <NotificationsContext.Provider value={notificationsManager(store)}>
+                    <Navigation
+                        colorScheme={colorScheme}
+                        authenticatedState={authenticatedState}
+                        isOnboardingNeverUsed={!!me?.isOnboardingNeverUsed}
+                    />
+                </NotificationsContext.Provider>
+            </SocketEvents.Provider>
+        </>
+    );
 };
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+function mapStateToProps(state: States.IAppState) {
+    return {
+        authenticatedState: state.authenticatedState,
+        me: state.user.me
+    };
+}
 
-export default App;
+function mapDispatchToProps(dispatch: any) {
+    return {
+        fetchMeProfileActionProps: bindActionCreators(fetchMeProfileAction, dispatch),
+        // fetchMyBlockedProfilesActionProps: bindActionCreators(fetchMyBlockedProfilesAction, dispatch),
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
