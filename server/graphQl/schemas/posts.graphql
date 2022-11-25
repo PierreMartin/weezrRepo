@@ -1,0 +1,13 @@
+# ################################## types ##################################
+type Post {
+    id: ID!
+    title: String
+    description: String
+    content: String
+    isPrivate: Boolean
+    userId: ID
+}
+
+# ################################## inputs (group of fields) ##################################
+
+# ################################## queries in client ##################################

@@ -1,0 +1,30 @@
+scalar Date
+
+type UserPhotoThread {
+    threadId: ID
+    fileId: ID
+    messageId: ID
+    authorId: ID
+    size_130_130: String
+    size_320_400: String
+    createdAt: Date
+}
+
+# ################################## inputs (group of fields) ##################################
+input UserPhotoThread_FilterMain {
+    threadId: ID
+    authorId: ID
+}
+
+input UserPhotoThread_DataMain {
+    threadId: ID
+    authorId: ID
+}
+
+input UserPhotoThread_Filter {
+    filterMain: UserPhotoThread_FilterMain
+}
+
+input UserPhotoThread_Data {
+    dataMain: UserPhotoThread_DataMain
+}

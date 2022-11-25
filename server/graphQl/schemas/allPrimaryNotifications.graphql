@@ -1,0 +1,38 @@
+# import User from "users.graphql"
+
+scalar Object
+scalar Date
+
+type AllPrimaryNotifications {
+    id: ID
+    entityName: String
+    senderId: ID
+    receiverId: ID
+    sender: User
+    at: Date
+    isSeenByReceiver: Boolean
+    hasAlreadyInteracted: Boolean
+}
+
+# ################################## inputs (group of fields) ##################################
+input AllPrimaryNotifications_FilterMain {
+    senderId: ID
+    receiverId: ID
+}
+
+input AllPrimaryNotifications_DataMain {
+    senderId: ID
+    receiverId: ID
+    at: Date
+    isSeenByReceiver: Boolean
+}
+
+input AllPrimaryNotifications_Filter {
+    filterMain: AllPrimaryNotifications_FilterMain
+    filterSetAsSeen: Object
+}
+
+input AllPrimaryNotifications_Data {
+    dataMain: AllPrimaryNotifications_DataMain
+    dataSetAsSeen: Object
+}

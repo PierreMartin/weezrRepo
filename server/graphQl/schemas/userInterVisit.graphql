@@ -1,0 +1,38 @@
+# import User from "users.graphql"
+
+scalar Object
+scalar Date
+
+type UserInterVisit {
+    id: ID
+    entityName: String
+    senderId: ID
+    receiverId: ID
+    sender: User
+    at: Date
+    isSeenByReceiver: Boolean
+    hasAlreadyInteracted: Boolean
+}
+
+# ################################## inputs (group of fields) ##################################
+input UserInterVisit_FilterMain {
+    senderId: ID
+    receiverId: ID
+}
+
+input UserInterVisit_DataMain {
+    senderId: ID
+    receiverId: ID
+    at: Date
+    isSeenByReceiver: Boolean
+}
+
+input UserInterVisit_Filter {
+    filterMain: UserInterVisit_FilterMain
+    filterSetAsSeen: Object
+}
+
+input UserInterVisit_Data {
+    dataMain: UserInterVisit_DataMain
+    dataSetAsSeen: Object
+}

@@ -1,0 +1,37 @@
+# import User from "users.graphql"
+
+scalar Object
+scalar Date
+
+type UserInterFollow {
+    id: ID
+    entityName: String
+    senderId: ID
+    receiverId: ID
+    sender: User
+    at: Date
+    isSeenByReceiver: Boolean
+}
+
+# ################################## inputs (group of fields) ##################################
+input UserInterFollow_FilterMain {
+    senderId: ID
+    receiverId: ID
+}
+
+input UserInterFollow_DataMain {
+    senderId: ID
+    receiverId: ID
+    at: Date
+    isSeenByReceiver: Boolean
+}
+
+input UserInterFollow_Filter {
+    filterMain: UserInterFollow_FilterMain
+    filterSetAsSeen: Object
+}
+
+input UserInterFollow_Data {
+    dataMain: UserInterFollow_DataMain
+    dataSetAsSeen: Object
+}

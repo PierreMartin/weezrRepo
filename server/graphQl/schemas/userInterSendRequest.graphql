@@ -1,0 +1,45 @@
+# import User from "users.graphql"
+
+scalar Object
+scalar Date
+
+type UserInterSendRequest {
+    id: ID
+    entityName: String
+    senderId: ID
+    receiverId: ID
+    sender: User
+    at: Date
+    isSeenByReceiver: Boolean
+    privatePhotosGranted: String
+    privatePhotosGrantedAt: Date
+    threadId: ID
+    isNewThread: Boolean
+}
+
+# ################################## inputs (group of fields) ##################################
+input UserInterSendRequest_FilterMain {
+    senderId: ID
+    receiverId: ID
+}
+
+input UserInterSendRequest_DataMain {
+    senderId: ID!
+    receiverId: ID!
+    at: Date
+    isSeenByReceiver: Boolean
+}
+
+input UserInterSendRequest_Filter {
+    filterMain: UserInterSendRequest_FilterMain
+    filterSetAsSeen: Object
+    filterUpdate: Object
+    filterForCreateThread: Object
+}
+
+input UserInterSendRequest_Data {
+    dataMain: UserInterSendRequest_DataMain
+    dataSetAsSeen: Object
+    dataUpdate: Object
+    dataForCreateThread: Object
+}

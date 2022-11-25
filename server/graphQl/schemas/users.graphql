@@ -1,0 +1,126 @@
+# For duplication between type and input, please see https://stackoverflow.com/questions/48787135/should-i-write-two-times-each-objects-as-input-and-type-in-a-graphql-schema
+
+scalar Object
+scalar Date
+
+type CurrentLocation {
+    accuracy: Float
+    course: Float
+    floor: Float
+    latitude: Float
+    longitude: Float
+    speed: Float
+    timestamp: Float
+    type: String
+    coordinates: [Float]
+}
+
+type Images {
+    forwardFileId: String
+    list: [Object]
+}
+
+type Interaction {
+    id: ID
+    senderId: ID!
+    receiverId: ID!
+    at: Date
+    type: String
+    isMutual: Boolean
+    privatePhotosGranted: String
+    privatePhotosGrantedAt: Date
+}
+
+type Interactions {
+    sent: Interaction
+    received: Interaction
+}
+
+type UserInteractions {
+    myLike: Interactions
+    myVisit: Interactions
+    myBlock: Interactions
+    myRequest: Interactions
+    myFollow: Interactions
+}
+
+type User {
+    currentLocation: CurrentLocation
+    images: Object
+    id: ID
+    email: String
+    isEmailVerified: Boolean
+    incorrectPasswordInput: Float
+    isOnline: Boolean
+    unreadMessages: Int
+    distanceComparedToMe: Float
+    displayName: String
+    gender: String
+    birthAt: Date
+    about: Object
+    career: Object
+    physicalAppearance: Object
+    preferencesFilter: Object
+    coordinates: [Float]
+    preferenceAccount: Object
+    basedLocation: String
+    poi: [String]
+    userInteractions: UserInteractions
+    hasPrivatePhotos: Boolean
+}
+
+# ################################## inputs (group of fields) ##################################
+input CurrentLocationInput {
+    accuracy: Float
+    course: Float
+    floor: Float
+    latitude: Float
+    longitude: Float
+    speed: Float
+    timestamp: Float
+    type: String
+    coordinates: [Float]
+}
+
+input User_FilterMain {
+    _id: ID
+    participants: Object
+    userMeId: String
+    threadId: String
+    coordinates: [Float]
+}
+
+input User_DataMain {
+    userMeId: ID
+    coordinates: [Float]
+    currentLocation: CurrentLocationInput
+    images: Object
+    id: ID
+    email: String
+    isEmailVerified: Boolean
+    incorrectPasswordInput: Float
+    isOnline: Boolean
+    displayName: String
+    gender: String
+    birthAt: Date
+    about: Object
+    career: Object
+    physicalAppearance: Object
+    preferencesFilter: Object
+    preferenceAccount: Object
+    basedLocation: String
+    poi: [String]
+}
+
+input User_Filter {
+    filterMain: User_FilterMain
+    filterDesiredMeetingType: Object
+    filterUpdate: Object
+    filterCountUnreadMessages: Object
+    filterFollowers: Object
+}
+
+input User_Data {
+    dataMain: User_DataMain
+    dataUpdate: Object
+}

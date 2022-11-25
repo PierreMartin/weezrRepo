@@ -26,7 +26,7 @@ target 'weezr' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  pod 'react-native-location', :path => '../node_modules/react-native-location'
+  pod 'react-native-location', :path => '../node_modules/react-native-location/react-native-location.podspec'
 
   # React Native Maps dependencies
   # rn_maps_path = '../node_modules/react-native-maps'

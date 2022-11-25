@@ -1,0 +1,39 @@
+# import User from "users.graphql"
+
+scalar Object
+scalar Date
+
+type UserInterBlock {
+    id: ID
+    entityName: String
+    senderId: ID
+    receiverId: ID
+    sender: User
+    receiver: User
+    at: Date
+    isSeenByReceiver: Boolean
+}
+
+# ################################## inputs (group of fields) ##################################
+input UserInterBlock_FilterMain {
+    senderId: ID
+    receiverId: ID
+}
+
+input UserInterBlock_DataMain {
+    senderId: ID
+    receiverId: ID
+    at: Date
+    isSeenByReceiver: Boolean
+}
+
+input UserInterBlock_Filter {
+    filterMain: UserInterBlock_FilterMain
+    filterSetAsSeen: Object
+    filterUnblock: Object
+}
+
+input UserInterBlock_Data {
+    dataMain: UserInterBlock_DataMain
+    dataSetAsSeen: Object
+}

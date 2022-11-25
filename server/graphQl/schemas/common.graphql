@@ -1,0 +1,11 @@
+# ################################## types ##################################
+type PageInfo {
+    success: Boolean
+    doRedirection: Boolean
+    message: String
+    totalCount: Int
+    isLimitReached: Int
+    isLastPage: Boolean
+}
+
+# ################################## inputs (group of fields) ##################################

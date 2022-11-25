@@ -1,0 +1,221 @@
+# import PageInfo from "common.graphql"
+# import User, User_Filter, User_Data from "users.graphql"
+# import Thread, Thread_Filter, Thread_Data from "threads.graphql"
+# import ThreadMessage, ThreadMessage_Filter, ThreadMessage_Data from "threadsMessages.graphql"
+# import UserInterSendLike, UserInterSendLike_Filter, UserInterSendLike_Data from "userInterSendLike.graphql"
+# import UserInterSendRequest, UserInterSendRequest_Filter, UserInterSendRequest_Data from "userInterSendRequest.graphql"
+# import UserInterVisit, UserInterVisit_Filter, UserInterVisit_Data from "userInterVisit.graphql"
+# import UserInterFollow, UserInterFollow_Filter, UserInterFollow_Data from "userInterFollow.graphql"
+# import UserInterBlock, UserInterBlock_Filter, UserInterBlock_Data from "userInterBlock.graphql"
+# import AllPrimaryNotifications, AllPrimaryNotifications_Filter, AllPrimaryNotifications_Data from "allPrimaryNotifications.graphql"
+# import UserPhotoThread, UserPhotoThread_Filter, UserPhotoThread_Data from "userPhotoThread.graphql"
+
+scalar Object
+
+# ################################## fetch ##################################
+type UsersResponse {
+    pageInfo: PageInfo
+    data: [User]
+}
+
+type UserResponse {
+    pageInfo: PageInfo
+    data: User
+}
+
+type ThreadMessageResponse {
+    pageInfo: PageInfo
+    data: [ThreadMessage]
+}
+
+type ThreadsResponse {
+    pageInfo: PageInfo
+    data: [Thread]
+}
+
+type ThreadResponse {
+    pageInfo: PageInfo
+    data: Thread
+}
+
+type LikesResponse {
+    pageInfo: PageInfo
+    data: [UserInterSendLike]
+}
+
+type VisitorsResponse {
+    pageInfo: PageInfo
+    data: [UserInterVisit]
+}
+
+type FollowersResponse {
+    pageInfo: PageInfo
+    data: [UserInterFollow]
+}
+
+type BlockedsResponse {
+    pageInfo: PageInfo
+    data: [UserInterBlock]
+}
+
+type RequestsResponse {
+    pageInfo: PageInfo
+    data: [UserInterSendRequest]
+}
+
+type AllPrimaryNotificationsResponse {
+    pageInfo: PageInfo
+    data: [AllPrimaryNotifications]
+}
+
+type UserPhotosThreadResponse {
+    pageInfo: PageInfo
+    data: [UserPhotoThread]
+}
+
+type Query {
+    users(
+        filter: User_Filter,
+        data: User_Data,
+        offset: Int,
+        limit: Int
+    ): UsersResponse
+
+    user(
+        filter: User_Filter!
+    ): UserResponse
+
+    userPhotosThread(
+        filter: UserPhotoThread_Filter,
+        offset: Int,
+        limit: Int
+    ): UserPhotosThreadResponse
+
+    thread(
+        filter: Thread_Filter
+    ): ThreadResponse
+
+    threads(
+        filter: Thread_Filter,
+        offset: Int,
+        limit: Int
+    ): ThreadsResponse
+
+    threadMessages(
+        filter: ThreadMessage_Filter,
+        offset: Int,
+        limit: Int
+    ): ThreadMessageResponse
+
+    likes(
+        filter: UserInterSendLike_Filter!,
+        offset: Int,
+        limit: Int
+    ): LikesResponse
+
+    visitors(
+        filter: UserInterVisit_Filter!,
+        offset: Int,
+        limit: Int
+    ): VisitorsResponse
+
+    followers(
+        filter: UserInterFollow_Filter!,
+        offset: Int,
+        limit: Int
+    ): FollowersResponse
+
+    blockeds(
+        filter: UserInterBlock_Filter!,
+        offset: Int,
+        limit: Int
+    ): BlockedsResponse
+
+    requests(
+        filter: UserInterSendRequest_Filter!,
+        offset: Int,
+        limit: Int
+    ): RequestsResponse
+
+    allPrimaryNotifications(
+        filter: AllPrimaryNotifications_Filter!,
+        offset: Int,
+        limit: Int
+    ): AllPrimaryNotificationsResponse
+}
+
+# ################################## update ##################################
+type UpdateUserResponse {
+    updatedPageInfo: PageInfo
+    updatedData: User
+}
+
+type DataUserPhoto {
+    user: User
+    updatedOrAddedImage: Object
+}
+
+type UpdateUserPhotoResponse {
+    updatedPageInfo: PageInfo
+    updatedData: DataUserPhoto
+}
+
+type CreateThreadResponse {
+    updatedPageInfo: PageInfo
+    updatedData: Thread
+}
+
+type CreateThreadMessageResponse {
+    updatedPageInfo: PageInfo
+    updatedData: ThreadMessage
+}
+
+type SetAsSeenResponse {
+    updatedPageInfo: PageInfo
+    updatedData: Boolean
+}
+
+type SendLikeResponse {
+    updatedPageInfo: PageInfo
+    updatedData: UserInterSendLike
+}
+
+type UpdateRequestResponse {
+    updatedPageInfo: PageInfo
+    updatedData: UserInterSendRequest
+}
+
+type ToVisitResponse {
+    updatedPageInfo: PageInfo
+    updatedData: UserInterVisit
+}
+
+type ToFollowResponse {
+    updatedPageInfo: PageInfo
+    updatedData: UserInterFollow
+}
+
+type ToBlockResponse {
+    updatedPageInfo: PageInfo
+    updatedData: UserInterBlock
+}
+
+type Mutation {
+    updateUser(filter: User_Filter, data: User_Data): UpdateUserResponse
+    updateUserPhoto(filter: User_Filter, data: User_Data): UpdateUserPhotoResponse
+    updateRequest(filter: UserInterSendRequest_Filter, data: UserInterSendRequest_Data): UpdateRequestResponse
+    createThread(data: Thread_Data): CreateThreadResponse
+    createThreadMessage(data: ThreadMessage_Data): CreateThreadMessageResponse
+
+    setMessagesAsRead(filter: ThreadMessage_Filter, data: ThreadMessage_Data): SetAsSeenResponse
+    setPrimaryNotificationsAsSeen(filter: AllPrimaryNotifications_Filter, data: AllPrimaryNotifications_Data): SetAsSeenResponse
+    setLikesAsSeen(filter: UserInterSendLike_Filter, data: UserInterSendLike_Data): SetAsSeenResponse
+    setVisitorsAsSeen(filter: UserInterVisit_Filter, data: UserInterVisit_Data): SetAsSeenResponse
+    setRequestsAsSeen(filter: UserInterSendRequest_Filter, data: UserInterSendRequest_Data): SetAsSeenResponse
+
+    sendLike(data: UserInterSendLike_Data): SendLikeResponse
+    sendRequest(filter: UserInterSendRequest_Filter, data: UserInterSendRequest_Data): UpdateRequestResponse
+    toVisit(data: UserInterVisit_Data): ToVisitResponse
+    toFollow(data: UserInterFollow_Data): ToFollowResponse
+    toBlock(filter: UserInterBlock_Filter, data: UserInterBlock_Data): ToBlockResponse
+}

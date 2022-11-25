@@ -1,0 +1,43 @@
+# import User from "users.graphql"
+
+scalar Object
+scalar Date
+
+type UserInterSendLike {
+    id: ID
+    entityName: String
+    senderId: ID
+    receiverId: ID
+    sender: User
+    at: Date
+    type: String
+    isMutual: Boolean
+    isSeenByReceiver: Boolean
+}
+
+# ################################## inputs (group of fields) ##################################
+input UserInterSendLike_FilterMain {
+    senderId: ID
+    receiverId: ID
+}
+
+input UserInterSendLike_DataMain {
+    senderId: ID!
+    receiverId: ID!
+    at: Date
+    type: String
+    isMutual: Boolean
+    isSeenByReceiver: Boolean
+}
+
+input UserInterSendLike_Filter {
+    filterMain: UserInterSendLike_FilterMain
+    filterSetAsSeen: Object
+}
+
+input UserInterSendLike_Data {
+    dataMain: UserInterSendLike_DataMain
+    dataSetAsSeen: Object
+}
+
+# ################################## queries in client ##################################

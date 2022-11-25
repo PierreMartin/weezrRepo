@@ -1,0 +1,54 @@
+# import UserInterSendRequest from "userInterSendRequest.graphql"
+
+scalar Date
+scalar Object
+
+# ################################## types ##################################
+type ThreadMessage {
+    id: ID!
+    threadId: ID
+    author: String
+    text: String
+    image: String
+    video: String
+    audio: String
+    request: UserInterSendRequest
+    createdAt: Date
+    sent: Boolean
+    received: Boolean
+}
+
+# ################################## inputs (group of fields) ##################################
+input ReadBy {
+    user: String
+    at: Date
+}
+
+input ThreadMessage_FilterMain {
+    threadId: ID
+}
+
+input ThreadMessage_DataMain {
+    author: ID
+    threadId: ID
+    text: String
+    image: String
+    video: String
+    audio: String
+    requestId: ID
+    createdAt: Date
+    sent: Boolean
+    received: Boolean
+    readBy: [ReadBy]
+}
+
+input ThreadMessage_Filter {
+    filterMain: ThreadMessage_FilterMain
+    filterSetAsRead: Object
+}
+
+input ThreadMessage_Data {
+    dataMain: ThreadMessage_DataMain
+    dataUserPhoto: Object
+    dataSetAsRead: Object
+}

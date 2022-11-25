@@ -1,0 +1,46 @@
+# import User, UserInteractions from "users.graphql"
+
+scalar Object
+
+# ################################## types ##################################
+type LatestMessage {
+    text: String
+    image: String
+    video: String
+    audio: String
+    requestId: ID
+    createdAt: String
+}
+
+type Thread {
+    _id: ID
+    id: ID
+    author: User
+    participants: [User]
+    userInteractions: UserInteractions
+    latestMessage: LatestMessage
+    unreadMessages: Int
+}
+
+# ################################## inputs (group of fields) ##################################
+input Thread_FilterMain {
+    _id: String
+    participants: Object
+}
+
+input Thread_DataMain {
+    author: String
+    participants: [String]
+}
+
+input Thread_Filter {
+    filterMain: Thread_FilterMain
+    filterCountUnread: Object
+    filterUnread: Object
+    filterOnline: Object
+    filterRequestSentIfExist: Object
+}
+
+input Thread_Data {
+    dataMain: Thread_DataMain
+}
