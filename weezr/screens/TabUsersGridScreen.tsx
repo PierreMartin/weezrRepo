@@ -377,6 +377,7 @@ function TabUsersGridScreen({
     const renderItem = ({ item }: any) => {
         const {
             displayName,
+            // email,
             distanceComparedToMe,
             unreadMessages,
             isOnline,
