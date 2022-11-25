@@ -24,7 +24,7 @@ module.exports = {
     "jsx-a11y/control-has-associated-label": "off",
     "jsx-a11y/media-has-caption": "off",
     "ban-ts-comment": "off",
-    "@typescript-eslint/naming-convention": ["error",
+    "@typescript-eslint/naming-convention": ["off",
       {
         "selector": "default",
         "format": ["camelCase"],

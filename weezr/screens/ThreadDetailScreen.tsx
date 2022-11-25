@@ -542,7 +542,7 @@ function ThreadDetailScreenComponent({
         });
     };
 
-    const onSendMessage = React.useCallback((nextMessages = [], threadParam: IThread) => {
+    const onSendMessage = React.useCallback((nextMessages: any[] = [], threadParam: IThread) => {
         const nextMessage = nextMessages[0] || {};
         const text = nextMessage.text;
         const image = nextMessage.image;
