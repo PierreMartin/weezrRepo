@@ -1,6 +1,5 @@
 "Martin Technologies | Lookup | Weezr"
 
-- check TabPhotosGalleryTopStack on Android
 - Bug wrong index when tap on photo in threads
 
 * Implem Chat
@@ -18,6 +17,9 @@
 - Fix tab unread message => not work at update
 - Fix websocket count unread messages in users grid, sometime stay at 0 
 - Change wording in back-end by keys of trad
+- Android => 
+  - Bug, no pagination (on grid)
+  - Bug, no profile me on all grid
 
 1) Refacto Inputs (and handle fields errors)
   - Text | textArea                       => <Form.Item type="text" /> (ou <Input type="text | textArea | password" />)
