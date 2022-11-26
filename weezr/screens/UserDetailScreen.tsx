@@ -444,50 +444,54 @@ function UserDetailScreenComponent({
         navigation.setOptions({
             headerRight: () => (
                 <Box>
-                    <Button
-                        m={0}
-                        p={1}
-                        variant="outline"
-                        // backgroundColor="#fff"
-                        borderColor="gray.300"
-                        _text={{
-                            color: "gray.500"
-                        }}
-                        leftIcon={<Icon as={Ionicons} name="ellipsis-horizontal-outline" size="5" />}
-                        onPress={() => {
-                            if (showActionSheetWithOptions) {
-                                showActionSheetWithOptions(
-                                    {
-                                        options: [
-                                            t('userDetail.secondaryActions.close'),
-                                            t('userDetail.secondaryActions.block.do'),
-                                            t('userDetail.secondaryActions.report.do')
-                                        ],
-                                        cancelButtonIndex: 0,
-                                        destructiveButtonIndex: [1, 2],
-                                        userInterfaceStyle: 'dark'
-                                    },
-                                    (buttonIndex) => {
-                                        switch (buttonIndex) {
-                                            case 0:
-                                                // Close
-                                                break;
-                                            case 1:
-                                                // To block the profile
-                                                onOpenActionSheetForBlockTheProfile();
-                                                break;
-                                            case 2:
-                                                // To report the profile
-                                                onOpenActionSheetForReportTheProfile();
-                                                break;
-                                            default:
-                                                break;
-                                        }
+                    {
+                        !isSelectedProfileOwner && (
+                            <Button
+                                m={0}
+                                p={1}
+                                variant="outline"
+                                // backgroundColor="#fff"
+                                borderColor="gray.300"
+                                _text={{
+                                    color: "gray.500"
+                                }}
+                                leftIcon={<Icon as={Ionicons} name="ellipsis-horizontal-outline" size="5" />}
+                                onPress={() => {
+                                    if (showActionSheetWithOptions) {
+                                        showActionSheetWithOptions(
+                                            {
+                                                options: [
+                                                    t('userDetail.secondaryActions.close'),
+                                                    t('userDetail.secondaryActions.block.do'),
+                                                    t('userDetail.secondaryActions.report.do')
+                                                ],
+                                                cancelButtonIndex: 0,
+                                                destructiveButtonIndex: [1, 2],
+                                                userInterfaceStyle: 'dark'
+                                            },
+                                            (buttonIndex) => {
+                                                switch (buttonIndex) {
+                                                    case 0:
+                                                        // Close
+                                                        break;
+                                                    case 1:
+                                                        // To block the profile
+                                                        onOpenActionSheetForBlockTheProfile();
+                                                        break;
+                                                    case 2:
+                                                        // To report the profile
+                                                        onOpenActionSheetForReportTheProfile();
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
+                                            }
+                                        );
                                     }
-                                );
-                            }
-                        }}
-                    />
+                                }}
+                            />
+                        )
+                    }
                 </Box>
             )
         });
