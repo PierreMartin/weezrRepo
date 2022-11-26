@@ -91,6 +91,7 @@ const THREAD_MESSAGES = gql`
                 isLastPage
             }
             data {
+                _id
                 id
                 text
                 image
@@ -151,6 +152,7 @@ const CREATE_THREAD_MESSAGE = gql`
                 success
             }
             updatedData {
+                _id
                 id
                 text
                 image
@@ -473,11 +475,8 @@ function ThreadDetailScreenComponent({
                 }
             }
         }
-        return {
-            ...threadMessages,
-            user: authorMessage,
-            _id: threadMessages?.id
-        };
+
+        return { ...threadMessages, user: authorMessage };
     };
 
     React.useEffect(() => {
@@ -542,8 +541,8 @@ function ThreadDetailScreenComponent({
         });
     };
 
-    const onSendMessage = React.useCallback((nextMessages: any[] = [], threadParam: IThread) => {
-        const nextMessage = nextMessages[0] || {};
+    const onSendMessage = React.useCallback((nextMessages: IThreadMessage, threadParam: IThread) => {
+        const nextMessage = nextMessages || {};
         const text = nextMessage.text;
         const image = nextMessage.image;
         const video = nextMessage.video;
@@ -591,7 +590,7 @@ function ThreadDetailScreenComponent({
             const hasError = !res?.data?.createThreadMessage?.updatedData?.id;
 
             // If message saved in DB:
-            onSetStateNewMessage(hasError, sentMessagesDb, threadParam);
+            onSetStateNewMessage(hasError, { ...sentMessagesDb, _id: nextMessage._id }, threadParam);
         });
     }, []);
 
@@ -681,7 +680,7 @@ function ThreadDetailScreenComponent({
 
                         const indexCurrentPhoto = photos
                             ?.reverse() // TODO voir pour Android si reverse ?
-                            ?.findIndex((message: IThreadMessage) => message?.id === selectedImage?.id);
+                            ?.findIndex((message: IThreadMessage) => message?._id === selectedImage?._id);
 
                         if (indexCurrentPhoto !== -1 && photos?.length && photos[indexCurrentPhoto]) {
                             navigation.navigate('PhotoDetailModal', {
@@ -899,7 +898,10 @@ function ThreadDetailScreenComponent({
 
             <GiftedChat
                 messages={messages || []}
-                onSend={(nextMessages) => onSendMessage(nextMessages, thread)}
+                onSend={(nextMessages) => {
+                    const nextMessage = (nextMessages?.length && nextMessages[0]) || {};
+                    onSendMessage(nextMessage, thread);
+                }}
                 onInputTextChanged={(text: string) => {
                     if (text) {
                         socketEvents.emit.startTyping({
@@ -978,13 +980,13 @@ function ThreadDetailScreenComponent({
                 onLoadSuccess={(data: any) => {
                     const filesUrls = data?.filesUrls;
 
-                    const nextMessage = [{
+                    const nextMessage: IThreadMessage = {
                         _id: data?.fileId,
                         fileId: data?.fileId,
                         image: filesUrls?.size_320_400,
                         ...filesUrls,
                         isNewUploadedFile: !!data?.isNewUploadedFile
-                    }];
+                    };
 
                     onSendMessage(nextMessage, thread);
                 }}

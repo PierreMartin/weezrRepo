@@ -5,7 +5,8 @@ scalar Object
 
 # ################################## types ##################################
 type ThreadMessage {
-    id: ID!
+    _id: ID
+    id: ID
     threadId: ID
     author: String
     text: String
