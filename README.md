@@ -14,18 +14,18 @@ Install manually react-native-vector-icons :
 
 To run the project:
 
-    $ git clone https://github.com/PierreMartin/mernNative21Repo.git
-    $ cd mernNative21Repo/server
+    $ git clone https://github.com/PierreMartin/weezrRepo.git
+    $ cd weezrRepo/server
     $ npm i
     $ npm run server
 
 In another terminal:
 
-    $ cd mernNative21
+    $ cd weezr
     $ npm i
     $ npm run start
     
-Then, in another terminal in /mernNative21, run simulator / device (on Apple Silicon M1, run on a rosetta terminal !!):
+Then, in another terminal in /weezr, run simulator / device (on Apple Silicon M1, run on a rosetta terminal !!):
 
     $ npm run ios / npm run android
     Or
