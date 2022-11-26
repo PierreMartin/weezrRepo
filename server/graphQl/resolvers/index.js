@@ -1029,11 +1029,13 @@ export const resolvers = {
 
             const {
                 filter,
+                data,
                 offset = 0,
                 limit = defaultLimit
             } = args;
 
             const { filterMain } = filter;
+            const { dataMain } = data;
 
             try {
                 const totalCount = await ThreadMessage
@@ -1049,8 +1051,26 @@ export const resolvers = {
                     .skip(offset)
                     .limit(limit);
 
+                const participantsIdsFront = dataMain?.participantsIdsFront;
+                const isBetweenTwoUsers = (participantsIdsFront?.length === 1);
+
+                const data = threadMessages?.map((threadMessage) => {
+                    const message = threadMessage?.toObject();
+
+                    // Check if message read by user front:
+                    let received = false;
+                    if (isBetweenTwoUsers
+                        && message?.author && (message.author === context?.userMeId)
+                        && !!message?.readBy?.find((by) => by?.user && (by.user === participantsIdsFront[0]))
+                    ) {
+                        received = true;
+                    }
+
+                    return { ...message, received };
+                });
+
                 return {
-                    data: threadMessages,
+                    data,
                     pageInfo: {
                         message: 'Thread messages successfully fetched',
                         success: true,

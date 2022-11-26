@@ -81,8 +81,8 @@ const THREAD = gql`
 `;
 
 const THREAD_MESSAGES = gql`
-    query ($filter: ThreadMessage_Filter, $offset: Int, $limit: Int) {
-        threadMessages(filter: $filter, offset: $offset, limit: $limit) {
+    query ($filter: ThreadMessage_Filter, $data: ThreadMessage_Data, $offset: Int, $limit: Int) {
+        threadMessages(filter: $filter, data: $data, offset: $offset, limit: $limit) {
             pageInfo {
                 message
                 success
@@ -105,6 +105,7 @@ const THREAD_MESSAGES = gql`
                 }
                 author
                 sent
+                received
             }
         }
     }
@@ -164,6 +165,7 @@ const CREATE_THREAD_MESSAGE = gql`
                     privatePhotosGranted
                 }
                 sent
+                received
                 author
                 threadId
                 createdAt
@@ -323,18 +325,6 @@ function ThreadDetailScreenComponent({
         }
 
         if (threadData?.thread?.data?.id) {
-            getThreadMessages({
-                variables: {
-                    filter: {
-                        filterMain: {
-                            threadId: threadData?.thread?.data?.id
-                        }
-                    },
-                    offset: 0, // skip
-                    limit: itemsPerPage
-                }
-            });
-
             const nextParticipantsIdsAll = threadData?.thread?.data?.participants?.map((participant: IUser) => participant?.id);
             const nextParticipantsIdsFront = nextParticipantsIdsAll?.filter((participant: string) => (participant && (participant !== me._id)));
 
@@ -342,6 +332,23 @@ function ThreadDetailScreenComponent({
             setParticipantsIdsAll(nextParticipantsIdsAll);
             setParticipantsIdsFront(nextParticipantsIdsFront);
             setIsBetweenTwoUsers(nextParticipantsIdsFront?.length === 1);
+
+            getThreadMessages({
+                variables: {
+                    filter: {
+                        filterMain: {
+                            threadId: threadData?.thread?.data?.id
+                        }
+                    },
+                    data: {
+                        dataMain: {
+                            participantsIdsFront: nextParticipantsIdsFront
+                        }
+                    },
+                    offset: 0, // skip
+                    limit: itemsPerPage
+                }
+            });
         }
     }, [threadData]);
 

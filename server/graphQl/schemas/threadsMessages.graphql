@@ -41,6 +41,7 @@ input ThreadMessage_DataMain {
     sent: Boolean
     received: Boolean
     readBy: [ReadBy]
+    participantsIdsFront: [String]
 }
 
 input ThreadMessage_Filter {

@@ -103,6 +103,7 @@ type Query {
 
     threadMessages(
         filter: ThreadMessage_Filter,
+        data: ThreadMessage_Data,
         offset: Int,
         limit: Int
     ): ThreadMessageResponse

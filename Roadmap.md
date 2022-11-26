@@ -6,7 +6,9 @@
   - Localisation
   - audio
   - video
+  - renew buttons actions in slider
   * Storage in local
+  - Switch for delete all messages in one thread
 
 - UserInteractions => handle "replies too" in TabNotificationsCenter
 - Query (Apollo ?) => See why we pass many times in some queries (like users)
