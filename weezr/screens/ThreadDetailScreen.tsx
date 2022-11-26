@@ -163,6 +163,10 @@ const CREATE_THREAD_MESSAGE = gql`
                     senderId
                     privatePhotosGranted
                 }
+                sent
+                author
+                threadId
+                createdAt
             }
         }
     }
@@ -513,7 +517,32 @@ function ThreadDetailScreenComponent({
         }
     };
 
-    const onSetStateNewMessage = (hasError: boolean, nextMessage: IThreadMessage, threadParam: IThread) => {
+    const onSetStateNewPendingMessage = (text = 'Sending ...') => {
+        setMessages((previousMessages: IThreadMessage[]) => {
+            const inverted = Platform.OS !== 'web';
+            const nextMessages: IThreadMessage[] = [...previousMessages];
+            const nextMessage: IThreadMessage = {
+                author: me._id,
+                text,
+                threadId: thread?.id,
+                createdAt: new Date()
+            };
+
+            const sentMessageFullFormat: IThreadMessage = formatThreadMessageData(nextMessage, true, thread);
+            sentMessageFullFormat._id = 'tmp';
+            sentMessageFullFormat.pending = true;
+
+            if (inverted) {
+                nextMessages.unshift(sentMessageFullFormat);
+            } else {
+                nextMessages.push(sentMessageFullFormat);
+            }
+
+            return nextMessages;
+        });
+    };
+
+    const onSetStateNewSuccessMessage = (hasError: boolean, nextMessage: IThreadMessage, threadParam: IThread) => {
         setMessages((previousMessages: IThreadMessage[]) => {
             const inverted = Platform.OS !== 'web';
             const nextMessages: IThreadMessage[] = [...previousMessages?.filter((msg) => msg?._id !== 'tmp')];
@@ -526,9 +555,9 @@ function ThreadDetailScreenComponent({
             if (!hasError) {
                 if (previousMessages?.length === 0) { sentMessageFullFormat.isFirstMessageInThread = true; }
                 socketEvents.emit.newMessage(sentMessageFullFormat);
-                sentMessageFullFormat.sent = true;
             } else {
-                sentMessageFullFormat.pending = true;
+                sentMessageFullFormat.sent = false;
+                sentMessageFullFormat.pending = false;
             }
 
             if (inverted) {
@@ -587,10 +616,13 @@ function ThreadDetailScreenComponent({
                 }
             }
         }).then((res: any) => {
-            const hasError = !res?.data?.createThreadMessage?.updatedData?.id;
+            const updatedData = res?.data?.createThreadMessage?.updatedData;
+            const hasError = !updatedData?.id;
 
             // If message saved in DB:
-            onSetStateNewMessage(hasError, { ...sentMessagesDb, _id: nextMessage._id }, threadParam);
+            onSetStateNewSuccessMessage(hasError, updatedData, threadParam);
+        }).catch(() => {
+            onSetStateNewSuccessMessage(true, { ...sentMessagesDb, _id: nextMessage._id }, threadParam);
         });
     }, []);
 
@@ -788,7 +820,7 @@ function ThreadDetailScreenComponent({
                                                                 user: me
                                                             };
 
-                                                            onSetStateNewMessage(false, nextMessage, thread);
+                                                            onSetStateNewSuccessMessage(false, nextMessage, thread);
 
                                                             setThread((previousThread: IThread) => {
                                                                 const nextThread = _.cloneDeep(previousThread || {});
@@ -900,6 +932,8 @@ function ThreadDetailScreenComponent({
                 messages={messages || []}
                 onSend={(nextMessages) => {
                     const nextMessage = (nextMessages?.length && nextMessages[0]) || {};
+
+                    onSetStateNewPendingMessage(nextMessage.text);
                     onSendMessage(nextMessage, thread);
                 }}
                 onInputTextChanged={(text: string) => {
@@ -954,28 +988,7 @@ function ThreadDetailScreenComponent({
                     isMultipleSelect: false
                 }}
                 onLoadPending={() => {
-                    setMessages((previousMessages: IThreadMessage[]) => {
-                        const inverted = Platform.OS !== 'web';
-                        const nextMessage: IThreadMessage[] = [...previousMessages];
-                        const sentMessagesDb: IThreadMessage = {
-                            author: me._id,
-                            text: 'Sending ...',
-                            threadId: thread?.id,
-                            createdAt: new Date()
-                        };
-
-                        const sentMessagesFullFormat: IThreadMessage = formatThreadMessageData(sentMessagesDb, true, thread);
-                        sentMessagesFullFormat._id = 'tmp';
-                        sentMessagesFullFormat.pending = true;
-
-                        if (inverted) {
-                            nextMessage.unshift(sentMessagesFullFormat);
-                        } else {
-                            nextMessage.push(sentMessagesFullFormat);
-                        }
-
-                        return nextMessage;
-                    });
+                    onSetStateNewPendingMessage('Sending ...');
                 }}
                 onLoadSuccess={(data: any) => {
                     const filesUrls = data?.filesUrls;
