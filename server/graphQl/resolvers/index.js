@@ -870,6 +870,7 @@ export const resolvers = {
                                 id: participant._id,
                                 email: participant.email,
                                 displayName: participant.displayName,
+                                images: participant.images,
                                 hasPrivatePhotos: !!participant.images?.list?.find((image) => image?.album === 'private')
                             }
                         }),

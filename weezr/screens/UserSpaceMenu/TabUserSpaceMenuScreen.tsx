@@ -9,7 +9,6 @@ import { States } from "../../reduxReducers/states";
 import { IItemGroup, MenuListGroup } from "../../components/MenuListGroup";
 import { IItem } from "../../components/MenuList";
 import { Avatar } from "../../components/Avatar";
-import { MenuItem } from "../../components/MenuItem";
 import getStyles from "./TabUserSpaceMenuScreen.styles";
 
 const styles = getStyles();

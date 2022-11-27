@@ -59,10 +59,10 @@ interface IApp {
 const socket = initRealtimeService(config.realtime, store);
 
 const App = ({
-                 me,
-                 authenticatedState,
-                 fetchMeProfileActionProps
-             }: IApp) => {
+    me,
+    authenticatedState,
+    fetchMeProfileActionProps
+}: IApp) => {
     const colorScheme = useColorScheme() as NonNullable<ColorSchemeName>;
     const isDarkMode = colorScheme === 'dark';
     const isLoadingComplete = useCachedResources();

@@ -26,7 +26,8 @@ import ReplyToRequest from "../components/ActionsForUserInteractions/ReplyToRequ
 import { onSendRequest, SEND_REQUEST } from "../components/ActionsForUserInteractions/SendRequest";
 import FilesBottomSheetPicker from "../components/FilesBottomSheetPicker";
 import { displayAlert } from "../components/DisplayAlert";
-import { getUniqueId } from "../toolbox/toolbox";
+import { Avatar } from "../components/Avatar";
+import { getUniqueId, getUserForwardPhoto } from "../toolbox/toolbox";
 import { IThread, IThreadMessage, IUser, IUserInteraction } from "../entities";
 import { States } from "../reduxReducers/states";
 import getStyles from "./ThreadDetailScreen.styles";
@@ -69,6 +70,7 @@ const THREAD = gql`
                     email
                     displayName
                     hasPrivatePhotos
+                    images
                 }
                 userInteractions {
                     # Used ONLY for know if userMe CAN send requests to private photos
@@ -209,6 +211,7 @@ function ThreadDetailScreenComponent({
 }: IThreadDetailScreenProps) {
     const [thread, setThread] = React.useState<IThread>(null as any);
     const [messages, setMessages] = React.useState<IThreadMessage[]>([]);
+    const [photoMe, setPhotoMe] = React.useState<string>('');
     const [typing, setTyping] = React.useState<any>({ isTyping: false, participantTyping: null });
     const [isLoadingMore, setIsLoadingMore] = React.useState<boolean>(false);
     const [participantsIdsAll, setParticipantsIdsAll] = React.useState<string[]>([]);
@@ -249,11 +252,94 @@ function ThreadDetailScreenComponent({
     }, [client]);
 
     React.useLayoutEffect(() => {
-        const usersFrontFound = threadData?.thread?.data?.participants?.filter((participant: IUser) => participant.id !== me?._id);
-        const firstUserFrontFound = usersFrontFound && usersFrontFound[0];
+        const participantsFront = threadData?.thread?.data?.participants?.filter((participant: IUser) => participant.id !== me?._id);
+        // const participantsFront = [...threadData?.thread?.data?.participants || []];
+
+        if (!participantsFront?.length) { return; }
+
+        const participantFound = participantsFront[0];
+        const isBtwTwoUsers = participantsFront.length === 1;
+        const { id, displayName } = participantFound;
+        let rightContent: any = null;
+
+        if (isBtwTwoUsers) {
+            //
+        } else if (participantsFront.length < 5) {
+            rightContent = (
+                <Box flexDirection="row">
+                    {
+                        participantsFront
+                            ?.map((participant: any) => {
+                                return (
+                                    <Avatar
+                                        key={participant.id}
+                                        user={{ ...participant, _id: participant.id }}
+                                        navigation={navigation}
+                                        size="sm"
+                                        routeNameNavigation="UserDetail"
+                                        displayDefaultAvatarIfNeeded
+                                    />
+                                );
+                            })
+                    }
+                </Box>
+            );
+        } else if (participantsFront.length >= 5) {
+            rightContent = (
+                <Button
+                    variant="outline"
+                    size="sm"
+                    p="0"
+                    pl="2"
+                    pr="2"
+                    _text={{ fontSize: 11 }}
+                    onPress={() => {
+                        // TODO
+                    }}
+                >
+                    See participants
+                </Button>
+            );
+        }
 
         navigation.setOptions({
-            title: firstUserFrontFound?.displayName
+            headerTitle: () => {
+                return (
+                    <Box>
+                        {
+                            isBtwTwoUsers ? (
+                                <Button
+                                    variant="unstyled"
+                                    p="0"
+                                    pl="2"
+                                    pr="2"
+                                    _text={{ fontSize: 18 }}
+                                    onPress={() => navigation.navigate('UserDetail', { userId: id })}
+                                >
+                                    <Box flexDirection="row" alignItems="center">
+                                        <Box mr={2}>
+                                            <Avatar
+                                                user={{ ...participantFound, _id: id }}
+                                                navigation={navigation}
+                                                size="sm"
+                                                routeNameNavigation="UserDetail"
+                                                displayDefaultAvatarIfNeeded
+                                            />
+                                        </Box>
+
+                                        {displayName}
+                                    </Box>
+                                </Button>
+                            ) : 'Group'
+                        }
+                    </Box>
+                );
+            },
+            headerRight: () => (
+                <Box flexDirection="row">
+                    {rightContent}
+                </Box>
+            )
         });
     }, [threadData]);
 
@@ -306,6 +392,9 @@ function ThreadDetailScreenComponent({
         } else {
             console.error('Error at loading thread data, no thread found');
         }
+
+        const { uri }: any = getUserForwardPhoto(me, 'size_40_40');
+        setPhotoMe(uri);
 
         return () => {
             if (onRefreshParentScreen) { onRefreshParentScreen(); }
@@ -504,14 +593,23 @@ function ThreadDetailScreenComponent({
         isCreate = false,
         threadParam: any = null
     ) => {
-        let authorMessage = {} as IUser;
+        let authorMessage = {} as any;
 
         if (isCreate) {
-            authorMessage = me as IUser;
+            authorMessage = {
+                _id: me._id,
+                avatar: photoMe,
+                name: me.displayName || ''
+            };
         } else {
             const authorMessageFound = threadParam?.participants?.find((participant: IUser) => participant?.id === threadMessages?.author);
             if (authorMessageFound) {
                 authorMessage = {...authorMessageFound};
+
+                const { uri }: any = getUserForwardPhoto(authorMessage, 'size_40_40');
+
+                authorMessage.avatar = uri;
+                authorMessage.name = authorMessage.displayName || '';
 
                 if (authorMessageFound?.id && !authorMessage?._id) {
                     authorMessage._id = authorMessageFound.id;
@@ -585,11 +683,11 @@ function ThreadDetailScreenComponent({
         });
     };
 
-    const onSetStateNewSuccessMessage = (hasError: boolean, nextMessage: IThreadMessage, threadParam: IThread) => {
+    const onSetStateNewSuccessMessage = (hasError: boolean, nextMessage: IThreadMessage) => {
         setMessages((previousMessages: IThreadMessage[]) => {
             const inverted = Platform.OS !== 'web';
             const nextMessages: IThreadMessage[] = [...previousMessages?.filter((msg) => msg?._id !== 'tmp')];
-            const sentMessageFullFormat: IThreadMessage = formatThreadMessageData(nextMessage, true, threadParam);
+            const sentMessageFullFormat: IThreadMessage = formatThreadMessageData(nextMessage, true, thread);
 
             if (!sentMessageFullFormat?._id) {
                 sentMessageFullFormat._id = getUniqueId();
@@ -613,7 +711,7 @@ function ThreadDetailScreenComponent({
         });
     };
 
-    const onSendMessage = React.useCallback((nextMessages: IThreadMessage, threadParam: IThread) => {
+    const onSendMessage = (nextMessages: IThreadMessage) => {
         const nextMessage = nextMessages || {};
         const text = nextMessage.text;
         const image = nextMessage.image;
@@ -625,12 +723,12 @@ function ThreadDetailScreenComponent({
             && !image
             && !video
             && !audio
-            && (!threadParam?.id || !me._id)
+            && (!thread?.id || !me._id)
         ) { return; }
 
         const sentMessagesDb: IThreadMessage = {
             author: me._id,
-            threadId: threadParam?.id,
+            threadId: thread?.id,
             createdAt: new Date(),
             // readBy: []
         };
@@ -642,9 +740,9 @@ function ThreadDetailScreenComponent({
 
         // Just for tests:
         /*
-        for (let i = 0; i < threadParam?.participants?.length; i++) {
+        for (let i = 0; i < thread?.participants?.length; i++) {
             sentMessagesDb.readBy.push({
-                user: threadParam.participants[i]?.id,
+                user: thread.participants[i]?.id,
                 at: new Date()
             });
         }
@@ -663,11 +761,11 @@ function ThreadDetailScreenComponent({
             const hasError = !updatedData?.id;
 
             // If message saved in DB:
-            onSetStateNewSuccessMessage(hasError, updatedData, threadParam);
+            onSetStateNewSuccessMessage(hasError, updatedData);
         }).catch(() => {
-            onSetStateNewSuccessMessage(true, { ...sentMessagesDb, _id: nextMessage._id }, threadParam);
+            onSetStateNewSuccessMessage(true, { ...sentMessagesDb, _id: nextMessage._id });
         });
-    }, []);
+    };
 
     const renderCustomView = (props: any) => {
         const { request } = props.currentMessage;
@@ -863,7 +961,7 @@ function ThreadDetailScreenComponent({
                                                                 user: me
                                                             };
 
-                                                            onSetStateNewSuccessMessage(false, nextMessage, thread);
+                                                            onSetStateNewSuccessMessage(false, nextMessage);
 
                                                             setThread((previousThread: IThread) => {
                                                                 const nextThread = _.cloneDeep(previousThread || {});
@@ -931,7 +1029,7 @@ function ThreadDetailScreenComponent({
     }, 1200);
 
     /*
-    const renderMessageVideo = () => {
+    const renderMessageLoca = () => {
         // TODO
     };
 
@@ -977,7 +1075,7 @@ function ThreadDetailScreenComponent({
                     const nextMessage = (nextMessages?.length && nextMessages[0]) || {};
 
                     onSetStateNewPendingMessage(nextMessage.text);
-                    onSendMessage(nextMessage, thread);
+                    onSendMessage(nextMessage);
                 }}
                 onInputTextChanged={(text: string) => {
                     if (text) {
@@ -992,7 +1090,7 @@ function ThreadDetailScreenComponent({
                 user={{
                     _id: me._id as string,
                     name: me.displayName,
-                    avatar: 'https://placeimg.com/140/140/any'
+                    avatar: photoMe
                 }}
                 scrollToBottom
                 showUserAvatar
@@ -1007,6 +1105,13 @@ function ThreadDetailScreenComponent({
                 onLoadEarlier={onLoadMessagesMore}
                 isLoadingEarlier={isLoadingMore}
                 shouldUpdateMessage={() => true}
+                renderUsernameOnMessage
+                messagesContainerStyle={{ backgroundColor: '#fff' }}
+                onPressAvatar={(user) => {
+                    if (user?._id) {
+                        navigation.navigate('UserDetail', { userId: user._id });
+                    }
+                }}
             />
 
             <FilesBottomSheetPicker
@@ -1044,7 +1149,7 @@ function ThreadDetailScreenComponent({
                         isNewUploadedFile: !!data?.isNewUploadedFile
                     };
 
-                    onSendMessage(nextMessage, thread);
+                    onSendMessage(nextMessage);
                 }}
                 onLoadError={() => {
                     setMessages((previousMessages: IThreadMessage[]) => {
