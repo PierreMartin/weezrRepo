@@ -16,6 +16,7 @@ import { StackNavigationProp } from "@react-navigation/stack/lib/typescript/src/
 import { SocketEvents } from "../context/SocketEvents";
 import {
     newMessageAction,
+    newSeenMessagesAction,
     setRealtimeNewBlockAction,
     setRealtimeNewRequestResponseAction,
     typingAction
@@ -37,9 +38,11 @@ interface IThreadDetailScreenProps extends StackScreenProps<any, 'ThreadDetail'>
     me: IUser;
     realtimeDataTyping: States.ITyping;
     realtimeNewMessage: States.INewMessage;
+    realtimeNewSeenMessages: States.INewSeenMessages;
     realtimeNewRequestResponse: States.INewRequest;
     realtimeNewBlock: States.INewBlock;
     newMessageActionProps: (data: any) => void;
+    newSeenMessagesActionProps: (data: any) => void;
     setRealtimeNewRequestResponseActionProps: (data: any) => void;
     setRealtimeNewBlockActionProps: (data: any) => void;
     typingActionProps: (data: any) => void;
@@ -194,9 +197,11 @@ function ThreadDetailScreenComponent({
     me,
     realtimeDataTyping,
     realtimeNewMessage,
+    realtimeNewSeenMessages,
     realtimeNewRequestResponse,
     realtimeNewBlock,
     newMessageActionProps,
+    newSeenMessagesActionProps,
     setRealtimeNewRequestResponseActionProps,
     setRealtimeNewBlockActionProps,
     typingActionProps,
@@ -420,6 +425,33 @@ function ThreadDetailScreenComponent({
 
     // Socket events:
     React.useEffect(() => {
+        if (realtimeNewSeenMessages) {
+            console.log('[socket] newSeenMessage ');
+
+            const isAllMessagesSeen = messages
+                ?.filter((message) => message?.author === me._id)
+                ?.every((message) => message?.received);
+
+            if (isBetweenTwoUsers && !isAllMessagesSeen) {
+                setMessages((previousMessages: IThreadMessage[]) => {
+                    return [...previousMessages].map((message) => {
+                        let received = false;
+                        if (message?.author && (message.author === me._id)) {
+                            received = true;
+                        }
+
+                        return { ...message, received };
+                    });
+                });
+            }
+
+            // reset redux:
+            newSeenMessagesActionProps(null);
+        }
+    }, [realtimeNewSeenMessages]);
+
+    // Socket events:
+    React.useEffect(() => {
         if (realtimeNewRequestResponse && realtimeNewRequestResponse?.threadId === thread?.id) {
             // If new request response received - Update:
             console.log('[socket] newRequestResponse');
@@ -519,6 +551,10 @@ function ThreadDetailScreenComponent({
                             }
                         }
                     }
+                }
+            }).then((res) => {
+                if (res?.data?.setMessagesAsRead?.updatedData) {
+                    socketEvents.emit.newSeenMessages({ threadId: thread.id, userId: me._id });
                 }
             });
         }
@@ -1044,6 +1080,7 @@ function mapStateToProps(state: States.IAppState) {
         me: state.user.me,
         realtimeDataTyping: state.realtimeData.typing,
         realtimeNewMessage: state.realtimeData.newMessage,
+        realtimeNewSeenMessages: state.realtimeData.newSeenMessages,
         realtimeNewRequestResponse: state.realtimeData.newRequestResponse,
         realtimeNewBlock: state.realtimeData.newBlock
     };
@@ -1052,6 +1089,7 @@ function mapStateToProps(state: States.IAppState) {
 function mapDispatchToProps(dispatch: any) {
     return {
         newMessageActionProps: bindActionCreators(newMessageAction, dispatch),
+        newSeenMessagesActionProps: bindActionCreators(newSeenMessagesAction, dispatch),
         typingActionProps: bindActionCreators(typingAction, dispatch),
         setRealtimeNewRequestResponseActionProps: bindActionCreators(setRealtimeNewRequestResponseAction, dispatch),
         setRealtimeNewBlockActionProps: bindActionCreators(setRealtimeNewBlockAction, dispatch),

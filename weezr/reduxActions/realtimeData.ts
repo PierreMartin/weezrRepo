@@ -3,6 +3,7 @@ import {
     REALTIME_DATA_NEW_FOLLOW,
     REALTIME_DATA_NEW_LIKE,
     REALTIME_DATA_NEW_MESSAGE,
+    REALTIME_DATA_NEW_SEEN_MESSAGES,
     REALTIME_DATA_NEW_REQUEST,
     REALTIME_DATA_NEW_REQUEST_RESPONSE,
     REALTIME_DATA_NEW_THREAD,
@@ -27,6 +28,17 @@ export function newMessageAction(dataReceive: any) {
     return (dispatch: any, getState: () => States.IAppState) => {
         dispatch({
             type: REALTIME_DATA_NEW_MESSAGE,
+            payload: {
+                dataReceive
+            }
+        });
+    };
+}
+
+export function newSeenMessagesAction(dataReceive: any) {
+    return (dispatch: any, getState: () => States.IAppState) => {
+        dispatch({
+            type: REALTIME_DATA_NEW_SEEN_MESSAGES,
             payload: {
                 dataReceive
             }

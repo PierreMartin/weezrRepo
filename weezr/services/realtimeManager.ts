@@ -3,6 +3,7 @@ import { Store, AnyAction } from 'redux';
 import { States } from "../reduxReducers/states";
 import {
     newMessageAction,
+    newSeenMessagesAction,
     typingAction,
     newThreadAction,
     setRealtimeNewLikeAction,
@@ -50,6 +51,10 @@ export class RealtimeManager {
             newMessageAction(dataReceive)(this.store.dispatch, this.store.getState);
         });
 
+        this.socketIo.on('newSeenMessagesServer', (dataReceive: any) => {
+            newSeenMessagesAction(dataReceive)(this.store.dispatch, this.store.getState);
+        });
+
         this.socketIo.on('newThreadServer', (dataReceive: any) => {
             newThreadAction(dataReceive)(this.store.dispatch, this.store.getState);
         });
@@ -88,6 +93,7 @@ export class RealtimeManager {
         this.socketIo.off('startTypingServer');
         this.socketIo.off('stopTypingServer');
         this.socketIo.off('newMessageServer');
+        this.socketIo.off('newSeenMessagesServer');
         this.socketIo.off('newLikeServer');
         this.socketIo.off('newVisitServer');
         this.socketIo.off('newRequestServer');
@@ -132,6 +138,10 @@ export class RealtimeManager {
                 // --------------------------- Events: ---------------------------
                 newMessage: (data: any) => {
                     this.socketIo.emit('newMessage', data);
+                },
+
+                newSeenMessages: (data: any) => {
+                    this.socketIo.emit('newSeenMessages', data);
                 },
 
                 newThread: (data: any) => {
@@ -183,6 +193,7 @@ export class RealtimeManager {
                 startTypingServer: () => { this.socketIo.off('startTypingServer'); },
                 stopTypingServer: () => { this.socketIo.off('stopTypingServer'); },
                 newMessageServer: () => { this.socketIo.off('newMessageServer'); },
+                newSeenMessagesServer: () => { this.socketIo.off('newSeenMessagesServer'); },
                 newLikeServer: () => { this.socketIo.off('newLikeServer'); },
                 newVisitServer: () => { this.socketIo.off('newVisitServer'); },
                 newRequestServer: () => { this.socketIo.off('newRequestServer'); },

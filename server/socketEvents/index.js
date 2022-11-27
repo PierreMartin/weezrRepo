@@ -70,6 +70,10 @@ export default (io) => {
             socket.broadcast.to(param.threadId).emit('newMessageServer', param);
         });
 
+        socket.on('newSeenMessages', (param) => {
+            socket.broadcast.to(param.threadId).emit('newSeenMessagesServer', param);
+        });
+
         /**
          * @param {object}
          * {

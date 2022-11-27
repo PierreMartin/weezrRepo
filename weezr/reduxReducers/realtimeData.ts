@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
 import {
     REALTIME_DATA_NEW_MESSAGE,
+    REALTIME_DATA_NEW_SEEN_MESSAGES,
     REALTIME_DATA_NEW_THREAD,
     REALTIME_DATA_TYPING,
     REALTIME_DATA_NEW_LIKE,
@@ -26,6 +27,16 @@ const newThread = (state = null as unknown as States.INewThread, action: any) =>
 const newMessage = (state = null as unknown as States.INewMessage, action: any) => {
     switch (action.type) {
         case REALTIME_DATA_NEW_MESSAGE:
+            if (action.payload) { return action.payload.dataReceive; }
+            return state;
+        default:
+            return state;
+    }
+};
+
+const newSeenMessages = (state = null as unknown as States.INewSeenMessages, action: any) => {
+    switch (action.type) {
+        case REALTIME_DATA_NEW_SEEN_MESSAGES:
             if (action.payload) { return action.payload.dataReceive; }
             return state;
         default:
@@ -116,6 +127,7 @@ const newPrimaryNotification = (state = null as unknown as States.INewPrimaryNot
 const realtimeDataReducer = combineReducers({
     newThread,
     newMessage,
+    newSeenMessages,
     typing,
     newLike,
     newVisit,

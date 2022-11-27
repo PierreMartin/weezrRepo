@@ -54,6 +54,7 @@ export declare namespace States {
 
     type INewThread = any;
     type INewMessage = IThreadMessage;
+    type INewSeenMessages = { threadId: string; userId: string; };
     type INewLike = IUserInteraction;
     type INewVisit = IUserInteraction;
     type INewFollow = IUserInteraction;
@@ -64,6 +65,7 @@ export declare namespace States {
     interface IRealtimeData {
         newThread?: INewThread;
         newMessage: INewMessage;
+        newSeenMessages: INewSeenMessages;
         newLike: INewLike;
         newVisit: INewVisit;
         newFollow: INewFollow;
