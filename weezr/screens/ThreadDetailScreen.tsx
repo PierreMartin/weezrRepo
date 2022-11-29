@@ -861,6 +861,7 @@ function ThreadDetailScreenComponent({
                         activeOpacity={0.8}
                         underlayColor="transparent"
                         style={{ height: 200, width: 200 }}
+                        onPress={() => Platform.OS === 'android' && onOpenMap(location)}
                     >
                         <MapView
                             style={{ ...StyleSheet.absoluteFillObject, borderRadius: 15 }}
@@ -873,7 +874,7 @@ function ThreadDetailScreenComponent({
                             scrollEnabled={false}
                             zoomEnabled={false}
                             userInterfaceStyle="dark"
-                            onPress={() => onOpenMap(location)}
+                            onPress={() => Platform.OS === 'ios' && onOpenMap(location)}
                         >
                             <Marker coordinate={location}>
                                 <Icon size="10" as={<Ionicons name="location" />} color="#fff" />

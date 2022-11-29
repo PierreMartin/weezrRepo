@@ -33,6 +33,7 @@
   - 'isOnline' => changer le champ en 'account': { 'lastLoginAt': Date, 'lastActivityAt': Date } => ajouter une icon orange (si lastActivityAt > 15min = on passe en orange, si > 30min, on vire l'icon)
   - send websockets every 15 minutes for update user's location in grid
 
+* mapbox.com
 * Push notification
 * Dark mode
 
