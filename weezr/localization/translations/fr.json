@@ -183,5 +183,12 @@
       "choosePhoto": "Choisir dans la bibliothèque",
       "close": "Fermer"
     }
+  },
+  "mapModal": {
+    "error": "Erreur lors du chargement de la carte...",
+    "header": {
+      "title": "Carte",
+      "close": "Fermer"
+    }
   }
 }

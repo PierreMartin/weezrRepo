@@ -3,6 +3,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import * as React from 'react';
 import { StyleSheet, Text } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import { useTranslation } from "react-i18next";
 import { Box, Center, Button, Icon } from "native-base";
 import { connect } from "react-redux";
 import { StackScreenProps } from '@react-navigation/stack';
@@ -46,14 +47,14 @@ function MapModalScreenComponent({
     const [region, setRegion] = React.useState<any>(initialRegion);
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
+    const { t } = useTranslation();
+
     React.useLayoutEffect(() => {
         navigation.setOptions({
-            title: 'Map',
+            title: t('mapModal.header.title'),
             headerLeft: () => (
-                <Button
-                    onPress={() => navigation.goBack()}
-                >
-                    Close
+                <Button onPress={() => navigation.goBack()}>
+                    {t('mapModal.header.close')}
                 </Button>
             )
         });
@@ -64,7 +65,7 @@ function MapModalScreenComponent({
     }, 50);
 
     if (!initialRegion?.latitude || !initialRegion?.longitude) {
-        return <Center style={styles.container}><Text>Error at loading map...</Text></Center>;
+        return <Center style={styles.container}><Text>{t('mapModal.error')}</Text></Center>;
     }
 
     return (

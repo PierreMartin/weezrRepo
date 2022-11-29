@@ -183,5 +183,12 @@
       "choosePhoto": "Choose from library",
       "close": "Close"
     }
+  },
+  "mapModal": {
+    "error": "Error at loading map...",
+    "header": {
+      "title": "Map",
+      "close": "Close"
+    }
   }
 }
