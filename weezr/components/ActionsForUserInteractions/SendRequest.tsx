@@ -119,7 +119,7 @@ const SendRequest = (props: ISendRequest) => {
 
     return (
         <Button
-            leftIcon={<Icon as={Ionicons} name={requestSentIconStr} size="sm" />}
+            leftIcon={<Icon as={Ionicons} name={requestSentIconStr} size="lg" />}
             onPress={() => {
                 if (!myRequest?.sent?.id) {
                     onSendRequest({

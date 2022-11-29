@@ -35,8 +35,8 @@ function getStyles(params: any = {}) {
         },
         toolbarUserInteractionContainer: {
             position: 'absolute',
-            bottom: 12,
-            right: 12,
+            bottom: 35,
+            right: 25,
             zIndex: 10
         },
         userInteractionButton: {

@@ -8,6 +8,7 @@ type LatestMessage {
     image: String
     video: String
     audio: String
+    location: Object
     requestId: ID
     createdAt: String
 }

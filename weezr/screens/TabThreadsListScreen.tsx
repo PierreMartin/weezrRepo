@@ -55,6 +55,7 @@ const THREADS = gql`
                     image
                     video
                     audio
+                    location
                     requestId
                     createdAt
                 }
@@ -194,6 +195,7 @@ function TabThreadsListScreen({
                             threadToUpdate.latestMessage.image = realtimeNewMessage.image;
                             threadToUpdate.latestMessage.video = realtimeNewMessage.video;
                             threadToUpdate.latestMessage.audio = realtimeNewMessage.audio;
+                            threadToUpdate.latestMessage.location = realtimeNewMessage.location;
                             threadToUpdate.latestMessage.createdAt = realtimeNewMessage.createdAt;
                         }
 
@@ -270,13 +272,14 @@ function TabThreadsListScreen({
     const renderFields = (fieldsSource: IThread) => {
         const usersFrontFound = fieldsSource?.participants?.filter((participant: IUser) => participant.id !== me?._id);
         const firstUserFrontFound = usersFrontFound[0] || {};
-        const { text, image, video, audio, requestId } = fieldsSource?.latestMessage;
+        const { text, image, video, audio, location, requestId } = fieldsSource?.latestMessage;
         let renderLatestMessage = ' ';
 
         if (text) { renderLatestMessage = truncate(text, 30, '...'); }
         if (image) { renderLatestMessage = '📷 Photo'; }
         if (video) { renderLatestMessage = '📹 Video'; }
         if (audio) { renderLatestMessage = '🔉 Audio'; }
+        if (location) { renderLatestMessage = '📍 Map'; }
         if (requestId) { renderLatestMessage = '📷 Request for private photos'; }
 
         return {

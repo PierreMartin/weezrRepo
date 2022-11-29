@@ -358,7 +358,7 @@ function TabMapScreen({ navigation, me }: ITabMapScreenProps) {
             { loading && <Spinner /> }
 
             <MapView
-                style={styles.map}
+                style={styles.mapView}
                 region={region}
                 onRegionChangeComplete={(regionParam) => onRegionChange(regionParam)}
                 customMapStyle={mapStyle}

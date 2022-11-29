@@ -804,7 +804,7 @@ function UserDetailScreenComponent({
 
                 <Box style={styles.userInteractionButton}>
                     <Button
-                        leftIcon={<Icon as={Ionicons} name={likeSentIconStr} size="sm" />}
+                        leftIcon={<Icon as={Ionicons} name={likeSentIconStr} size="lg" />}
                         onPress={() => {
                             sendLike({
                                 variables: {
@@ -859,7 +859,7 @@ function UserDetailScreenComponent({
 
                 <Box style={[styles.userInteractionButton, { position: 'relative' }]}>
                     <Button
-                        leftIcon={<Icon as={Ionicons} name="chatbubble-ellipses-outline" size="sm" />}
+                        leftIcon={<Icon as={Ionicons} name="chatbubble-ellipses-outline" size="lg" />}
                         onPress={() => {
                             navigation.navigate('ThreadDetail', {
                                 threadId: threadData?.thread?.data?.id,
@@ -893,7 +893,7 @@ function UserDetailScreenComponent({
             <>
                 <Box style={styles.userInteractionButton}>
                     <Button
-                        leftIcon={<Icon as={Ionicons} name="pencil-outline" size="sm" />}
+                        leftIcon={<Icon as={Ionicons} name="pencil-outline" size="lg" />}
                         onPress={() => {
                             navigation.navigate('UserEditingProfileMenu', {
                                 onRefreshParentScreen: () => onRefresh()

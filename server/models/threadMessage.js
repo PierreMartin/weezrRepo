@@ -8,6 +8,7 @@ const ThreadMessageSchema = new mongoose.Schema({
     image: String,
     video: String,
     audio: String,
+    location: Object,
     requestId: { type: mongoose.ObjectId },
     createdAt: { type: Date },
     sent: { type: Boolean, default: false },

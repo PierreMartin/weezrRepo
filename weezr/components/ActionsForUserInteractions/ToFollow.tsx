@@ -113,7 +113,7 @@ const ToFollow = (props: IToFollow) => {
 
     return (
         <Button
-            leftIcon={<Icon as={Ionicons} name={followSentIconStr} size="sm" />}
+            leftIcon={<Icon as={Ionicons} name={followSentIconStr} size="lg" />}
             onPress={() => {
                 onToFollow({
                     toFollow,

@@ -9,6 +9,18 @@ export type ILanguage = 'en' | 'fr';
 export type IAlbum = 'public' | 'private' | 'threadMessage' | 'album1' | 'album2';
 export type PrivatePhotosGranted = 'granted' | 'declined' | 'null';
 
+export interface ILocation {
+    accuracy?: number;
+    course?: number;
+    floor?: number;
+    latitude: number;
+    longitude: number;
+    speed?: number;
+    timestamp?: number;
+    coordinates?: number[];
+    type?: string
+}
+
 export interface IUserImagesList {
     fileId: string;
     size_40_40: string; // Small, for mini preview in chat, comments, ...
@@ -88,17 +100,7 @@ export interface IUser extends IEntity {
         desiredMeetingType?: 'meetings' | 'friends' | 'loveRelationship';
     };
     basedLocation?: string; // City or country
-    currentLocation: {
-        accuracy?: number;
-        course?: number;
-        floor?: number;
-        latitude: number;
-        longitude: number;
-        speed?: number;
-        timestamp: number;
-        coordinates?: number[];
-        type?: string
-    };
+    currentLocation: ILocation;
     preferencesFilter?: {
         desiredGender?: string;
         desiredAgeRange?: number[];
@@ -173,6 +175,7 @@ export interface IThreadMessage extends IEntity {
     audio?: string;
     requestId?: string;
     request?: any;
+    location?: ILocation;
 
     threadId: string;
     createdAt: Date;

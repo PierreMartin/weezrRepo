@@ -1,3 +1,4 @@
+# import CurrentLocation from "users.graphql"
 # import UserInterSendRequest from "userInterSendRequest.graphql"
 
 scalar Date
@@ -14,6 +15,7 @@ type ThreadMessage {
     video: String
     audio: String
     request: UserInterSendRequest
+    location: CurrentLocation
     createdAt: Date
     sent: Boolean
     received: Boolean
@@ -36,6 +38,7 @@ input ThreadMessage_DataMain {
     image: String
     video: String
     audio: String
+    location: Object
     requestId: ID
     createdAt: Date
     sent: Boolean

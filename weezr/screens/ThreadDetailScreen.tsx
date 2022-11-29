@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+// @ts-ignore
+import Ionicons from "react-native-vector-icons/Ionicons";
 import * as React from 'react';
-import { Linking, Platform, Text, TouchableHighlight, View } from 'react-native';
+import { Linking, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useFocusEffect } from "@react-navigation/native";
-import { Box, Button, Center, Image } from "native-base";
+import { Box, Button, Center, Icon, Image } from "native-base";
+import MapView, { Marker } from "react-native-maps";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import { Bubble, BubbleProps, GiftedChat } from 'react-native-gifted-chat';
@@ -28,7 +31,7 @@ import FilesBottomSheetPicker from "../components/FilesBottomSheetPicker";
 import { displayAlert } from "../components/DisplayAlert";
 import { Avatar } from "../components/Avatar";
 import { getUniqueId, getUserForwardPhoto } from "../toolbox/toolbox";
-import { IThread, IThreadMessage, IUser, IUserInteraction } from "../entities";
+import { ILocation, IThread, IThreadMessage, IUser, IUserInteraction } from "../entities";
 import { States } from "../reduxReducers/states";
 import getStyles from "./ThreadDetailScreen.styles";
 
@@ -108,6 +111,10 @@ const THREAD_MESSAGES = gql`
                     senderId
                     privatePhotosGranted
                 }
+                location {
+                    latitude
+                    longitude
+                }
                 author
                 sent
                 received
@@ -168,6 +175,10 @@ const CREATE_THREAD_MESSAGE = gql`
                     id
                     senderId
                     privatePhotosGranted
+                }
+                location {
+                    latitude
+                    longitude
                 }
                 sent
                 received
@@ -711,18 +722,20 @@ function ThreadDetailScreenComponent({
         });
     };
 
-    const onSendMessage = (nextMessages: IThreadMessage) => {
+    const onSendMessage = (nextMessages: Partial<IThreadMessage>) => {
         const nextMessage = nextMessages || {};
         const text = nextMessage.text;
         const image = nextMessage.image;
         const video = nextMessage.video;
         const audio = nextMessage.audio;
+        const location = nextMessage.location;
 
         if (
             !text
             && !image
             && !video
             && !audio
+            && !location
             && (!thread?.id || !me._id)
         ) { return; }
 
@@ -737,6 +750,7 @@ function ThreadDetailScreenComponent({
         if (image) { sentMessagesDb.image = image; }
         if (video) { sentMessagesDb.video = video; }
         if (audio) { sentMessagesDb.audio = audio; }
+        if (location) { sentMessagesDb.location = location; }
 
         // Just for tests:
         /*
@@ -767,8 +781,27 @@ function ThreadDetailScreenComponent({
         });
     };
 
+    const onOpenMap = (location: ILocation, isEditing = false) => {
+        const onSendLocation = (nextLocation: ILocation) => {
+            if (nextLocation?.latitude && nextLocation?.longitude) {
+                onSetStateNewPendingMessage();
+
+                const nextMessage: Partial<IThreadMessage> = {
+                    location: {
+                        latitude: nextLocation.latitude,
+                        longitude: nextLocation.longitude
+                    }
+                };
+
+                onSendMessage(nextMessage);
+            }
+        };
+
+        navigation.navigate('MapModal', { location, isEditing, onSendLocation });
+    };
+
     const renderCustomView = (props: any) => {
-        const { request } = props.currentMessage;
+        const { request, location } = props.currentMessage;
 
         if (request) {
             const { senderId, privatePhotosGranted, id } = request as IUserInteraction;
@@ -817,6 +850,36 @@ function ThreadDetailScreenComponent({
                             )
                         }
                     </View>
+                </View>
+            );
+        }
+
+        if (location) {
+            return (
+                <View style={{ borderRadius: 15, padding: 2 }}>
+                    <TouchableHighlight
+                        activeOpacity={0.8}
+                        underlayColor="transparent"
+                        style={{ height: 200, width: 200 }}
+                    >
+                        <MapView
+                            style={{ ...StyleSheet.absoluteFillObject, borderRadius: 15 }}
+                            region={{
+                                latitude: location.latitude,
+                                longitude: location.longitude,
+                                latitudeDelta: 0.0922,
+                                longitudeDelta: 0.0421
+                            }}
+                            scrollEnabled={false}
+                            zoomEnabled={false}
+                            userInterfaceStyle="dark"
+                            onPress={() => onOpenMap(location)}
+                        >
+                            <Marker coordinate={location}>
+                                <Icon size="10" as={<Ionicons name="location" />} color="#fff" />
+                            </Marker>
+                        </MapView>
+                    </TouchableHighlight>
                 </View>
             );
         }
@@ -942,6 +1005,7 @@ function ThreadDetailScreenComponent({
                                                 break;
                                             case 1:
                                                 // Send my position
+                                                onOpenMap(me.currentLocation, true);
                                                 break;
                                             case 2:
                                                 // Ask private photos
@@ -1029,10 +1093,6 @@ function ThreadDetailScreenComponent({
     }, 1200);
 
     /*
-    const renderMessageLoca = () => {
-        // TODO
-    };
-
     const renderMessageAudio = () => {
         // TODO
     };

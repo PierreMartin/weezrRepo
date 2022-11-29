@@ -1,8 +1,9 @@
 "Martin Technologies | Lookup | Weezr"
 
+- Mette shadow sur texte in grid.
+
 * Implem Chat
   - improvement => https://github.com/FaridSafi/react-native-gifted-chat/blob/22cc6f70045c2755a4bec6e1e87ce788d7166a8f/example/example-gifted-chat/src/Chats.js
-  - Localisation
   - audio
   - renew buttons actions in slider
   * Storage in local
@@ -18,6 +19,7 @@
 - Android => 
   - Bug, no pagination (on grid)
   - Bug, no profile me on all grid
+- Refaire algo pour les hommes -> afficher pareil
 
 1) Refacto Inputs (and handle fields errors)
   - Text | textArea                       => <Form.Item type="text" /> (ou <Input type="text | textArea | password" />)
@@ -54,6 +56,7 @@
 
 - Gallery photos => enable multiple select + send photos
 - ThreadDetail => enable multiple participants in thread (>= 3)
+- Make the Markers move smoothly in react-native-maps
 
 * Create static website + RGPD + privacy
 * Create logo

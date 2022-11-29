@@ -20,6 +20,7 @@ import UserAccountMenuScreen from "../screens/UserSpaceMenu/UserAccountSettings/
 import UserEditingPhotosTopTabNavigator from "./UserEditingPhotosTopTabNavigator";
 import FieldsFormScreen from "../screens/FieldsFormScreen";
 import PhotoDetailModalScreen from "../screens/modals/PhotoDetailModalScreen";
+import MapModalScreen from "../screens/modals/MapModalScreen";
 import { States } from "../reduxReducers/states";
 
 const RootStack = createNativeStackNavigator<any>();
@@ -75,6 +76,10 @@ function RootStackScreen({ authenticatedState, navigation, isOnboardingNeverUsed
                                 name="PhotoDetailModal"
                                 component={PhotoDetailModalScreen}
                                 initialParams={{ isEditing: false, isForwardItem: false }}
+                            />
+                            <MainStack.Screen
+                                name="MapModal"
+                                component={MapModalScreen}
                             />
                             {/* <MainStack.Screen name="XxxModal" component={XxxModalScreen} /> */}
                         </MainStack.Group>
