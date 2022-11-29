@@ -2,9 +2,16 @@
 
 - Mette shadow sur texte in grid.
 
+Audio:
+https://github.com/liplylie/ReactNativeChatImageAudio/blob/27446d5d25e5f628a28384bde3d140e5a128e028/src/components/chat.js
+https://hackernoon.com/recording-audio-in-react-native-ca1d3uc8
+
+Lib => https://github.com/hyochan/react-native-audio-recorder-player
+
 * Implem Chat
   - improvement => https://github.com/FaridSafi/react-native-gifted-chat/blob/22cc6f70045c2755a4bec6e1e87ce788d7166a8f/example/example-gifted-chat/src/Chats.js
   - audio
+  - Add 'Check' (seen message) icons in treadsList
   - renew buttons actions in slider
   * Storage in local
   - Switch for delete all messages in one thread

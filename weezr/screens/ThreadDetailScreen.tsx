@@ -30,6 +30,8 @@ import { onSendRequest, SEND_REQUEST } from "../components/ActionsForUserInterac
 import FilesBottomSheetPicker from "../components/FilesBottomSheetPicker";
 import { displayAlert } from "../components/DisplayAlert";
 import { Avatar } from "../components/Avatar";
+import { AudioRecorder } from "../components/Audio/AudioRecorder";
+import { AudioPlayer } from "../components/Audio/AudioPlayer";
 import { getUniqueId, getUserForwardPhoto } from "../toolbox/toolbox";
 import { ILocation, IThread, IThreadMessage, IUser, IUserInteraction } from "../entities";
 import { States } from "../reduxReducers/states";
@@ -800,6 +802,18 @@ function ThreadDetailScreenComponent({
         navigation.navigate('MapModal', { location, isEditing, onSendLocation });
     };
 
+    const onSendAudio = (nextAudio: string) => {
+        if (nextAudio) {
+            onSetStateNewPendingMessage();
+
+            const nextMessage: Partial<IThreadMessage> = {
+                audio: nextAudio
+            };
+
+            onSendMessage(nextMessage);
+        }
+    };
+
     const renderCustomView = (props: any) => {
         const { request, location } = props.currentMessage;
 
@@ -946,6 +960,16 @@ function ThreadDetailScreenComponent({
         );
     };
 
+    const renderMessageAudio = (props: any) => {
+        const currentMessage = props.currentMessage;
+
+        return (
+            <View style={{ borderRadius: 15, padding: 2 }}>
+                <AudioPlayer audioSource={currentMessage?.audio} />
+            </View>
+        );
+    };
+
     const onOpenMyPhotosPicker = () => {
         bottomSheetModalRef.current?.present();
     };
@@ -970,7 +994,6 @@ function ThreadDetailScreenComponent({
                     </Button>
                 </Box>
 
-                {/* Last item */}
                 <Box style={[styles.actionsItem, { marginHorizontal: 0 }]}>
                     <Button
                         rounded="none"
@@ -1057,6 +1080,10 @@ function ThreadDetailScreenComponent({
                         ➕
                     </Button>
                 </Box>
+
+                <Box style={styles.actionsItem}>
+                    <AudioRecorder onSubmit={onSendAudio} />
+                </Box>
             </Box>
         );
     };
@@ -1092,12 +1119,6 @@ function ThreadDetailScreenComponent({
             userId: null
         });
     }, 1200);
-
-    /*
-    const renderMessageAudio = () => {
-        // TODO
-    };
-    */
 
     const parsePatterns = (linkStyle: any) => {
         return [
@@ -1158,6 +1179,7 @@ function ThreadDetailScreenComponent({
                 renderBubble={renderBubble}
                 renderActions={renderActions}
                 renderMessageImage={renderMessageImage}
+                renderMessageAudio={renderMessageAudio}
                 renderCustomView={renderCustomView}
                 isTyping={typing.isTyping}
                 parsePatterns={parsePatterns}
