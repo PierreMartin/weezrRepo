@@ -190,5 +190,8 @@
       "title": "Map",
       "close": "Close"
     }
+  },
+  "audioRecorder": {
+    "info": "Hold to record, release to end"
   }
 }

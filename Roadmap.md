@@ -3,7 +3,6 @@
 - audio:
   - Multer
   - Design
-    - Tooltip when short / long press
     - hide ms secondes
     - handle change timeline onTap + onDrag
 

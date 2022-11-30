@@ -6,12 +6,12 @@ function getStyles(params: any = {}) {
             flexDirection: 'row',
             alignItems: 'baseline',
             justifyContent: 'center',
-            width: 200,
             paddingHorizontal: 4,
             paddingTop: 12,
             paddingBottom: 0
         },
         playBtn: {
+            flexDirection: 'row'
             // marginTop: 0
         },
         viewBarWrapper: {

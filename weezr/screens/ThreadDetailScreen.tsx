@@ -9,7 +9,7 @@ import { Box, Button, Center, Icon, Image } from "native-base";
 import MapView, { Marker } from "react-native-maps";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
-import { Bubble, BubbleProps, GiftedChat, Send } from 'react-native-gifted-chat';
+import { Bubble, BubbleProps, Composer, GiftedChat, Send } from 'react-native-gifted-chat';
 import { connectActionSheet } from "@expo/react-native-action-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { connect } from "react-redux";
@@ -36,6 +36,7 @@ import { getUniqueId, getUserForwardPhoto } from "../toolbox/toolbox";
 import { ILocation, IThread, IThreadMessage, IUser, IUserInteraction } from "../entities";
 import { States } from "../reduxReducers/states";
 import getStyles from "./ThreadDetailScreen.styles";
+import colors from "../styles/colors";
 
 const styles = getStyles();
 
@@ -230,6 +231,7 @@ function ThreadDetailScreenComponent({
     const [participantsIdsAll, setParticipantsIdsAll] = React.useState<string[]>([]);
     const [participantsIdsFront, setParticipantsIdsFront] = React.useState<string[]>([]);
     const [isBetweenTwoUsers, setIsBetweenTwoUsers] = React.useState<boolean>(false);
+    const [audioVoiceSource, setAudioVoiceSource] = React.useState<string | null>(null);
 
     const [getThread, {
         loading: getThreadLoading,
@@ -803,14 +805,17 @@ function ThreadDetailScreenComponent({
     };
 
     const onSendAudio = (nextAudio: string) => {
+        // TODO send audio on cloud with Multer
+
         if (nextAudio) {
             onSetStateNewPendingMessage();
 
             const nextMessage: Partial<IThreadMessage> = {
-                audio: nextAudio
+                audio: 'https://www.pacdv.com/sounds/voices/am-i-totally-screwed-or.wav'
             };
 
             onSendMessage(nextMessage);
+            setAudioVoiceSource(null);
         }
     };
 
@@ -902,6 +907,37 @@ function ThreadDetailScreenComponent({
         return null;
     };
 
+    const renderComposer = (props: any) => {
+        // If audio voice recorded:
+        if (audioVoiceSource) {
+            return (
+                <View style={{ flex: 1, backgroundColor: colors.primary }}>
+                    <AudioPlayer
+                        audioSource={audioVoiceSource}
+                        onDeleteAudioSource={() => setAudioVoiceSource(null)}
+                    />
+                </View>
+            );
+        }
+
+        // Normal rendering:
+        return (
+            <Composer
+                {...props}
+                textInputStyle={{
+                    color: '#222B45',
+                    backgroundColor: '#EDF1F7',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    borderColor: '#E4E9F2',
+                    paddingTop: 8.5,
+                    paddingHorizontal: 12,
+                    marginLeft: 0
+                }}
+            />
+        );
+    };
+
     const renderBubble = (props: Readonly<BubbleProps<any>>) => {
         return (
             <Bubble
@@ -964,7 +1000,7 @@ function ThreadDetailScreenComponent({
         const currentMessage = props.currentMessage;
 
         return (
-            <View style={{ borderRadius: 15, padding: 2 }}>
+            <View style={{ borderRadius: 15, padding: 2, width: 200 }}>
                 <AudioPlayer audioSource={currentMessage?.audio} />
             </View>
         );
@@ -976,7 +1012,23 @@ function ThreadDetailScreenComponent({
 
     const renderSend = (props: any) => {
         let send = <Icon as={Ionicons} name="send-outline" size="lg" />;
-        if (!props.text) { send = <AudioRecorder onSubmit={onSendAudio} />; }
+
+        // If audio voice recorded:
+        if (audioVoiceSource) {
+            return (
+                <Button
+                    variant="none"
+                    onPress={() => onSendAudio(audioVoiceSource)}
+                >
+                    {send}
+                </Button>
+            );
+        }
+
+        // If message empty:
+        if (!audioVoiceSource && !props.text) {
+            send = <AudioRecorder onSubmit={(nextAudio) => setAudioVoiceSource(nextAudio)} />;
+        }
 
         return (
             <Send
@@ -1193,6 +1245,7 @@ function ThreadDetailScreenComponent({
                 }}
                 scrollToBottom
                 showUserAvatar
+                renderComposer={renderComposer}
                 renderBubble={renderBubble}
                 renderSend={renderSend}
                 renderActions={renderActions}

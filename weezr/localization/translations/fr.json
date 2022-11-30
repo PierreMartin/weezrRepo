@@ -190,5 +190,8 @@
       "title": "Carte",
       "close": "Fermer"
     }
+  },
+  "audioRecorder": {
+    "info": "Maintenir pour enregistrer, relâcher pour terminer"
   }
 }

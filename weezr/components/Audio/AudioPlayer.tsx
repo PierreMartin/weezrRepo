@@ -11,12 +11,13 @@ const audioRecorderPlayer = new AudioRecorderPlayer();
 
 export interface IAudioPlayer {
     audioSource: string;
+    onDeleteAudioSource?: () => void;
 }
 
 const screenWidth = Dimensions.get('screen').width;
 
 export function AudioPlayer(props: IAudioPlayer) {
-    const { audioSource } = props;
+    const { audioSource, onDeleteAudioSource } = props;
 
     const [playerState, setPlayerState] = React.useState<string>('none');
     const [iconPlay, setIconPlay] = React.useState<string>('play-outline');
@@ -116,6 +117,21 @@ export function AudioPlayer(props: IAudioPlayer) {
     return (
         <Box style={styles.playerContainer}>
             <Box style={styles.playBtn}>
+                {
+                    onDeleteAudioSource && (
+                        <Button
+                            rounded="none"
+                            variant="unstyle"
+                            p="0"
+                            m="0"
+                            leftIcon={<Icon as={Ionicons} name="trash-outline" size={6} color="#fff" />}
+                            onPress={async () => {
+                                await onStopPlay();
+                                onDeleteAudioSource();
+                            }}
+                        />
+                    )
+                }
                 <Button
                     rounded="none"
                     variant="unstyle"

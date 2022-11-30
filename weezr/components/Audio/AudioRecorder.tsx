@@ -1,6 +1,7 @@
 // @ts-ignore
 import Ionicons from "react-native-vector-icons/Ionicons";
 import React from 'react';
+import { useTranslation } from "react-i18next";
 import { PermissionsAndroid, Platform } from "react-native";
 import AudioRecorderPlayer, {
     AudioEncoderAndroidType,
@@ -9,7 +10,7 @@ import AudioRecorderPlayer, {
     AVEncodingOption,
     OutputFormatAndroidType
 } from 'react-native-audio-recorder-player';
-import { Box, Button, Icon, Text } from "native-base";
+import { Box, Button, Icon, Popover, Text } from "native-base";
 import getStyles from "./AudioRecorder.styles";
 
 const styles = getStyles();
@@ -37,6 +38,9 @@ export function AudioRecorder(props: IAudioRecorder) {
     const [recordSecs, setRecordSecs] = React.useState<number>(0);
     const [recordTime, setRecordTime] = React.useState<string>('00:00:00');
     const [isRecording, setIsRecording] = React.useState<boolean>(false);
+    const [isPopoverInfoOpened, setIsPopoverInfoOpened] = React.useState<boolean>(false);
+
+    const { t } = useTranslation();
 
     const onStartRecord = async (): Promise<void> => {
         setIsRecording(true);
@@ -92,7 +96,7 @@ export function AudioRecorder(props: IAudioRecorder) {
 
     const onStopRecord = async (): Promise<void> => {
         if (!isRecording) {
-            // TODO display tootip
+            setIsPopoverInfoOpened(true);
             // TODO do vibrate phone
             return;
         }
@@ -118,16 +122,34 @@ export function AudioRecorder(props: IAudioRecorder) {
                 )
             }
 
-            <Button
-                leftIcon={<Icon as={Ionicons} name="mic-outline" size="7" />}
-                rounded="none"
-                variant="unstyle"
-                pl="0"
-                pr="0"
-                delayLongPress={800}
-                onLongPress={onStartRecord}
-                onPressOut={onStopRecord}
-            />
+            <Popover
+                isOpen={isPopoverInfoOpened}
+                onClose={() => setIsPopoverInfoOpened(false)}
+                trigger={(triggerProps) => {
+                    return (
+                        <Button
+                            {...triggerProps}
+                            leftIcon={<Icon as={Ionicons} name="mic-outline" size="7" />}
+                            rounded="none"
+                            variant="unstyle"
+                            pl="0"
+                            pr="0"
+                            delayLongPress={800}
+                            onLongPress={onStartRecord}
+                            onPressOut={onStopRecord}
+                        />
+                    );
+                }}
+            >
+                <Popover.Content accessibilityLabel="Info" flex={1}>
+                    <Popover.Arrow />
+                    <Popover.CloseButton top={1} />
+
+                    <Popover.Body p={2} pr={12}>
+                        {t('audioRecorder.info')}
+                    </Popover.Body>
+                </Popover.Content>
+            </Popover>
         </Box>
     );
 }
