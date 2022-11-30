@@ -9,7 +9,7 @@ import { Box, Button, Center, Icon, Image } from "native-base";
 import MapView, { Marker } from "react-native-maps";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
-import { Bubble, BubbleProps, GiftedChat } from 'react-native-gifted-chat';
+import { Bubble, BubbleProps, GiftedChat, Send } from 'react-native-gifted-chat';
 import { connectActionSheet } from "@expo/react-native-action-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { connect } from "react-redux";
@@ -974,6 +974,27 @@ function ThreadDetailScreenComponent({
         bottomSheetModalRef.current?.present();
     };
 
+    const renderSend = (props: any) => {
+        let send = <Icon as={Ionicons} name="send-outline" size="lg" />;
+        if (!props.text) { send = <AudioRecorder onSubmit={onSendAudio} />; }
+
+        return (
+            <Send
+                {...props}
+                alwaysShowSend
+                disabled={!props.text}
+                containerStyle={{
+                    width: 44,
+                    height: 50,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                {send}
+            </Send>
+        );
+    };
+
     const renderActions = (/* props: Readonly<ActionsProps> */) => {
         return (
             <Box style={styles.actionsContainer}>
@@ -1080,10 +1101,6 @@ function ThreadDetailScreenComponent({
                         ➕
                     </Button>
                 </Box>
-
-                <Box style={styles.actionsItem}>
-                    <AudioRecorder onSubmit={onSendAudio} />
-                </Box>
             </Box>
         );
     };
@@ -1177,6 +1194,7 @@ function ThreadDetailScreenComponent({
                 scrollToBottom
                 showUserAvatar
                 renderBubble={renderBubble}
+                renderSend={renderSend}
                 renderActions={renderActions}
                 renderMessageImage={renderMessageImage}
                 renderMessageAudio={renderMessageAudio}

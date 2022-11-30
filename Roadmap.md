@@ -1,5 +1,16 @@
 "Martin Technologies | Lookup | Weezr"
 
+- audio:
+  - Multer
+  - Design
+    - Tooltip when short / long press
+    - hide ms secondes
+    - handle change timeline onTap + onDrag
+
+1) At release => Put preview sound in input message + display "Send"
+2) Set audio file with multer
+
+
 - Mette shadow sur texte in grid.
 
 Audio:
