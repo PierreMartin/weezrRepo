@@ -923,13 +923,14 @@ function ThreadDetailScreenComponent({
         return (
             <Composer
                 {...props}
+                composerHeight={44}
                 textInputStyle={{
                     color: '#222B45',
                     backgroundColor: '#EDF1F7',
                     borderWidth: 1,
                     borderRadius: 5,
                     borderColor: '#E4E9F2',
-                    paddingTop: 8.5,
+                    paddingTop: 12,
                     paddingHorizontal: 12,
                     marginLeft: 0
                 }}
