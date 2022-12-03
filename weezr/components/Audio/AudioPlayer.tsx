@@ -37,6 +37,7 @@ export function AudioPlayer(props: IAudioPlayer) {
     */
 
     const onStartPlay = async (): Promise<void> => {
+        await onStopPlay();
         setIsLoading(true);
 
         const msg = await audioRecorderPlayer.startPlayer(audioSource);
