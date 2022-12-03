@@ -36,7 +36,6 @@ import { getUniqueId, getUserForwardPhoto } from "../toolbox/toolbox";
 import { ILocation, IThread, IThreadMessage, IUser, IUserInteraction } from "../entities";
 import { States } from "../reduxReducers/states";
 import getStyles from "./ThreadDetailScreen.styles";
-import colors from "../styles/colors";
 
 const styles = getStyles();
 
@@ -911,7 +910,7 @@ function ThreadDetailScreenComponent({
         // If audio voice recorded:
         if (audioVoiceSource) {
             return (
-                <View style={{ flex: 1, backgroundColor: colors.primary }}>
+                <View style={{ flex: 1, backgroundColor: '#779cd0', height: '100%' }}>
                     <AudioPlayer
                         audioSource={audioVoiceSource}
                         onDeleteAudioSource={() => setAudioVoiceSource(null)}

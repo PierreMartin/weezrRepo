@@ -115,7 +115,7 @@ export function AudioRecorder(props: IAudioRecorder) {
         <Box flex={1}>
             {
                 (isRecording) && (
-                    <Box style={styles.recordingPopover} backgroundColor="primary.500">
+                    <Box style={styles.recordingPopover}>
                         <Icon as={Ionicons} name="mic-outline" size="7" color="#fff" />
                         <Text color="#fff">{recordTime}</Text>
                     </Box>

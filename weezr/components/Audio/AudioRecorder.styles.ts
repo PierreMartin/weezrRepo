@@ -11,7 +11,8 @@ function getStyles(params: any = {}) {
             height: 35,
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            backgroundColor: 'red'
         }
     });
 }

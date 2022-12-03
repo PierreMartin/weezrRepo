@@ -1,10 +1,11 @@
 import createStyles from "../../styles/base";
+import colors from "../../styles/colors";
 
 function getStyles(params: any = {}) {
     return createStyles({
         playerContainer: {
             flexDirection: 'row',
-            alignItems: 'baseline',
+            // alignItems: 'baseline',
             justifyContent: 'center',
             paddingHorizontal: 4,
             paddingTop: 12,
@@ -20,7 +21,7 @@ function getStyles(params: any = {}) {
             marginHorizontal: 8
         },
         viewBar: {
-            backgroundColor: '#ccc',
+            backgroundColor: colors.dark.border,
             height: 20,
             alignSelf: 'stretch',
         },

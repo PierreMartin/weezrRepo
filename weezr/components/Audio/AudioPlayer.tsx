@@ -130,7 +130,7 @@ export function AudioPlayer(props: IAudioPlayer) {
 
     return (
         <Box style={styles.playerContainer}>
-            <Box style={styles.playBtn}>
+            <Box style={styles.playBtn} mt={-5}>
                 {
                     onDeleteAudioSource && (
                         <Button
@@ -171,8 +171,8 @@ export function AudioPlayer(props: IAudioPlayer) {
 
             <Box style={styles.viewBarWrapper}>
                 <View
-                    onLayout={(event) => setPlayContainerWidth(event?.nativeEvent?.layout?.width || 0)}
                     style={styles.viewBar}
+                    onLayout={(event) => setPlayContainerWidth(event?.nativeEvent?.layout?.width || 0)}
                     onStartShouldSetResponder={() => true}
                     onMoveShouldSetResponder={() => true}
                     onResponderMove={onStatusPress}
