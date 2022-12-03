@@ -28,10 +28,13 @@ export function AudioPlayer(props: IAudioPlayer) {
     const [playTime, setPlayTime] = React.useState<string>('00:00');
     const [duration, setDuration] = React.useState<string>('00:00');
 
-    const [viewBarWidth, setViewBarWidth] = React.useState<number>(0); // px
+    const [playContainerWidth, setPlayContainerWidth] = React.useState<number>(0); // px
+    const [playWidth, setPlayWidth] = React.useState<number>(0); // px
 
-    let playWidth = (currentPositionSec / currentDurationSec) * (viewBarWidth); // px
+    /*
+    let playWidth = (currentPositionSec / currentDurationSec) * (playContainerWidth); // px
     if (!playWidth) { playWidth = 0; }
+    */
 
     const onStartPlay = async (): Promise<void> => {
         setIsLoading(true);
@@ -48,15 +51,23 @@ export function AudioPlayer(props: IAudioPlayer) {
                 console.log('Finished');
                 onStopPlay();
                 // audioRecorderPlayer.seekToPlayer(0);
+
                 setPlayerState('none');
                 setIconPlay('refresh-outline');
+                setPlayWidth(0);
+
+                return;
             }
 
             setCurrentPositionSec(e.currentPosition);
             setCurrentDurationSec(e.duration);
 
-            setPlayTime(audioRecorderPlayer.mmss(Math.floor(e.currentPosition / 1000)));
-            setDuration(audioRecorderPlayer.mmss(Math.floor(e.duration / 1000)));
+            let nextPlayWidth = (e.currentPosition / e.duration) * (playContainerWidth); // px
+            if (!nextPlayWidth) { nextPlayWidth = 0; }
+
+            setPlayWidth(nextPlayWidth); // px
+            setPlayTime(audioRecorderPlayer.mmss(Math.floor(e.currentPosition / 1000))); // ms
+            setDuration(audioRecorderPlayer.mmss(Math.floor(e.duration / 1000))); // ms
         });
     };
 
@@ -107,7 +118,7 @@ export function AudioPlayer(props: IAudioPlayer) {
 
         const locationX = parseInt(e?.nativeEvent?.locationX || 0, 10);
 
-        let positionToMoveInMs = (locationX * currentDurationSec) / viewBarWidth;
+        let positionToMoveInMs = (locationX * currentDurationSec) / playContainerWidth;
         positionToMoveInMs = Math.round(positionToMoveInMs);
 
         console.log(`positionToMoveInMs: ${positionToMoveInMs}`);
@@ -159,7 +170,7 @@ export function AudioPlayer(props: IAudioPlayer) {
 
             <Box style={styles.viewBarWrapper}>
                 <View
-                    onLayout={(event) => setViewBarWidth(event?.nativeEvent?.layout?.width || 0)}
+                    onLayout={(event) => setPlayContainerWidth(event?.nativeEvent?.layout?.width || 0)}
                     style={styles.viewBar}
                     onStartShouldSetResponder={() => true}
                     onMoveShouldSetResponder={() => true}
