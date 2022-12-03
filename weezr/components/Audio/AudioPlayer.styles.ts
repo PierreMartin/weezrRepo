@@ -11,7 +11,8 @@ function getStyles(params: any = {}) {
             paddingBottom: 0
         },
         playBtn: {
-            flexDirection: 'row'
+            flexDirection: 'row',
+            alignItems: 'center'
             // marginTop: 0
         },
         viewBarWrapper: {

@@ -1,14 +1,7 @@
 "Martin Technologies | Lookup | Weezr"
 
 - audio:
-  - Multer
-  - Design
-    - hide ms secondes
-    - handle change timeline onTap + onDrag
-
-1) At release => Put preview sound in input message + display "Send"
-2) Set audio file with multer
-
+  - Set audio file with multer
 
 - Mette shadow sur texte in grid.
 
@@ -225,6 +218,7 @@ Authent JWT :
     -> Aide / Help
     -> Contact (email) / Contact
 
+Uncategorize people
 
 UserPhotoForProfile
   userId: String, // primary

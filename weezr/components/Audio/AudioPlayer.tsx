@@ -1,9 +1,9 @@
 // @ts-ignore
 import Ionicons from "react-native-vector-icons/Ionicons";
 import React from 'react';
-import { TouchableOpacity } from "react-native";
+import { View } from "react-native";
 import AudioRecorderPlayer from "react-native-audio-recorder-player";
-import { Box, Button, Icon, Text } from "native-base";
+import { Box, Button, Icon, Spinner, Text } from "native-base";
 import getStyles from "./AudioPlayer.styles";
 
 const styles = getStyles();
@@ -17,14 +17,16 @@ export interface IAudioPlayer {
 export function AudioPlayer(props: IAudioPlayer) {
     const { audioSource, onDeleteAudioSource } = props;
 
-    const [playerState, setPlayerState] = React.useState<string>('none');
+    const [playerState, setPlayerState] = React.useState<'none' | 'play' | 'pause' | 'resume'>('none');
     const [iconPlay, setIconPlay] = React.useState<string>('play-outline');
+
+    const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
     const [currentPositionSec, setCurrentPositionSec] = React.useState<number>(0); // ms
     const [currentDurationSec, setCurrentDurationSec] = React.useState<number>(0); // ms
 
-    const [playTime, setPlayTime] = React.useState<string>('00:00:00');
-    const [duration, setDuration] = React.useState<string>('00:00:00');
+    const [playTime, setPlayTime] = React.useState<string>('00:00');
+    const [duration, setDuration] = React.useState<string>('00:00');
 
     const [viewBarWidth, setViewBarWidth] = React.useState<number>(0); // px
 
@@ -32,25 +34,29 @@ export function AudioPlayer(props: IAudioPlayer) {
     if (!playWidth) { playWidth = 0; }
 
     const onStartPlay = async (): Promise<void> => {
+        setIsLoading(true);
+
         const msg = await audioRecorderPlayer.startPlayer(audioSource);
         const volume = await audioRecorderPlayer.setVolume(1.0);
         console.log(`file: ${msg}`, `volume: ${volume}`);
 
         audioRecorderPlayer.addPlayBackListener((e) => {
+            setIsLoading(false);
+            console.log('Playing...');
+
             if (e.currentPosition === e.duration) {
-                console.log('finished');
+                console.log('Finished');
                 onStopPlay();
-                // audioRecorderPlayer.stopPlayer();
                 // audioRecorderPlayer.seekToPlayer(0);
                 setPlayerState('none');
-                setIconPlay('play-outline');
+                setIconPlay('refresh-outline');
             }
 
             setCurrentPositionSec(e.currentPosition);
             setCurrentDurationSec(e.duration);
 
-            setPlayTime(audioRecorderPlayer.mmssss(Math.floor(e.currentPosition)));
-            setDuration(audioRecorderPlayer.mmssss(Math.floor(e.duration)));
+            setPlayTime(audioRecorderPlayer.mmss(Math.floor(e.currentPosition / 1000)));
+            setDuration(audioRecorderPlayer.mmss(Math.floor(e.duration / 1000)));
         });
     };
 
@@ -97,6 +103,8 @@ export function AudioPlayer(props: IAudioPlayer) {
     };
 
     const onStatusPress = (e: any): void => {
+        if (playerState === 'none') { return; } // if not playing, do nothing
+
         const locationX = parseInt(e?.nativeEvent?.locationX || 0, 10);
 
         let positionToMoveInMs = (locationX * currentDurationSec) / viewBarWidth;
@@ -118,6 +126,8 @@ export function AudioPlayer(props: IAudioPlayer) {
                             variant="unstyle"
                             p="0"
                             m="0"
+                            ml={2}
+                            mr={2}
                             leftIcon={<Icon as={Ionicons} name="trash-outline" size={6} color="#fff" />}
                             onPress={async () => {
                                 await onStopPlay();
@@ -126,25 +136,38 @@ export function AudioPlayer(props: IAudioPlayer) {
                         />
                     )
                 }
-                <Button
-                    rounded="none"
-                    variant="unstyle"
-                    p="0"
-                    m="0"
-                    leftIcon={<Icon as={Ionicons} name={iconPlay} size={6} color="#fff" />}
-                    onPress={onTap}
-                />
+
+                {
+                    !isLoading ? (
+                        <Button
+                            rounded="none"
+                            variant="unstyle"
+                            p="0"
+                            m="0"
+                            mr={1}
+                            leftIcon={<Icon as={Ionicons} name={iconPlay} size={6} color="#fff" />}
+                            onPress={onTap}
+                        />
+                    ) : (
+                        <Spinner
+                            size="sm"
+                            color="#fff"
+                        />
+                    )
+                }
             </Box>
 
             <Box style={styles.viewBarWrapper}>
-                <TouchableOpacity onPress={onStatusPress}>
-                    <Box
-                        onLayout={(event) => setViewBarWidth(event?.nativeEvent?.layout?.width || 0)}
-                        style={styles.viewBar}
-                    >
-                        <Box style={[styles.viewBarPlay, { width: playWidth }]} />
-                    </Box>
-                </TouchableOpacity>
+                <View
+                    onLayout={(event) => setViewBarWidth(event?.nativeEvent?.layout?.width || 0)}
+                    style={styles.viewBar}
+                    onStartShouldSetResponder={() => true}
+                    onMoveShouldSetResponder={() => true}
+                    onResponderMove={onStatusPress}
+                    onTouchStart={onStatusPress}
+                >
+                    <Box style={[styles.viewBarPlay, { width: playWidth }]} />
+                </View>
 
                 <Box style={styles.txtCounterWrapper}>
                     <Text style={styles.txtCounter}>{playTime}</Text>

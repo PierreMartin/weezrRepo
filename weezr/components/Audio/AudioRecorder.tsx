@@ -36,7 +36,7 @@ export function AudioRecorder(props: IAudioRecorder) {
     const { onSubmit } = props;
 
     const [recordSecs, setRecordSecs] = React.useState<number>(0);
-    const [recordTime, setRecordTime] = React.useState<string>('00:00:00');
+    const [recordTime, setRecordTime] = React.useState<string>('00:00');
     const [isRecording, setIsRecording] = React.useState<boolean>(false);
     const [isPopoverInfoOpened, setIsPopoverInfoOpened] = React.useState<boolean>(false);
 
@@ -88,7 +88,7 @@ export function AudioRecorder(props: IAudioRecorder) {
         audioRecorderPlayer.addRecordBackListener((e) => {
             // console.log('record-back', e);
             setRecordSecs(e.currentPosition);
-            setRecordTime(audioRecorderPlayer.mmssss(Math.floor(e.currentPosition)));
+            setRecordTime(audioRecorderPlayer.mmss(Math.floor(e.currentPosition / 1000)));
         });
 
         console.log(`onStartRecord - uri: ${uri}`);
