@@ -5,6 +5,7 @@ import { View } from "react-native";
 import AudioRecorderPlayer from "react-native-audio-recorder-player";
 import { Box, Button, Icon, Spinner, Text } from "native-base";
 import getStyles from "./AudioPlayer.styles";
+import colors from "../../styles/colors";
 
 const styles = getStyles();
 const audioRecorderPlayer = new AudioRecorderPlayer();
@@ -12,10 +13,11 @@ const audioRecorderPlayer = new AudioRecorderPlayer();
 export interface IAudioPlayer {
     audioSource: string;
     onDeleteAudioSource?: () => void;
+    hasReceived?: boolean;
 }
 
 export function AudioPlayer(props: IAudioPlayer) {
-    const { audioSource, onDeleteAudioSource } = props;
+    const { audioSource, onDeleteAudioSource, hasReceived } = props;
 
     const [playerState, setPlayerState] = React.useState<'none' | 'play' | 'pause' | 'resume'>('none');
     const [iconPlay, setIconPlay] = React.useState<string>('play-outline');
@@ -144,6 +146,22 @@ export function AudioPlayer(props: IAudioPlayer) {
 
     if (!audioSource) { return null; }
 
+    let stylesColor: any = {
+        color: '#fff',
+        viewBar: {
+            backgroundColor: colors.dark.border
+        }
+    };
+
+    if (hasReceived) {
+        stylesColor = {
+            color: '#000',
+            viewBar: {
+                backgroundColor: '#eaeaea'
+            }
+        };
+    }
+
     return (
         <Box style={styles.playerContainer}>
             <Box style={styles.playBtn} mt={-5}>
@@ -173,13 +191,13 @@ export function AudioPlayer(props: IAudioPlayer) {
                             p="0"
                             m="0"
                             mr={1}
-                            leftIcon={<Icon as={Ionicons} name={iconPlay} size={6} color="#fff" />}
+                            leftIcon={<Icon as={Ionicons} name={iconPlay} size={6} color={stylesColor.color} />}
                             onPress={onTap}
                         />
                     ) : (
                         <Spinner
                             size="sm"
-                            color="#fff"
+                            color={stylesColor.color}
                         />
                     )
                 }
@@ -187,7 +205,7 @@ export function AudioPlayer(props: IAudioPlayer) {
 
             <Box style={styles.viewBarWrapper}>
                 <View
-                    style={styles.viewBar}
+                    style={[styles.viewBar, stylesColor.viewBar]}
                     onLayout={(event) => setPlayContainerWidth(event?.nativeEvent?.layout?.width || 0)}
                     onStartShouldSetResponder={() => true}
                     onMoveShouldSetResponder={() => true}
@@ -198,8 +216,8 @@ export function AudioPlayer(props: IAudioPlayer) {
                 </View>
 
                 <Box style={styles.txtCounterWrapper}>
-                    <Text style={styles.txtCounter}>{playTime}</Text>
-                    <Text style={styles.txtCounter}>{duration}</Text>
+                    <Text style={[styles.txtCounter, { color: stylesColor.color }]}>{playTime}</Text>
+                    <Text style={[styles.txtCounter, { color: stylesColor.color }]}>{duration}</Text>
                 </Box>
             </Box>
         </Box>

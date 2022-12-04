@@ -1041,10 +1041,11 @@ function ThreadDetailScreenComponent({
 
     const renderMessageAudio = (props: any) => {
         const currentMessage = props.currentMessage;
+        const isAuthorMe = me._id === currentMessage?.author;
 
         return (
             <View style={{ borderRadius: 15, padding: 2, width: 200 }}>
-                <AudioPlayer audioSource={currentMessage?.audio} />
+                <AudioPlayer audioSource={currentMessage?.audio} hasReceived={!isAuthorMe} />
             </View>
         );
     };

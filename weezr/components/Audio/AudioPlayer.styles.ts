@@ -21,7 +21,7 @@ function getStyles(params: any = {}) {
             marginHorizontal: 8
         },
         viewBar: {
-            backgroundColor: colors.dark.border,
+            // backgroundColor: colors.dark.border,
             height: 20,
             alignSelf: 'stretch',
         },
