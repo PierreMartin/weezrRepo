@@ -811,7 +811,6 @@ function ThreadDetailScreenComponent({
 
         const fileObj = {
             uri: nextAudio,
-            // type: 'XXX',
             name: `${Date.now()}`
         };
 
@@ -823,12 +822,11 @@ function ThreadDetailScreenComponent({
         })
             .then((resUploadedFile: any) => {
                 if (resUploadedFile?.data) {
-                    const filesUrls = resUploadedFile?.filesUrls;
+                    const { fileId, filesUrls } = resUploadedFile.data || {};
 
                     const nextMessage: Partial<IThreadMessage> = {
-                        _id: resUploadedFile?.data?.fileId,
-                        fileId: resUploadedFile?.data?.fileId,
-                        audio: filesUrls?.url,
+                        _id: fileId,
+                        audio: filesUrls?.url
                     };
 
                     onSendMessage(nextMessage);
@@ -1340,7 +1338,7 @@ function ThreadDetailScreenComponent({
                 onLoadSuccess={(data: any) => {
                     const filesUrls = data?.filesUrls;
 
-                    const nextMessage: IThreadMessage = {
+                    const nextMessage: Partial<IThreadMessage> = {
                         _id: data?.fileId,
                         fileId: data?.fileId,
                         image: filesUrls?.size_320_400,

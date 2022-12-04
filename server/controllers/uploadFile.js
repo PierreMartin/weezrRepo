@@ -1,4 +1,4 @@
-// import { S3Client } from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 import multerS3 from "multer-s3";
 import AWS from "aws-sdk";
 import multer from "multer";
@@ -15,23 +15,21 @@ const BUCKET_REGION = process.env.AWS_BUCKET_REGION || 'eu-west-3';
 const ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
 const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 
-/*
-const s3 = new S3Client({
+const s3AllFiles = new S3Client({
     accessKeyId: ACCESS_KEY_ID,
     secretAccessKey: AWS_SECRET_ACCESS_KEY,
     region: BUCKET_REGION
 });
-*/
+
+const s3PhotoOnly = new AWS.S3();
 
 AWS.config.update({
     secretAccessKey: AWS_SECRET_ACCESS_KEY,
     accessKeyId: ACCESS_KEY_ID
 });
 
-const s3 = new AWS.S3();
-
 /*
-s3.listBuckets(function(err, data) {
+s3AllFiles.listBuckets(function(err, data) {
     if (err) {
         console.log("Error", err);
     } else {
@@ -44,8 +42,7 @@ console.log('AWS S3 - BUCKET_NAME =====> ', BUCKET_NAME);
 
 let newFileId = null;
 
-const isFileValidImage = ({ fileNameParam, mimetypeParam, checkOnlyExtension, extension }) => {
-    const filetypes = /jpeg|jpg|png|bmp|gif/;
+const isFileValid = (filetypes, { fileNameParam, mimetypeParam, checkOnlyExtension, extension }) => {
     let isValide = false;
     let extname;
     let mimetype;
@@ -90,7 +87,7 @@ const getSizes = (params) => {
 const upload = multer({
     limits: { fileSize: 1024 * 1024 * 200 }, // 200MB
     fileFilter(req, file, cb) {
-        const isValide = isFileValidImage({ fileNameParam: file.originalname, mimetypeParam: file.mimetype });
+        const isValide = isFileValid(/jpeg|jpg|png|bmp|gif/, { fileNameParam: file.originalname, mimetypeParam: file.mimetype });
         if (isValide) {
             return cb(null, true);
         } else {
@@ -98,7 +95,7 @@ const upload = multer({
         }
     },
     storage: multerS3({
-        s3: s3,
+        s3: s3AllFiles,
         acl: 'public-read',
         bucket: BUCKET_NAME,
         metadata: function (req, file, cb) {
@@ -133,7 +130,7 @@ const upload = multer({
             let extension = originalNameArr[originalNameArr?.length - 1] || mimeTypeArr[mimeTypeArr?.length - 1] || null;
 
             // Check if file extension valid:
-            const isValide = isFileValidImage({ checkOnlyExtension: true, extension });
+            const isValide = isFileValid(/jpeg|jpg|png|bmp|gif/, { checkOnlyExtension: true, extension });
             if (!isValide) { extension = 'jpg'; }
 
             // Set file name:
@@ -190,12 +187,12 @@ const generatePathFile = (req, file) => {
     let isValide = true;
     switch (filetype) {
         case 'image':
-            isValide = isFileValidImage({ checkOnlyExtension: true, extension });
+            isValide = isFileValid(/jpeg|jpg|png|bmp|gif/, { checkOnlyExtension: true, extension });
             if (!isValide) { extension = 'jpg'; }
             break;
         case 'audio':
-            console.log('extension ', extension);
-            if (!extension) { extension = 'm4a'; } // TODO isFileValidAudio()
+            isValide = isFileValid(/m4a|x-m4a|aac|mp3|aif|aiff|au|wave/, { checkOnlyExtension: true, extension });
+            if (!isValide) { extension = 'm4a'; }
             break;
         default:
             break;
@@ -233,7 +230,7 @@ export const uploadFileMulter = (req, res, next) => {
                     const path = generatePathFile(req, file);
                     cb(null, path);
                 },
-                s3,
+                s3: s3PhotoOnly,
                 Bucket: BUCKET_NAME,
                 ACL: 'public-read',
                 /*
@@ -247,7 +244,7 @@ export const uploadFileMulter = (req, res, next) => {
             break;
         case 'audio':
             storage = multerS3({
-                s3,
+                s3: s3AllFiles,
                 acl: 'public-read',
                 bucket: BUCKET_NAME,
                 metadata: function (req, file, cb) {
@@ -277,10 +274,10 @@ export const uploadFileMulter = (req, res, next) => {
 
             switch (filetype) {
                 case 'image':
-                    isValide = isFileValidImage({ fileNameParam: file.originalname, mimetypeParam: file.mimetype });
+                    isValide = isFileValid(/jpeg|jpg|png|bmp|gif/, { fileNameParam: file.originalname, mimetypeParam: file.mimetype });
                     break;
                 case 'audio':
-                    isValide = true; // TODO isFileValidAudio()
+                    isValide = isFileValid(/m4a|x-m4a|aac|mp3|aif|aiff|au|wave/, { fileNameParam: file.originalname, mimetypeParam: file.mimetype });
                     break;
                 default:
                     break;
@@ -319,7 +316,7 @@ export const deleteFileMulter = (req, res, next) => {
 
                 cb(null, path);
             },
-            s3,
+            s3: s3AllFiles,
             Bucket: BUCKET_NAME,
             ACL: 'public-read'
         })
@@ -338,19 +335,26 @@ export function uploadFile(req, res, next) {
         // const { entityname, entityid } = req.params || {};
         // const { ... } = req.body || {}; // All is stringified here !!
 
-        const filesUrls = {};
-        const sizesFiles = getSizes(req.params);
-
         if (!file) {
             return res.status(500).json({ message: 'A error has occurred at the updating file - Allow images only of extensions jpeg|jpg|png|bmp|gif !' });
         }
 
-        for (let i = 0; i < sizesFiles?.length; i++) {
-            const val = sizesFiles[i];
-            const key = val?.suffix;
+        const filesUrls = {};
 
-            if (key && file && file[key] && file[key].Location) {
-                filesUrls[key] = file[key].Location;
+        if (file.location) {
+            // Is mono file:
+            filesUrls.url = file.location;
+        } else {
+            // Is multiple file size:
+            const sizesFiles = getSizes(req.params);
+
+            for (let i = 0; i < sizesFiles?.length; i++) {
+                const val = sizesFiles[i];
+                const key = val?.suffix;
+
+                if (key && file && file[key] && file[key].Location) {
+                    filesUrls[key] = file[key].Location;
+                }
             }
         }
 

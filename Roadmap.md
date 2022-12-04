@@ -1,8 +1,5 @@
 "Martin Technologies | Lookup | Weezr"
 
-- audio:
-  - Set audio file with multer
-
 - Mette shadow sur texte in grid.
 
 Audio:
