@@ -92,9 +92,17 @@ const FilesBottomSheetPicker = React.forwardRef((props: IFilesBottomSheetPicker,
         // Close BottomSheetModal:
         onClosePhotosPicker();
 
+        const fileObj = {
+            // uri: Platform.OS === 'ios' ? `file:///${photoBlob.path}` : photoBlob.path,
+            uri: fileBlob.path,
+            type: fileBlob.mime,
+            name: fileBlob.filename || `${Date.now()}.jpg`
+        };
+
         uploadFile({
-            photoBlob: fileBlob,
-            ...paramsUploadFile
+            fileObj,
+            ...paramsUploadFile,
+            fileType: 'image'
         })
             .then((resUploadedFile: any) => {
                 if (resUploadedFile?.data) {

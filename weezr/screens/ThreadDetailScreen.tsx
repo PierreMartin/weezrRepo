@@ -24,6 +24,7 @@ import {
     setRealtimeNewRequestResponseAction,
     typingAction
 } from "../reduxActions/realtimeData";
+import { uploadFile } from "../services/UploadFileService";
 import { Spinner } from "../components/Spinner";
 import ReplyToRequest from "../components/ActionsForUserInteractions/ReplyToRequest";
 import { onSendRequest, SEND_REQUEST } from "../components/ActionsForUserInteractions/SendRequest";
@@ -804,18 +805,62 @@ function ThreadDetailScreenComponent({
     };
 
     const onSendAudio = (nextAudio: string) => {
-        // TODO send audio on cloud with Multer
+        if (!nextAudio) { return; }
 
-        if (nextAudio) {
-            onSetStateNewPendingMessage();
+        onSetStateNewPendingMessage();
 
-            const nextMessage: Partial<IThreadMessage> = {
-                audio: 'https://www.pacdv.com/sounds/voices/am-i-totally-screwed-or.wav'
-            };
+        const fileObj = {
+            uri: nextAudio,
+            // type: 'XXX',
+            name: `${Date.now()}`
+        };
 
-            onSendMessage(nextMessage);
-            setAudioVoiceSource(null);
-        }
+        uploadFile({
+            fileObj,
+            entityName: 'threadMessage',
+            entityId: thread?.id,
+            fileType: 'audio'
+        })
+            .then((resUploadedFile: any) => {
+                if (resUploadedFile?.data) {
+                    const filesUrls = resUploadedFile?.filesUrls;
+
+                    const nextMessage: Partial<IThreadMessage> = {
+                        _id: resUploadedFile?.data?.fileId,
+                        fileId: resUploadedFile?.data?.fileId,
+                        audio: filesUrls?.url,
+                    };
+
+                    onSendMessage(nextMessage);
+                }
+            }).catch((err) => {
+                // Tmp error:
+                console.error(err);
+                setMessages((previousMessages: IThreadMessage[]) => {
+                    const inverted = Platform.OS !== 'web';
+                    const nextMessage: IThreadMessage[] = [...previousMessages?.filter((msg) => msg?._id !== 'tmp')];
+                    const sentMessagesDb: IThreadMessage = {
+                        author: me._id,
+                        text: 'Error !',
+                        threadId: thread?.id,
+                        createdAt: new Date()
+                    };
+
+                    const sentMessagesFullFormat: IThreadMessage = formatThreadMessageData(sentMessagesDb, true, thread);
+                    sentMessagesFullFormat._id = 'error';
+                    sentMessagesFullFormat.pending = false;
+
+                    if (inverted) {
+                        nextMessage.unshift(sentMessagesFullFormat);
+                    } else {
+                        nextMessage.push(sentMessagesFullFormat);
+                    }
+
+                    return nextMessage;
+                });
+            }).finally(() => {
+                setAudioVoiceSource(null);
+            });
     };
 
     const renderCustomView = (props: any) => {

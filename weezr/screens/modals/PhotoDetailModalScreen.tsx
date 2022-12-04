@@ -156,12 +156,20 @@ function PhotoDetailModalScreenComponent({
 
         setIsLoading(true);
 
+        const fileObj = {
+            // uri: Platform.OS === 'ios' ? `file:///${photoBlob.path}` : photoBlob.path,
+            uri: blob.path,
+            type: blob.mime,
+            name: blob.filename || `${Date.now()}.jpg`
+        };
+
         uploadFile({
-            photoBlob: blob,
+            fileObj,
             entityName: 'user',
             entityId: userId,
             isMultipleSize: true,
-            isMultipleSelect: false
+            isMultipleSelect: false,
+            fileType: 'image'
         })
             .then((resUploadedFile) => {
                 const data = resUploadedFile?.data;
@@ -232,7 +240,8 @@ function PhotoDetailModalScreenComponent({
         deleteFile({
             entityName: 'user',
             entityId: userId,
-            selectedFileId: fileId
+            selectedFileId: fileId,
+            fileType: 'image'
         })
             .then((resDeletedFile) => {
                 const deletedFileId = resDeletedFile?.data?.deletedFileId;

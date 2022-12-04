@@ -1,5 +1,5 @@
 // import { S3Client } from "@aws-sdk/client-s3";
-// import multerS3 from "multer-s3";
+import multerS3 from "multer-s3";
 import AWS from "aws-sdk";
 import multer from "multer";
 import { v4 as uuid } from 'uuid';
@@ -148,20 +148,144 @@ const upload = multer({
 });
 */
 
+const generatePathFile = (req, file) => {
+    // Here we set the file in storage:
+    const {
+        filetype,
+        entityname,
+        entityid,
+        foldername: folderNameParam
+    } = req.params || {};
+
+    let subFolderName = entityid;
+
+    if (subFolderName === 'notEntityId') {
+        switch (entityname) {
+            case 'user':
+                subFolderName = 'unknown-user-id';
+                break;
+            case 'threadMessage':
+                subFolderName = 'unknown-threadmessage-id';
+                break;
+            default:
+                subFolderName = 'unknown-entity-id';
+                break;
+        }
+    }
+
+    // Get file extension:
+    const originalNameArr = file?.originalname?.split('.') || [];
+    const mimeTypeArr = file?.mimetype?.split('/') || [];
+    let extension = null;
+
+    if (originalNameArr?.length > 1) {
+        extension = originalNameArr?.at(-1);
+    } else if (mimeTypeArr?.at(-1)) {
+        extension = mimeTypeArr?.at(-1);
+    }
+
+    extension = extension?.split('-')?.at(-1);
+
+    // Check if file extension valid:
+    let isValide = true;
+    switch (filetype) {
+        case 'image':
+            isValide = isFileValidImage({ checkOnlyExtension: true, extension });
+            if (!isValide) { extension = 'jpg'; }
+            break;
+        case 'audio':
+            console.log('extension ', extension);
+            if (!extension) { extension = 'm4a'; } // TODO isFileValidAudio()
+            break;
+        default:
+            break;
+    }
+
+    // Set file name:
+    newFileId = uuid();
+    extension = extension?.toLowerCase();
+
+    const fileName = `${newFileId}.${extension}`;
+    const folderName = folderNameParam !== 'notFolderName' ? folderNameParam : entityname;
+    const path = `${folderName}/${subFolderName}/${fileName}`;
+
+    // console.log('file => ', file);
+    // console.log('path ===> ', path);
+
+    return path;
+}
+
 // 1) We send file in cloud - Uploading single file to aws s3 bucket
 export const uploadFileMulter = (req, res, next) => {
     const {
+        filetype,
         ismultiplesize,
         ismultipleselect
     } = req.params || {};
 
     const sizesFiles = getSizes(req.params);
+    let storage = () => null;
+
+    switch (filetype) {
+        case 'image':
+            storage = s3Storage({
+                Key: (req, file, cb) => {
+                    const path = generatePathFile(req, file);
+                    cb(null, path);
+                },
+                s3,
+                Bucket: BUCKET_NAME,
+                ACL: 'public-read',
+                /*
+                Metadata: function (req, file, cb) {
+                    cb(null, { fieldName: file.fieldname });
+                },
+                */
+                multiple: ismultiplesize === 'true',
+                resize: ismultiplesize === 'true' ? sizesFiles : { ...sizesFiles[0] }
+            });
+            break;
+        case 'audio':
+            storage = multerS3({
+                s3,
+                acl: 'public-read',
+                bucket: BUCKET_NAME,
+                metadata: function (req, file, cb) {
+                    cb(null, { fieldName: file.fieldname });
+                },
+                // id: 'size_320_400',
+                /*
+                shouldTransform: (req, file, cb) => {
+                    cb(null, /^image/i.test(file.mimetype));
+                },
+                */
+                key: function (req, file, cb) {
+                    const path = generatePathFile(req, file);
+                    cb(null, path);
+                }
+            });
+            break;
+        default:
+            break;
+    }
 
     // 1) We send file in cloud:
     const upload = multer({
         limits: { fileSize: 1024 * 1024 * 200 }, // 200MB
         fileFilter(req, file, cb) {
-            const isValide = isFileValidImage({ fileNameParam: file.originalname, mimetypeParam: file.mimetype });
+            let isValide = false;
+
+            switch (filetype) {
+                case 'image':
+                    isValide = isFileValidImage({ fileNameParam: file.originalname, mimetypeParam: file.mimetype });
+                    break;
+                case 'audio':
+                    isValide = true; // TODO isFileValidAudio()
+                    break;
+                default:
+                    break;
+            }
+
             if (isValide) {
                 return cb(null, true);
             } else {
@@ -169,54 +293,7 @@ export const uploadFileMulter = (req, res, next) => {
                 // cb("Error: Allow images only of extensions jpeg|jpg|png|bmp|gif !"); // String in first param is only for web
             }
         },
-        storage: s3Storage({
-            Key: (req, file, cb) => {
-                // Here we set the file in storage:
-                const { entityname, entityid, foldername: folderNameParam } = req.params || {};
-                let subFolderName = entityid;
-
-                if (subFolderName === 'notEntityId') {
-                    switch (entityname) {
-                        case 'user':
-                            subFolderName = 'unknown-user-id';
-                            break;
-                        case 'threadMessage':
-                            subFolderName = 'unknown-threadmessage-id';
-                            break;
-                        default:
-                            subFolderName = 'unknown-entity-id';
-                            break;
-                    }
-                }
-
-                // Get file extension:
-                const originalNameArr = file?.originalname?.split('.') || [];
-                const mimeTypeArr = file?.mimetype?.split('/') || [];
-                let extension = originalNameArr[originalNameArr?.length - 1] || mimeTypeArr[mimeTypeArr?.length - 1] || null;
-
-                // Check if file extension valid:
-                const isValide = isFileValidImage({ checkOnlyExtension: true, extension });
-                if (!isValide) { extension = 'jpg'; }
-
-                // Set file name:
-                newFileId = uuid();
-                const fileName = `${newFileId}.${extension?.toLowerCase()}`;
-                const folderName = folderNameParam !== 'notFolderName' ? folderNameParam : entityname;
-                const path = `${folderName}/${subFolderName}/${fileName}`;
-
-                cb(null, path);
-            },
-            s3,
-            Bucket: BUCKET_NAME,
-            ACL: 'public-read',
-            /*
-            Metadata: function (req, file, cb) {
-                cb(null, { fieldName: file.fieldname });
-            },
-            */
-            multiple: ismultiplesize === 'true',
-            resize: ismultiplesize === 'true' ? sizesFiles : { ...sizesFiles[0] }
-        })
+        storage
     });
 
     if (ismultipleselect === 'true') {
@@ -252,7 +329,7 @@ export const deleteFileMulter = (req, res, next) => {
 };
 
 /**
- * POST /api/upload_file/:entityname/:entityid
+ * POST /api/upload_file/:filetype/:entityname/:entityid
  * 2) File uploaded done, now we provide urls (strings) of the images stored in the cloud:
  */
 export function uploadFile(req, res, next) {
@@ -291,7 +368,7 @@ export function uploadFile(req, res, next) {
 }
 
 /**
- * POST /api/delete_file/:entityname/:entityid
+ * POST /api/delete_file/:filetype/:entityname/:entityid
  */
 export function deleteFile(req, res, next) {
     assertAuthenticated(req, res, next, 'deleteFile', (userRes) => {

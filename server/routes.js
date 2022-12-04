@@ -27,8 +27,8 @@ export default (app) => {
     app.post('/api/me/myblockedprofiles', getMyBlockedProfiles);
 
     import('./controllers/uploadFile').then((module) => {
-        app.post('/api/upload_file/:entityname/:entityid/:foldername/:ismultiplesize/:ismultipleselect', module.uploadFileMulter, module.uploadFile);
-        app.post('/api/delete_file/:entityname/:entityid', /*module.deleteFileMulter, */module.deleteFile);
+        app.post('/api/upload_file/:filetype/:entityname/:entityid/:foldername/:ismultiplesize/:ismultipleselect', module.uploadFileMulter, module.uploadFile);
+        app.post('/api/delete_file/:filetype/:entityname/:entityid', /*module.deleteFileMulter, */module.deleteFile);
     });
 
     app.post('/api/countallunreadmessages', getCountAllUnreadMessages);

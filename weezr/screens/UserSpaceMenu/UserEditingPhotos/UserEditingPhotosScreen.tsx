@@ -140,12 +140,20 @@ function UserEditingPhotosScreenComponent(props: IUserEditingPhotosScreen) {
     const onAddPhoto = (photoBlob: any, isForAdd: boolean, selectedItemId = '', isForwardItemSelected?: boolean) => {
         setSelectedItemIdOnLoading(selectedItemId);
 
+        const fileObj = {
+            // uri: Platform.OS === 'ios' ? `file:///${photoBlob.path}` : photoBlob.path,
+            uri: photoBlob.path,
+            type: photoBlob.mime,
+            name: photoBlob.filename || `${Date.now()}.jpg`
+        };
+
         uploadFile({
-            photoBlob,
+            fileObj,
             entityName: 'user',
             entityId: me._id,
             isMultipleSize: true,
-            isMultipleSelect: false
+            isMultipleSelect: false,
+            fileType: 'image'
         })
             .then((resUploadedFile) => {
                 const data = resUploadedFile?.data;
