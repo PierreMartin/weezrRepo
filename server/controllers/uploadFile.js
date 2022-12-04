@@ -204,7 +204,18 @@ const generatePathFile = (req, file) => {
 
     const fileName = `${newFileId}.${extension}`;
     const folderName = folderNameParam !== 'notFolderName' ? folderNameParam : entityname;
-    const path = `${folderName}/${subFolderName}/${fileName}`;
+
+    let path = null;
+    switch (filetype) {
+        case 'image':
+            path = `${folderName}/${subFolderName}/${fileName}`;
+            break;
+        case 'audio':
+            path = `${folderName}/${subFolderName}/voiceMessages/${fileName}`;
+            break;
+        default:
+            break;
+    }
 
     // console.log('file => ', file);
     // console.log('path ===> ', path);

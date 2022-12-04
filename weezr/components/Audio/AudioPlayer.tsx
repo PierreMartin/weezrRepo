@@ -38,15 +38,31 @@ export function AudioPlayer(props: IAudioPlayer) {
 
     const onStartPlay = async (): Promise<void> => {
         await onStopPlay();
+        let isOnLoading = true;
         setIsLoading(true);
 
         const msg = await audioRecorderPlayer.startPlayer(audioSource);
         const volume = await audioRecorderPlayer.setVolume(1.0);
         console.log(`file: ${msg}`, `volume: ${volume}`);
 
+        // If error or file doesn't exist on cloud:
+        setTimeout(() => {
+            if (isOnLoading) {
+                onStopPlay();
+
+                setIsLoading(false);
+                isOnLoading = false;
+                setPlayerState('none');
+                setIconPlay('alert-circle-outline');
+                setPlayWidth(0);
+            }
+        }, 12 * 1000);
+
         audioRecorderPlayer.addPlayBackListener((e) => {
-            setIsLoading(false);
             console.log('Playing...');
+
+            setIsLoading(false);
+            isOnLoading = false;
 
             if (e.currentPosition === e.duration) {
                 console.log('Finished');
