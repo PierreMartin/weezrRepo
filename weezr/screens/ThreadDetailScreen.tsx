@@ -810,14 +810,12 @@ function ThreadDetailScreenComponent({
 
         onSetStateNewPendingMessage();
 
-        let extension = null;
+        let extension = '';
         const name = nextAudio?.split('.') || [];
-        if (name?.length > 1) {
-            // @ts-ignore
-            extension = name?.at(-1);
-        }
+        if (name?.length > 1) { extension = name[name.length - 1]; }
 
-        extension = extension?.split('-')?.at(-1);
+        const ext = extension?.split('-');
+        if (ext?.length) { extension = ext[ext.length - 1]; }
 
         const mimeType = mime.getType(extension);
 

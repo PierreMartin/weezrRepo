@@ -2,7 +2,7 @@
 import Ionicons from "react-native-vector-icons/Ionicons";
 import React from 'react';
 import { useTranslation } from "react-i18next";
-import { PermissionsAndroid, Platform } from "react-native";
+import { PermissionsAndroid, Platform, Vibration } from "react-native";
 import AudioRecorderPlayer, {
     AudioEncoderAndroidType,
     AudioSourceAndroidType,
@@ -46,7 +46,7 @@ export function AudioRecorder(props: IAudioRecorder) {
 
     const onStartRecord = async (): Promise<void> => {
         setIsRecording(true);
-        // TODO do vibrate phone
+        Vibration.vibrate();
 
         if (Platform.OS === 'android') {
             try {
@@ -99,7 +99,7 @@ export function AudioRecorder(props: IAudioRecorder) {
     const onStopRecord = async (): Promise<void> => {
         if (!isRecording) {
             setIsPopoverInfoOpened(true);
-            // TODO do vibrate phone
+            Vibration.vibrate();
             return;
         }
 
@@ -109,7 +109,7 @@ export function AudioRecorder(props: IAudioRecorder) {
 
         onSubmit(result);
         setIsRecording(false);
-        // TODO do vibrate phone
+        Vibration.vibrate();
         console.log('onStopRecord ', result);
     };
 
