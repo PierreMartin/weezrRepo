@@ -44,6 +44,8 @@ If Gradle is stuck at downloading NDK =>
 
 
 FOR IOS:
+For Change Default iOS Simulator Device:
+    npx react-native run-ios --simulator="iPhone 13 Pro Max"
 
 If `pod install` has errors => run `pod install --repo-update`
 

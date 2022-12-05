@@ -191,7 +191,7 @@ const generatePathFile = (req, file) => {
             if (!isValide) { extension = 'jpg'; }
             break;
         case 'audio':
-            isValide = isFileValid(/m4a|x-m4a|aac|mp3|aif|aiff|au|wave/, { checkOnlyExtension: true, extension });
+            isValide = isFileValid(/m4a|x-m4a|aac|mp3|mp4|aif|aiff|au|wave/, { checkOnlyExtension: true, extension });
             if (!isValide) { extension = 'm4a'; }
             break;
         default:
@@ -288,7 +288,7 @@ export const uploadFileMulter = (req, res, next) => {
                     isValide = isFileValid(/jpeg|jpg|png|bmp|gif/, { fileNameParam: file.originalname, mimetypeParam: file.mimetype });
                     break;
                 case 'audio':
-                    isValide = isFileValid(/m4a|x-m4a|aac|mp3|aif|aiff|au|wave/, { fileNameParam: file.originalname, mimetypeParam: file.mimetype });
+                    isValide = isFileValid(/m4a|x-m4a|aac|mp3|mp4|aif|aiff|au|wave/, { fileNameParam: file.originalname, mimetypeParam: file.mimetype });
                     break;
                 default:
                     break;

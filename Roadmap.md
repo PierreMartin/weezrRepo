@@ -1,16 +1,21 @@
 "Martin Technologies | Lookup | Weezr"
 
+- voiceMessages => fix Android (RNFetchBlob) + do vibrate phone
+  - "react-native-audio-recorder-player path android"
+
+IOS:
+"file:///Users/pierremartin/Library/Developer/CoreSimulator/Devices/CD5A2557-28A0-4AF7-BECC-26C5A7585F65/data/Containers/Data/Application/03C71821-4366-472A-9073-FD62C647BBDA/Library/Caches/sound.m4a"
+
+
+Android:
+"file:////data/user/0/com.weezr/cache/sound.mp4"
+
+
 - Mette shadow sur texte in grid.
 
-Audio:
-https://github.com/liplylie/ReactNativeChatImageAudio/blob/27446d5d25e5f628a28384bde3d140e5a128e028/src/components/chat.js
-https://hackernoon.com/recording-audio-in-react-native-ca1d3uc8
-
-Lib => https://github.com/hyochan/react-native-audio-recorder-player
 
 * Implem Chat
   - improvement => https://github.com/FaridSafi/react-native-gifted-chat/blob/22cc6f70045c2755a4bec6e1e87ce788d7166a8f/example/example-gifted-chat/src/Chats.js
-  - audio
   - Add 'Check' (seen message) icons in treadsList
   - renew buttons actions in slider
   * Storage in local
@@ -24,6 +29,7 @@ Lib => https://github.com/hyochan/react-native-audio-recorder-player
 - Fix websocket count unread messages in users grid, sometime stay at 0 
 - Change wording in back-end by keys of trad
 - Android => 
+  - Very slow on device !!
   - Bug, no pagination (on grid)
   - Bug, no profile me on all grid
 - Refaire algo pour les hommes -> afficher pareil
@@ -65,6 +71,7 @@ Lib => https://github.com/hyochan/react-native-audio-recorder-player
 - Gallery photos => enable multiple select + send photos
 - ThreadDetail => enable multiple participants in thread (>= 3)
 - Make the Markers move smoothly in react-native-maps
+- Créer automation (Cron) afin de supprimer toutes les interactions des visiteurs de plus de 7j. Pour faire de la place en bbd.
 
 * Create static website + RGPD + privacy
 * Create logo

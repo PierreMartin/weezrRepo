@@ -13,6 +13,7 @@ import com.facebook.soloader.SoLoader;
 import com.weezr.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import com.dooboolab.audiorecorderplayer.RNAudioRecorderPlayerPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -30,6 +31,7 @@ public class MainApplication extends Application implements ReactApplication {
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
           // packages.add(new RNLocationPackage()); // Already load (but IDK were...)
+          // packages.add(new RNAudioRecorderPlayerPackage()); // Already load (but IDK were...)
           return packages;
         }
 

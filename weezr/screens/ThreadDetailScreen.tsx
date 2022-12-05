@@ -809,8 +809,25 @@ function ThreadDetailScreenComponent({
 
         onSetStateNewPendingMessage();
 
+        let extension = null;
+        const name = nextAudio?.split('.') || [];
+        if (name?.length > 1) {
+            // @ts-ignore
+            extension = name?.at(-1);
+        }
+
+        extension = extension?.split('-')?.at(-1);
+
+        const mime = ''; // getMimeByExt(extension);
+
+        if (!mime) {
+            console.error('no mime type!');
+            return;
+        }
+
         const fileObj = {
             uri: nextAudio,
+            type: mime,
             name: `${Date.now()}`
         };
 

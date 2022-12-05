@@ -259,6 +259,8 @@ dependencies {
     implementation "com.google.android.gms:play-services-base:16.0.1"
     implementation "com.google.android.gms:play-services-location:16.0.0"
 
+    implementation project(':react-native-audio-recorder-player')
+
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
