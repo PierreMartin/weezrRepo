@@ -22,11 +22,12 @@ const audioRecorderPlayer = new AudioRecorderPlayer();
 
 const path = Platform.select({
     ios: undefined,
+    android: undefined,
     // Discussion: https://github.com/hyochan/react-native-audio-recorder-player/discussions/479
     // ios: 'https://firebasestorage.googleapis.com/v0/b/cooni-ebee8.appspot.com/o/test-audio.mp3?alt=media&token=d05a2150-2e52-4a2e-9c8c-d906450be20b',
     // ios: 'https://staging.media.ensembl.fr/original/uploads/26403543-c7d0-4d44-82c2-eb8364c614d0',
     // ios: 'hello.m4a',
-    android: `${dirs.CacheDir}/voiceMessages.m4a`,
+    // android: `${dirs.CacheDir}/voiceMessages.mp4`,
 });
 
 export interface IAudioRecorder {
@@ -79,7 +80,7 @@ export function AudioRecorder(props: IAudioRecorder) {
             AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
             AVNumberOfChannelsKeyIOS: 2,
             AVFormatIDKeyIOS: AVEncodingOption.aac,
-            OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
+            OutputFormatAndroid: OutputFormatAndroidType.MPEG_4, // NOTE: Fix for read mp4 on ios (see https://github.com/hyochan/react-native-audio-recorder-player/issues/295)
         };
 
         console.log('onStartRecord - audioSet', audioSet);
