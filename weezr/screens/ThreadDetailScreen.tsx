@@ -14,6 +14,7 @@ import { connectActionSheet } from "@expo/react-native-action-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import mime from "mime";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import { StackNavigationProp } from "@react-navigation/stack/lib/typescript/src/types";
 import { SocketEvents } from "../context/SocketEvents";
@@ -818,16 +819,16 @@ function ThreadDetailScreenComponent({
 
         extension = extension?.split('-')?.at(-1);
 
-        const mime = ''; // getMimeByExt(extension);
+        const mimeType = mime.getType(extension);
 
-        if (!mime) {
-            console.error('no mime type!');
+        if (!extension || !mimeType) {
+            console.error('No mime type!');
             return;
         }
 
         const fileObj = {
             uri: nextAudio,
-            type: mime,
+            type: mimeType,
             name: `${Date.now()}`
         };
 
