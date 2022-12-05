@@ -2,7 +2,7 @@
 import Ionicons from "react-native-vector-icons/Ionicons";
 import React from 'react';
 import { useTranslation } from "react-i18next";
-import { PermissionsAndroid, Platform, Vibration } from "react-native";
+import { PermissionsAndroid, Platform } from "react-native";
 import AudioRecorderPlayer, {
     AudioEncoderAndroidType,
     AudioSourceAndroidType,
@@ -10,12 +10,18 @@ import AudioRecorderPlayer, {
     AVEncodingOption,
     OutputFormatAndroidType
 } from 'react-native-audio-recorder-player';
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 // import RNFetchBlob from "rn-fetch-blob";
 import { Box, Button, Icon, Popover, Text } from "native-base";
 import getStyles from "./AudioRecorder.styles";
 
 const styles = getStyles();
 // const dirs = RNFetchBlob.fs.dirs;
+
+const hapticOptions = {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: false
+};
 
 // For android it is mp4, and for ios it is a m4a
 const audioRecorderPlayer = new AudioRecorderPlayer();
@@ -46,7 +52,7 @@ export function AudioRecorder(props: IAudioRecorder) {
 
     const onStartRecord = async (): Promise<void> => {
         setIsRecording(true);
-        Vibration.vibrate();
+        ReactNativeHapticFeedback.trigger('impactLight', hapticOptions);
 
         if (Platform.OS === 'android') {
             try {
@@ -99,7 +105,7 @@ export function AudioRecorder(props: IAudioRecorder) {
     const onStopRecord = async (): Promise<void> => {
         if (!isRecording) {
             setIsPopoverInfoOpened(true);
-            Vibration.vibrate();
+            ReactNativeHapticFeedback.trigger('impactLight', hapticOptions);
             return;
         }
 
@@ -109,7 +115,7 @@ export function AudioRecorder(props: IAudioRecorder) {
 
         onSubmit(result);
         setIsRecording(false);
-        Vibration.vibrate();
+        ReactNativeHapticFeedback.trigger('impactLight', hapticOptions);
         console.log('onStopRecord ', result);
     };
 

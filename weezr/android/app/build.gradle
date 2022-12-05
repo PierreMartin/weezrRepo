@@ -260,6 +260,7 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:16.0.0"
 
     implementation project(':react-native-audio-recorder-player')
+    implementation project(':react-native-haptic-feedback')
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 

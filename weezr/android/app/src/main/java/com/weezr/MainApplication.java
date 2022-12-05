@@ -14,6 +14,7 @@ import com.weezr.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.dooboolab.audiorecorderplayer.RNAudioRecorderPlayerPackage;
+import com.mkuczera.RNReactNativeHapticFeedbackPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 

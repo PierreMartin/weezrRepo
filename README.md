@@ -42,6 +42,11 @@ FOR ANDROID:
 If Gradle is stuck at downloading NDK =>
     https://stackoverflow.com/questions/71601864/gradle-is-stuck-at-downloading-ndk
 
+If error "Task :react-native-location:compileDebugJavaWithJavac FAILED"
+    cd android and then ./gradlew clean
+    npx jetifier
+
+
 
 FOR IOS:
 For Change Default iOS Simulator Device:
