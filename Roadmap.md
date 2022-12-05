@@ -1,7 +1,8 @@
 "Martin Technologies | Lookup | Weezr"
 
-- voiceMessages => fix Android (RNFetchBlob) + do vibrate phone
-  - "react-native-audio-recorder-player path android"
+- voiceMessages 
+  - react-native-audio-recorder-player can't read mp4 on ios
+  - do vibrate phone
 
 IOS:
 "file:///Users/pierremartin/Library/Developer/CoreSimulator/Devices/CD5A2557-28A0-4AF7-BECC-26C5A7585F65/data/Containers/Data/Application/03C71821-4366-472A-9073-FD62C647BBDA/Library/Caches/sound.m4a"

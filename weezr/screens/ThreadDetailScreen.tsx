@@ -823,6 +823,7 @@ function ThreadDetailScreenComponent({
 
         if (!extension || !mimeType) {
             console.error('No mime type!');
+            setAudioVoiceSource(null);
             return;
         }
 

@@ -10,22 +10,23 @@ import AudioRecorderPlayer, {
     AVEncodingOption,
     OutputFormatAndroidType
 } from 'react-native-audio-recorder-player';
+import RNFetchBlob from "rn-fetch-blob";
 import { Box, Button, Icon, Popover, Text } from "native-base";
 import getStyles from "./AudioRecorder.styles";
 
 const styles = getStyles();
+const dirs = RNFetchBlob.fs.dirs;
 
 // For android it is mp4, and for ios it is a m4a
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
 const path = Platform.select({
     ios: undefined,
-    android: undefined,
     // Discussion: https://github.com/hyochan/react-native-audio-recorder-player/discussions/479
     // ios: 'https://firebasestorage.googleapis.com/v0/b/cooni-ebee8.appspot.com/o/test-audio.mp3?alt=media&token=d05a2150-2e52-4a2e-9c8c-d906450be20b',
     // ios: 'https://staging.media.ensembl.fr/original/uploads/26403543-c7d0-4d44-82c2-eb8364c614d0',
     // ios: 'hello.m4a',
-    // android: `${this.dirs.CacheDir}/hello.mp3`,
+    android: `${dirs.CacheDir}/voiceMessages.m4a`,
 });
 
 export interface IAudioRecorder {
