@@ -10,12 +10,12 @@ import AudioRecorderPlayer, {
     AVEncodingOption,
     OutputFormatAndroidType
 } from 'react-native-audio-recorder-player';
-import RNFetchBlob from "rn-fetch-blob";
+// import RNFetchBlob from "rn-fetch-blob";
 import { Box, Button, Icon, Popover, Text } from "native-base";
 import getStyles from "./AudioRecorder.styles";
 
 const styles = getStyles();
-const dirs = RNFetchBlob.fs.dirs;
+// const dirs = RNFetchBlob.fs.dirs;
 
 // For android it is mp4, and for ios it is a m4a
 const audioRecorderPlayer = new AudioRecorderPlayer();
