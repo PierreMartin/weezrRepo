@@ -20,7 +20,7 @@ const styles = getStyles();
 
 const hapticOptions = {
     enableVibrateFallback: true,
-    ignoreAndroidSystemSettings: false
+    ignoreAndroidSystemSettings: true
 };
 
 // For android it is mp4, and for ios it is a m4a
@@ -52,7 +52,7 @@ export function AudioRecorder(props: IAudioRecorder) {
 
     const onStartRecord = async (): Promise<void> => {
         setIsRecording(true);
-        ReactNativeHapticFeedback.trigger('impactLight', hapticOptions);
+        ReactNativeHapticFeedback.trigger('impactMedium', hapticOptions);
 
         if (Platform.OS === 'android') {
             try {
@@ -105,7 +105,7 @@ export function AudioRecorder(props: IAudioRecorder) {
     const onStopRecord = async (): Promise<void> => {
         if (!isRecording) {
             setIsPopoverInfoOpened(true);
-            ReactNativeHapticFeedback.trigger('impactLight', hapticOptions);
+            ReactNativeHapticFeedback.trigger('impactMedium', hapticOptions);
             return;
         }
 
@@ -115,7 +115,7 @@ export function AudioRecorder(props: IAudioRecorder) {
 
         onSubmit(result);
         setIsRecording(false);
-        ReactNativeHapticFeedback.trigger('impactLight', hapticOptions);
+        ReactNativeHapticFeedback.trigger('impactMedium', hapticOptions);
         console.log('onStopRecord ', result);
     };
 
