@@ -1,13 +1,15 @@
 "Martin Technologies | Lookup | Weezr"
 
+https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/shared-values
+
 * Implem Chat
   - improvement => https://github.com/FaridSafi/react-native-gifted-chat/blob/22cc6f70045c2755a4bec6e1e87ce788d7166a8f/example/example-gifted-chat/src/Chats.js
-  - renew buttons actions in slider
   - Add 'Check' (seen message) icons in treadsList
   * Storage in local
   - Switch for delete all messages in one thread
 
 - Mette shadow sur texte in grid.
+- Use react-native-haptic-feedback at refreshControl + onRefresh
 
 - UserInteractions => handle "replies too" in TabNotificationsCenter
 - Query (Apollo ?) => See why we pass many times in some queries (like users)
