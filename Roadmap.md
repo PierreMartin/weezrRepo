@@ -5,7 +5,6 @@
   * Storage in local
   - Switch for delete all messages in one thread
 
-- Bug send request in chat
 - Mette shadow sur texte in grid.
 - Use react-native-haptic-feedback at refreshControl + onRefresh
 

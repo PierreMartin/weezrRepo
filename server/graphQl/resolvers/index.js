@@ -1075,9 +1075,9 @@ export const resolvers = {
 
                 // console.log(`- totalCount: ${totalCount} - isLastPage ${(offset + limit) >= totalCount} - offset: ${offset}`);
 
-                const threadMessages = await ThreadMessage
+                const rawMessages = await ThreadMessage
                     .find(filterMain)
-                    .populate('request', '_id senderId receiverId at privatePhotosGranted privatePhotosGrantedAt')
+                    // .populate('request', '_id senderId receiverId at privatePhotosGranted privatePhotosGrantedAt')
                     .sort({ createdAt: -1 })
                     .skip(offset)
                     .limit(limit);
@@ -1085,7 +1085,7 @@ export const resolvers = {
                 const participantsIdsFront = dataMain?.participantsIdsFront;
                 const isBetweenTwoUsers = (participantsIdsFront?.length === 1);
 
-                const data = threadMessages?.map((threadMessage) => {
+                const enrichedMessages = rawMessages?.map((threadMessage) => {
                     const message = threadMessage?.toObject();
 
                     // Check if message read by user front:
@@ -1099,8 +1099,10 @@ export const resolvers = {
                     return { ...message, received };
                 });
 
+                const messages = await ThreadMessage.populate(enrichedMessages, { path: 'request', select: '_id senderId receiverId at privatePhotosGranted privatePhotosGrantedAt' });
+
                 return {
-                    data,
+                    data: messages,
                     pageInfo: {
                         message: 'Thread messages successfully fetched',
                         success: true,
