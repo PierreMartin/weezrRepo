@@ -188,6 +188,19 @@ const getUserInteractions = (userMeId) => {
     ];
 };
 
+const checkIfThreadMessageReceived = (isBetweenTwoUsers, participantsIdFront, message, userMeId) => {
+    let received = false;
+
+    if (isBetweenTwoUsers
+        && message?.author && (message.author === userMeId)
+        && !!message?.readBy?.find((by) => by?.user && (by.user === participantsIdFront))
+    ) {
+        received = true;
+    }
+
+    return received;
+};
+
 export const resolvers = {
     Query: {
         users: async (parent, args, context, info) => {
@@ -999,14 +1012,31 @@ export const resolvers = {
                     "$sort": { "latestMessage.createdAt": -1 }
                 });
 
-                const threadsRaw = await Thread
+                const rawThreads = await Thread
                     .aggregate(aggregate)
                     .skip(offset)
                     .limit(limit);
 
-                const threads = await Thread.populate(threadsRaw, { path: 'participants', select: '_id email images displayName isOnline' });
+                const enrichedThreads = rawThreads?.map((thread) => {
+                    const { latestMessage, participants } = thread || {};
 
-                if (!threads || !threadsRaw) { return new Error("A error has occurred at the fetching threads"); }
+                    const participantsIdsFront = participants?.filter((participant) => (participant && (participant !== context?.userMeId)));
+                    const isBetweenTwoUsers = (participantsIdsFront?.length === 1);
+
+                    // Check if latestMessage read by user front:
+                    let received = checkIfThreadMessageReceived(
+                        isBetweenTwoUsers,
+                        participantsIdsFront?.length && participantsIdsFront[0],
+                        latestMessage,
+                        context?.userMeId
+                    );
+
+                    return { ...thread, latestMessage: { ...latestMessage, received } };
+                });
+
+                const threads = await Thread.populate(enrichedThreads, { path: 'participants', select: '_id email images displayName isOnline' });
+
+                if (!threads) { return new Error("A error has occurred at the fetching threads"); }
 
                 const totalCount = threads?.length;
 
@@ -1059,13 +1089,12 @@ export const resolvers = {
                     const message = threadMessage?.toObject();
 
                     // Check if message read by user front:
-                    let received = false;
-                    if (isBetweenTwoUsers
-                        && message?.author && (message.author === context?.userMeId)
-                        && !!message?.readBy?.find((by) => by?.user && (by.user === participantsIdsFront[0]))
-                    ) {
-                        received = true;
-                    }
+                    let received = checkIfThreadMessageReceived(
+                        isBetweenTwoUsers,
+                        participantsIdsFront?.length && participantsIdsFront[0],
+                        message,
+                        context?.userMeId
+                    );
 
                     return { ...message, received };
                 });
