@@ -1,6 +1,8 @@
+// @ts-ignore
+import Ionicons from "react-native-vector-icons/Ionicons";
 import * as React from 'react';
 import { FlatList, RefreshControl, TouchableHighlight } from 'react-native';
-import { Box, Center } from "native-base";
+import { Box, Center, Icon } from "native-base";
 import { StackNavigationProp } from '@react-navigation/stack/src/types';
 import { Header, Text, View } from '.';
 import { InputSearch } from "./InputSearch";
@@ -60,8 +62,13 @@ export const List = ({
                             user={fields.avatar}
                             size="sm"
                         />
+
                         <View style={{ flex: 1 }}>
-                            { (fields.title?.length > 0) && <Text style={styles.itemPrimaryText}>{fields.title}</Text> }
+                            <View style={{ flexDirection: 'row' }}>
+                                { fields.isOnline && (<Icon as={Ionicons} name="radio-button-on-outline" size="4" color="#16BF24FF" mr={1} />) }
+                                { (fields.title?.length > 0) && <Text style={styles.itemPrimaryText}>{fields.title}</Text> }
+                            </View>
+
                             { (fields.content) && <Text style={styles.itemSecondaryText}>{fields.content}</Text> }
                         </View>
 
@@ -77,7 +84,10 @@ export const List = ({
                         }
 
                         <View>
-                            { fields.at && <Text style={styles.itemSecondaryText}>{fields.at}</Text> }
+                            <View style={{ flexDirection: 'row' }}>
+                                { fields.at && <Text style={styles.itemSecondaryText}>{fields.at}</Text> }
+                                { fields.checkmark && <Text> {fields.checkmark()}</Text> }
+                            </View>
 
                             <Text style={{ marginTop: 6 }}>
                                 { fields.badge && fields.badge() }

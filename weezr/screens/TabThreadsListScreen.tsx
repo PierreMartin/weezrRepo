@@ -1,6 +1,8 @@
+// @ts-ignore
+import Ionicons from "react-native-vector-icons/Ionicons";
 import * as React from 'react';
 import { StackScreenProps } from "@react-navigation/stack";
-import { Badge, Box, Center } from "native-base";
+import { Badge, Box, Center, Icon } from "native-base";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { StackNavigationProp } from '@react-navigation/stack/src/types';
@@ -49,6 +51,7 @@ const THREADS = gql`
                     email
                     displayName
                     images
+                    isOnline
                 }
                 latestMessage {
                     text
@@ -58,6 +61,8 @@ const THREADS = gql`
                     location
                     requestId
                     createdAt
+                    sent
+                    received
                 }
                 unreadMessages
             }
@@ -197,6 +202,8 @@ function TabThreadsListScreen({
                             threadToUpdate.latestMessage.audio = realtimeNewMessage.audio;
                             threadToUpdate.latestMessage.location = realtimeNewMessage.location;
                             threadToUpdate.latestMessage.createdAt = realtimeNewMessage.createdAt;
+                            threadToUpdate.latestMessage.sent = realtimeNewMessage.sent;
+                            threadToUpdate.latestMessage.received = realtimeNewMessage.received;
                         }
 
                         nextThreads[indexFound] = threadToUpdate;
@@ -272,7 +279,17 @@ function TabThreadsListScreen({
     const renderFields = (fieldsSource: IThread) => {
         const usersFrontFound = fieldsSource?.participants?.filter((participant: IUser) => participant.id !== me?._id);
         const firstUserFrontFound = usersFrontFound[0] || {};
-        const { text, image, video, audio, location, requestId } = fieldsSource?.latestMessage;
+        const {
+            text,
+            image,
+            video,
+            audio,
+            location,
+            requestId,
+            sent,
+            received
+        } = fieldsSource?.latestMessage;
+
         let renderLatestMessage = ' ';
 
         if (text) { renderLatestMessage = truncate(text, 30, '...'); }
@@ -285,7 +302,18 @@ function TabThreadsListScreen({
         return {
             title: firstUserFrontFound?.displayName || 'User',
             content: renderLatestMessage,
+            isOnline: firstUserFrontFound?.isOnline,
             at: fieldsSource?.latestMessage?.createdAt,
+            checkmark: () => {
+                let icon = null;
+                if (sent && received) {
+                    icon = 'checkmark-done-outline';
+                } else if (sent) {
+                    icon = 'checkmark-outline';
+                }
+
+                return icon ? <Icon as={Ionicons} name={icon} size="sm" /> : '';
+            },
             avatar: firstUserFrontFound as IUser,
             navigate: { routeName: 'ThreadDetail', paramList: { threadId: fieldsSource._id } },
             badge: () => {

@@ -1004,7 +1004,7 @@ export const resolvers = {
                     .skip(offset)
                     .limit(limit);
 
-                const threads = await Thread.populate(threadsRaw, { path: 'participants', select: '_id email images displayName' });
+                const threads = await Thread.populate(threadsRaw, { path: 'participants', select: '_id email images displayName isOnline' });
 
                 if (!threads || !threadsRaw) { return new Error("A error has occurred at the fetching threads"); }
 

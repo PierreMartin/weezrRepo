@@ -11,6 +11,8 @@ type LatestMessage {
     location: Object
     requestId: ID
     createdAt: String
+    sent: Boolean
+    received: Boolean
 }
 
 type Thread {
