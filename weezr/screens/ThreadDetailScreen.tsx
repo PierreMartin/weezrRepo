@@ -6,6 +6,12 @@ import { Keyboard, Linking, Platform, StyleSheet, Text, TouchableHighlight, View
 import { StackScreenProps } from '@react-navigation/stack';
 import { useFocusEffect } from "@react-navigation/native";
 import { Box, Button, Center, Icon, Image } from "native-base";
+import Animated, {
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming
+} from 'react-native-reanimated';
 import MapView, { Marker } from "react-native-maps";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
@@ -209,6 +215,9 @@ const SET_MESSAGES_AS_READ = gql`
 
 const itemsPerPage = 50;
 
+const offsetChatActions = -80; // TODO get width element
+const offsetComposer = 100; // TODO get width element
+
 function ThreadDetailScreenComponent({
     navigation,
     route,
@@ -235,6 +244,9 @@ function ThreadDetailScreenComponent({
     const [isBetweenTwoUsers, setIsBetweenTwoUsers] = React.useState<boolean>(false);
     const [audioVoiceSource, setAudioVoiceSource] = React.useState<string | null>(null);
     const [isChatActionsOpened, setIsChatActionsOpened] = React.useState<boolean>(false);
+
+    const offsetChatActionsShared = useSharedValue(offsetChatActions);
+    const offsetComposerShared = useSharedValue(offsetComposer);
 
     const [getThread, {
         loading: getThreadLoading,
@@ -968,6 +980,10 @@ function ThreadDetailScreenComponent({
         return null;
     };
 
+    const offsetChatActionsStyles = useAnimatedStyle(() => ({ transform: [{ translateX: offsetChatActionsShared.value }] }));
+    // const offsetComposerStyles = useAnimatedStyle(() => ({ transform: [{ translateX: offsetComposerShared.value }] }));
+    const offsetComposerStyles = useAnimatedStyle(() => ({ width: `${offsetComposerShared.value * 100}%` }));
+
     const renderComposer = (props: any) => {
         // If audio voice recorded:
         if (audioVoiceSource) {
@@ -983,21 +999,23 @@ function ThreadDetailScreenComponent({
 
         // Normal rendering:
         return (
-            <Composer
-                {...props}
-                composerHeight="auto"
-                textInputStyle={{
-                    minHeight: 35,
-                    maxHeight: 110,
-                    paddingTop: 9,
-                    paddingHorizontal: 10,
-                    marginLeft: 0,
-                    borderWidth: 1,
-                    borderRadius: 16,
-                    borderColor: colors.dark.border,
-                    color: '#222B45'
-                }}
-            />
+            <Animated.View style={[{ flex: 1, marginLeft: 30 }]}>
+                <Composer
+                    {...props}
+                    composerHeight="auto"
+                    textInputStyle={{
+                        minHeight: 35,
+                        maxHeight: 110,
+                        paddingTop: 9,
+                        paddingHorizontal: 10,
+                        marginLeft: 0,
+                        borderWidth: 1,
+                        borderRadius: 16,
+                        borderColor: colors.dark.border,
+                        color: '#222B45'
+                    }}
+                />
+            </Animated.View>
         );
     };
 
@@ -1111,20 +1129,133 @@ function ThreadDetailScreenComponent({
         );
     };
 
-    /*
-    const chatActionsStyles: any = {};
-    if (isChatActionsOpened) {
-        chatActionsStyles.left = '-22';
-    }
-    */
+    const onSetIsChatActionsOpened = (isOpen: boolean) => {
+        if (isOpen) { setIsChatActionsOpened(isOpen); }
+
+        offsetChatActionsShared.value = withTiming(isOpen ? 0 : offsetChatActions, { duration: 500, easing: Easing.out(Easing.exp) }, (finished) => {
+            if (finished && !isOpen) { setIsChatActionsOpened(isOpen); }
+        });
+
+        offsetComposerShared.value = withTiming(isOpen ? 0 : offsetComposer, { duration: 500, easing: Easing.out(Easing.exp) });
+    };
 
     const renderActions = (/* props: Readonly<ActionsProps> */) => {
         return (
             <Box style={styles.actionsContainer}>
+                <Animated.View style={[{ position: 'absolute', bottom: 8, left: 0 }, offsetChatActionsStyles]}>
+                    <Box style={{ flex: 1, flexDirection: 'row' }}>
+                        <Box style={[styles.actionsItem]}>
+                            {/* Open my images picker */}
+                            <Button
+                                rounded="none"
+                                variant="unstyle"
+                                pl="0"
+                                pr="0"
+                                _text={{ fontSize: 16 }}
+                                onPress={() => {
+                                    // Use => https://gorhom.github.io/react-native-bottom-sheet/usage
+                                    onOpenMyPhotosPicker();
+                                }}
+                            >
+                                📷
+                            </Button>
+                        </Box>
+
+                        <Box style={[styles.actionsItem, { marginHorizontal: 0 }]}>
+                            <Button
+                                rounded="none"
+                                variant="unstyle"
+                                pl="0"
+                                pr="0"
+                                _text={{ fontSize: 16 }}
+                                onPress={() => {
+                                    if (showActionSheetWithOptions) {
+                                        const options = [
+                                            'Close',
+                                            'Send my position'
+                                        ];
+
+                                        const hasAlreadySentRequest = !!thread.userInteractions?.myRequest?.sent?.id;
+                                        const participantsFront = thread?.participants?.filter((participant: IUser) => (participant?.id && (participant.id !== me._id)));
+                                        const hasParticipantFrontPrivatePhotos = participantsFront?.length && participantsFront[0].hasPrivatePhotos;
+
+                                        if (isBetweenTwoUsers && hasParticipantFrontPrivatePhotos && !hasAlreadySentRequest) {
+                                            options.push('Ask private photos');
+                                        }
+
+                                        showActionSheetWithOptions(
+                                            {
+                                                options,
+                                                cancelButtonIndex: 0,
+                                                userInterfaceStyle: 'dark'
+                                            },
+                                            (buttonIndex) => {
+                                                switch (buttonIndex) {
+                                                    case 0:
+                                                        // Close
+                                                        break;
+                                                    case 1:
+                                                        // Send my position
+                                                        onOpenMap(me.currentLocation, true);
+                                                        break;
+                                                    case 2:
+                                                        // Ask private photos
+                                                        if (isBetweenTwoUsers && !hasAlreadySentRequest) {
+                                                            onSendRequest({
+                                                                sendRequest,
+                                                                participantsIds: participantsIdsAll,
+                                                                userFront: { id: participantsIdsFront[0] },
+                                                                me,
+                                                                onSetStateAtSubmit: (userInterSendRequest: IUserInteraction) => {
+                                                                    const nextMessage: IThreadMessage = {
+                                                                        _id: getUniqueId(),
+                                                                        threadId: thread.id,
+                                                                        createdAt: new Date(),
+                                                                        requestId: userInterSendRequest.id,
+                                                                        request: userInterSendRequest,
+                                                                        user: me
+                                                                    };
+
+                                                                    onSetStateNewSuccessMessage(false, nextMessage);
+
+                                                                    setThread((previousThread: IThread) => {
+                                                                        const nextThread = _.cloneDeep(previousThread || {});
+
+                                                                        if (me?._id) {
+                                                                            // eslint-disable-next-line max-len
+                                                                            if (!nextThread?.userInteractions) { nextThread.userInteractions = {} as any; }
+                                                                            // eslint-disable-next-line max-len
+                                                                            if (!nextThread?.userInteractions?.myRequest) { nextThread.userInteractions.myRequest = {} as any; }
+                                                                            // eslint-disable-next-line max-len
+                                                                            if (!nextThread?.userInteractions?.myRequest?.sent) { nextThread.userInteractions.myRequest.sent = {} as any; }
+
+                                                                            nextThread.userInteractions.myRequest.sent = userInterSendRequest;
+                                                                        }
+
+                                                                        return nextThread;
+                                                                    });
+                                                                },
+                                                                socketEvents
+                                                            });
+                                                        }
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
+                                            }
+                                        );
+                                    }
+                                }}
+                            >
+                                ➕
+                            </Button>
+                        </Box>
+                    </Box>
+                </Animated.View>
 
                 {
                     !isChatActionsOpened && (
-                        <Box style={styles.actionsItem}>
+                        <Box style={{ position: 'absolute', bottom: 8, left: 0 }}>
                             <Button
                                 leftIcon={<Icon as={Ionicons} name="chevron-forward-outline" size="xl" />}
                                 rounded="none"
@@ -1132,120 +1263,9 @@ function ThreadDetailScreenComponent({
                                 p={0}
                                 m={0}
                                 bottom={2}
-                                onPress={() => { setIsChatActionsOpened(true); }}
+                                onPress={() => { onSetIsChatActionsOpened(true); }}
                             />
                         </Box>
-                    )
-                }
-
-                {
-                    isChatActionsOpened && (
-                        <>
-                            <Box style={styles.actionsItem}>
-                                {/* Open my images picker */}
-                                <Button
-                                    rounded="none"
-                                    variant="unstyle"
-                                    pl="0"
-                                    pr="0"
-                                    _text={{ fontSize: 16 }}
-                                    onPress={() => {
-                                        // Use => https://gorhom.github.io/react-native-bottom-sheet/usage
-                                        onOpenMyPhotosPicker();
-                                    }}
-                                >
-                                    📷
-                                </Button>
-                            </Box>
-
-                            <Box style={[styles.actionsItem, { marginHorizontal: 0 }]}>
-                                <Button
-                                    rounded="none"
-                                    variant="unstyle"
-                                    pl="0"
-                                    pr="0"
-                                    _text={{ fontSize: 16 }}
-                                    onPress={() => {
-                                        if (showActionSheetWithOptions) {
-                                            const options = [
-                                                'Close',
-                                                'Send my position'
-                                            ];
-
-                                            const hasAlreadySentRequest = !!thread.userInteractions?.myRequest?.sent?.id;
-                                            const participantsFront = thread?.participants?.filter((participant: IUser) => (participant?.id && (participant.id !== me._id)));
-                                            const hasParticipantFrontPrivatePhotos = participantsFront?.length && participantsFront[0].hasPrivatePhotos;
-
-                                            if (isBetweenTwoUsers && hasParticipantFrontPrivatePhotos && !hasAlreadySentRequest) {
-                                                options.push('Ask private photos');
-                                            }
-
-                                            showActionSheetWithOptions(
-                                                {
-                                                    options,
-                                                    cancelButtonIndex: 0,
-                                                    userInterfaceStyle: 'dark'
-                                                },
-                                                (buttonIndex) => {
-                                                    switch (buttonIndex) {
-                                                        case 0:
-                                                            // Close
-                                                            break;
-                                                        case 1:
-                                                            // Send my position
-                                                            onOpenMap(me.currentLocation, true);
-                                                            break;
-                                                        case 2:
-                                                            // Ask private photos
-                                                            if (isBetweenTwoUsers && !hasAlreadySentRequest) {
-                                                                onSendRequest({
-                                                                    sendRequest,
-                                                                    participantsIds: participantsIdsAll,
-                                                                    userFront: { id: participantsIdsFront[0] },
-                                                                    me,
-                                                                    onSetStateAtSubmit: (userInterSendRequest: IUserInteraction) => {
-                                                                        const nextMessage: IThreadMessage = {
-                                                                            _id: getUniqueId(),
-                                                                            threadId: thread.id,
-                                                                            createdAt: new Date(),
-                                                                            requestId: userInterSendRequest.id,
-                                                                            request: userInterSendRequest,
-                                                                            user: me
-                                                                        };
-
-                                                                        onSetStateNewSuccessMessage(false, nextMessage);
-
-                                                                        setThread((previousThread: IThread) => {
-                                                                            const nextThread = _.cloneDeep(previousThread || {});
-
-                                                                            if (me?._id) {
-                                                                                if (!nextThread?.userInteractions) { nextThread.userInteractions = {} as any; }
-                                                                                if (!nextThread?.userInteractions?.myRequest) { nextThread.userInteractions.myRequest = {} as any; }
-                                                                                // eslint-disable-next-line max-len
-                                                                                if (!nextThread?.userInteractions?.myRequest?.sent) { nextThread.userInteractions.myRequest.sent = {} as any; }
-
-                                                                                nextThread.userInteractions.myRequest.sent = userInterSendRequest;
-                                                                            }
-
-                                                                            return nextThread;
-                                                                        });
-                                                                    },
-                                                                    socketEvents
-                                                                });
-                                                            }
-                                                            break;
-                                                        default:
-                                                            break;
-                                                    }
-                                                }
-                                            );
-                                        }
-                                    }}
-                                >
-                                    ➕
-                                </Button>
-                            </Box>
-                        </>
                     )
                 }
             </Box>
@@ -1329,10 +1349,10 @@ function ThreadDetailScreenComponent({
                 textInputProps={{
                     blurOnSubmit: true,
                     autoFocus: false,
-                    onFocus: () => { setIsChatActionsOpened(false); }
+                    onFocus: () => { onSetIsChatActionsOpened(false); }
                 }}
                 onInputTextChanged={(text: string) => {
-                    if (isChatActionsOpened) { setIsChatActionsOpened(false); }
+                    if (isChatActionsOpened) { onSetIsChatActionsOpened(false); }
 
                     if (text) {
                         socketEvents.emit.startTyping({
