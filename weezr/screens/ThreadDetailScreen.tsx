@@ -228,8 +228,7 @@ function ThreadDetailScreenComponent({
     newSeenMessagesActionProps,
     setRealtimeNewRequestResponseActionProps,
     setRealtimeNewBlockActionProps,
-    typingActionProps,
-    showActionSheetWithOptions
+    typingActionProps
 }: IThreadDetailScreenProps) {
     const [thread, setThread] = React.useState<IThread>(null as any);
     const [messages, setMessages] = React.useState<IThreadMessage[]>([]);
@@ -241,7 +240,7 @@ function ThreadDetailScreenComponent({
     const [isBetweenTwoUsers, setIsBetweenTwoUsers] = React.useState<boolean>(false);
     const [audioVoiceSource, setAudioVoiceSource] = React.useState<string | null>(null);
     const [isChatActionsOpened, setIsChatActionsOpened] = React.useState<boolean>(false);
-    const [offsetChatActionsWidth] = React.useState<number>(-70); // For animation, in px
+    const [offsetChatActionsWidth] = React.useState<number>(-110); // For animation, in px
     const [offsetComposerWidth] = React.useState<number>(25); // For animation, in px
 
     const offsetChatActionsShared = useSharedValue(offsetChatActionsWidth); // For buttons container animation
@@ -818,6 +817,44 @@ function ThreadDetailScreenComponent({
         navigation.navigate('MapModal', { location, isEditing, onSendLocation });
     };
 
+    const onSendRequestPrivatePhotos = (canSendRequest: boolean) => {
+        if (canSendRequest) {
+            onSendRequest({
+                sendRequest,
+                participantsIds: participantsIdsAll,
+                userFront: { id: participantsIdsFront[0] },
+                me,
+                onSetStateAtSubmit: (userInterSendRequest: IUserInteraction) => {
+                    const nextMessage: IThreadMessage = {
+                        _id: getUniqueId(),
+                        threadId: thread.id,
+                        createdAt: new Date(),
+                        requestId: userInterSendRequest.id,
+                        request: userInterSendRequest,
+                        user: me
+                    };
+
+                    onSetStateNewSuccessMessage(false, nextMessage);
+
+                    setThread((previousThread: IThread) => {
+                        const nextThread = _.cloneDeep(previousThread || {});
+
+                        if (me?._id) {
+                            if (!nextThread?.userInteractions) { nextThread.userInteractions = {} as any; }
+                            if (!nextThread?.userInteractions?.myRequest) { nextThread.userInteractions.myRequest = {} as any; }
+                            if (!nextThread?.userInteractions?.myRequest?.sent) { nextThread.userInteractions.myRequest.sent = {} as any; }
+
+                            nextThread.userInteractions.myRequest.sent = userInterSendRequest;
+                        }
+
+                        return nextThread;
+                    });
+                },
+                socketEvents
+            });
+        }
+    };
+
     const onSendAudio = (nextAudio: string) => {
         if (!nextAudio) { return; }
 
@@ -992,6 +1029,12 @@ function ThreadDetailScreenComponent({
     const offsetChatActionsStyles = useAnimatedStyle(() => ({ marginLeft: offsetChatActionsShared.value }));
     const offsetComposerStyles = useAnimatedStyle(() => ({ marginLeft: offsetComposerShared.value }));
 
+    /* Handling send request private photos: */
+    const hasAlreadySentRequest = !!thread?.userInteractions?.myRequest?.sent?.id;
+    const participantsFront = thread?.participants?.filter((participant: IUser) => (participant?.id && (participant.id !== me._id)));
+    const hasParticipantFrontPrivatePhotos = participantsFront?.length && participantsFront[0].hasPrivatePhotos;
+    const canSendRequest = isBetweenTwoUsers && !!hasParticipantFrontPrivatePhotos && !hasAlreadySentRequest;
+
     const renderActions = (/* props: Readonly<ActionsProps> */) => {
         return (
             <Box style={styles.actionsContainer}>
@@ -1003,6 +1046,7 @@ function ThreadDetailScreenComponent({
                         <Box style={[styles.actionItem]}>
                             {/* Open my images picker */}
                             <Button
+                                leftIcon={<Icon as={Ionicons} name="images-outline" size="lg" />}
                                 rounded="none"
                                 variant="unstyle"
                                 pl="0"
@@ -1012,99 +1056,38 @@ function ThreadDetailScreenComponent({
                                     // Use => https://gorhom.github.io/react-native-bottom-sheet/usage
                                     onOpenMyPhotosPicker();
                                 }}
-                            >
-                                📷
-                            </Button>
+                            />
                         </Box>
 
-                        <Box style={[styles.actionItem, { marginHorizontal: 0 }]}>
+                        <Box style={[styles.actionItem]}>
                             <Button
+                                leftIcon={<Icon as={Ionicons} name="location-outline" size="lg" />}
                                 rounded="none"
                                 variant="unstyle"
                                 pl="0"
                                 pr="0"
                                 _text={{ fontSize: 16 }}
                                 onPress={() => {
-                                    if (showActionSheetWithOptions) {
-                                        const options = [
-                                            'Close',
-                                            'Send my position'
-                                        ];
-
-                                        const hasAlreadySentRequest = !!thread.userInteractions?.myRequest?.sent?.id;
-                                        const participantsFront = thread?.participants?.filter((participant: IUser) => (participant?.id && (participant.id !== me._id)));
-                                        const hasParticipantFrontPrivatePhotos = participantsFront?.length && participantsFront[0].hasPrivatePhotos;
-
-                                        if (isBetweenTwoUsers && hasParticipantFrontPrivatePhotos && !hasAlreadySentRequest) {
-                                            options.push('Ask private photos');
-                                        }
-
-                                        showActionSheetWithOptions(
-                                            {
-                                                options,
-                                                cancelButtonIndex: 0,
-                                                userInterfaceStyle: 'dark'
-                                            },
-                                            (buttonIndex) => {
-                                                switch (buttonIndex) {
-                                                    case 0:
-                                                        // Close
-                                                        break;
-                                                    case 1:
-                                                        // Send my position
-                                                        onOpenMap(me.currentLocation, true);
-                                                        break;
-                                                    case 2:
-                                                        // Ask private photos
-                                                        if (isBetweenTwoUsers && !hasAlreadySentRequest) {
-                                                            onSendRequest({
-                                                                sendRequest,
-                                                                participantsIds: participantsIdsAll,
-                                                                userFront: { id: participantsIdsFront[0] },
-                                                                me,
-                                                                onSetStateAtSubmit: (userInterSendRequest: IUserInteraction) => {
-                                                                    const nextMessage: IThreadMessage = {
-                                                                        _id: getUniqueId(),
-                                                                        threadId: thread.id,
-                                                                        createdAt: new Date(),
-                                                                        requestId: userInterSendRequest.id,
-                                                                        request: userInterSendRequest,
-                                                                        user: me
-                                                                    };
-
-                                                                    onSetStateNewSuccessMessage(false, nextMessage);
-
-                                                                    setThread((previousThread: IThread) => {
-                                                                        const nextThread = _.cloneDeep(previousThread || {});
-
-                                                                        if (me?._id) {
-                                                                            // eslint-disable-next-line max-len
-                                                                            if (!nextThread?.userInteractions) { nextThread.userInteractions = {} as any; }
-                                                                            // eslint-disable-next-line max-len
-                                                                            if (!nextThread?.userInteractions?.myRequest) { nextThread.userInteractions.myRequest = {} as any; }
-                                                                            // eslint-disable-next-line max-len
-                                                                            if (!nextThread?.userInteractions?.myRequest?.sent) { nextThread.userInteractions.myRequest.sent = {} as any; }
-
-                                                                            nextThread.userInteractions.myRequest.sent = userInterSendRequest;
-                                                                        }
-
-                                                                        return nextThread;
-                                                                    });
-                                                                },
-                                                                socketEvents
-                                                            });
-                                                        }
-                                                        break;
-                                                    default:
-                                                        break;
-                                                }
-                                            }
-                                        );
-                                    }
+                                    // Send my position:
+                                    onOpenMap(me.currentLocation, true);
                                 }}
-                            >
-                                ➕
-                            </Button>
+                            />
+                        </Box>
+
+                        <Box style={[styles.actionItem, { marginHorizontal: 0 }]}>
+                            <Button
+                                leftIcon={<Icon as={Ionicons} name="lock-closed-outline" size="lg" />}
+                                rounded="none"
+                                variant="unstyle"
+                                pl="0"
+                                pr="0"
+                                _text={{ fontSize: 16 }}
+                                onPress={() => {
+                                    // Ask private photos:
+                                    onSendRequestPrivatePhotos(canSendRequest);
+                                }}
+                                isDisabled={!canSendRequest}
+                            />
                         </Box>
                     </Box>
                 </Animated.View>

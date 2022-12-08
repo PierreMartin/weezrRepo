@@ -13,7 +13,7 @@ function getStyles(params: any = {}) {
             marginBottom: 1
         },
         actionItem: {
-            marginHorizontal: 9
+            marginHorizontal: 5
         },
         actionChevron: {
             position: 'absolute',
