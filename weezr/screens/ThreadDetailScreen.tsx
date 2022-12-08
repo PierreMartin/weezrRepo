@@ -215,9 +215,6 @@ const SET_MESSAGES_AS_READ = gql`
 
 const itemsPerPage = 50;
 
-const offsetChatActions = -80; // TODO get width element
-const offsetComposer = 100; // TODO get width element
-
 function ThreadDetailScreenComponent({
     navigation,
     route,
@@ -244,9 +241,11 @@ function ThreadDetailScreenComponent({
     const [isBetweenTwoUsers, setIsBetweenTwoUsers] = React.useState<boolean>(false);
     const [audioVoiceSource, setAudioVoiceSource] = React.useState<string | null>(null);
     const [isChatActionsOpened, setIsChatActionsOpened] = React.useState<boolean>(false);
+    const [offsetChatActionsWidth] = React.useState<number>(-70); // For animation, in px
+    const [offsetComposerWidth] = React.useState<number>(20); // For animation, in px
 
-    const offsetChatActionsShared = useSharedValue(offsetChatActions);
-    const offsetComposerShared = useSharedValue(offsetComposer);
+    const offsetChatActionsShared = useSharedValue(offsetChatActionsWidth); // For buttons container animation
+    const offsetComposerShared = useSharedValue(offsetComposerWidth); // For input (composer) animation
 
     const [getThread, {
         loading: getThreadLoading,
@@ -981,25 +980,26 @@ function ThreadDetailScreenComponent({
     };
 
     const onSetIsChatActionsOpened = (isOpen: boolean) => {
-        if (isOpen) { setIsChatActionsOpened(isOpen); }
+        if (isOpen) { setIsChatActionsOpened(true); }
+        if (!isOpen) { setTimeout(() => { setIsChatActionsOpened(false); }, 120); }
 
-        offsetChatActionsShared.value = withTiming(isOpen ? 0 : offsetChatActions, { duration: 500, easing: Easing.out(Easing.exp) }, (finished) => {
-            if (finished && !isOpen) { setIsChatActionsOpened(isOpen); }
-        });
-
-        offsetComposerShared.value = withTiming(isOpen ? 0 : offsetComposer, { duration: 500, easing: Easing.out(Easing.exp) });
+        const conf = { duration: 500, easing: Easing.out(Easing.exp) };
+        offsetChatActionsShared.value = withTiming(isOpen ? 0 : offsetChatActionsWidth, conf);
+        offsetComposerShared.value = withTiming(isOpen ? 0 : offsetComposerWidth, conf);
     };
 
     /* Handling animations: */
-    const offsetChatActionsStyles = useAnimatedStyle(() => ({ transform: [{ translateX: offsetChatActionsShared.value }] }));
-    // const offsetComposerStyles = useAnimatedStyle(() => ({ transform: [{ translateX: offsetComposerShared.value }] }));
-    const offsetComposerStyles = useAnimatedStyle(() => ({ width: `${offsetComposerShared.value * 100}%` }));
+    const offsetChatActionsStyles = useAnimatedStyle(() => ({ marginLeft: offsetChatActionsShared.value }));
+    const offsetComposerStyles = useAnimatedStyle(() => ({ marginLeft: offsetComposerShared.value }));
 
     const renderActions = (/* props: Readonly<ActionsProps> */) => {
         return (
             <Box style={styles.actionsContainer}>
-                <Animated.View style={[{ position: 'absolute', bottom: 8, left: 0 }, offsetChatActionsStyles]}>
-                    <Box style={{ flex: 1, flexDirection: 'row' }}>
+                <Animated.View style={[offsetChatActionsStyles]}>
+                    <Box
+                        style={{ flex: 1, flexDirection: 'row' }}
+                        // onLayout={(event) => setOffsetChatActionsWidth(-Math.abs(event?.nativeEvent?.layout?.width || 0))}
+                    >
                         <Box style={[styles.actionsItem]}>
                             {/* Open my images picker */}
                             <Button
@@ -1129,9 +1129,11 @@ function ThreadDetailScreenComponent({
     };
 
     const renderComposer = (props: any) => {
-        // If audio voice recorded:
+        let renderer = null;
+
         if (audioVoiceSource) {
-            return (
+            // If audio voice recorded rendering:
+            renderer = (
                 <View style={{ flex: 1, backgroundColor: '#779cd0', height: '100%' }}>
                     <AudioPlayer
                         audioSource={audioVoiceSource}
@@ -1139,11 +1141,9 @@ function ThreadDetailScreenComponent({
                     />
                 </View>
             );
-        }
-
-        // Normal rendering:
-        return (
-            <Animated.View style={[{ flex: 1, marginLeft: 30 }]}>
+        } else {
+            // Normal rendering:
+            renderer = (
                 <Composer
                     {...props}
                     composerHeight="auto"
@@ -1159,6 +1159,12 @@ function ThreadDetailScreenComponent({
                         color: '#222B45'
                     }}
                 />
+            );
+        }
+
+        return (
+            <Animated.View style={[{ flex: 1 }, offsetComposerStyles]}>
+                {renderer}
             </Animated.View>
         );
     };
