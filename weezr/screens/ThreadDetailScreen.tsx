@@ -242,7 +242,7 @@ function ThreadDetailScreenComponent({
     const [audioVoiceSource, setAudioVoiceSource] = React.useState<string | null>(null);
     const [isChatActionsOpened, setIsChatActionsOpened] = React.useState<boolean>(false);
     const [offsetChatActionsWidth] = React.useState<number>(-70); // For animation, in px
-    const [offsetComposerWidth] = React.useState<number>(20); // For animation, in px
+    const [offsetComposerWidth] = React.useState<number>(25); // For animation, in px
 
     const offsetChatActionsShared = useSharedValue(offsetChatActionsWidth); // For buttons container animation
     const offsetComposerShared = useSharedValue(offsetComposerWidth); // For input (composer) animation
@@ -981,7 +981,7 @@ function ThreadDetailScreenComponent({
 
     const onSetIsChatActionsOpened = (isOpen: boolean) => {
         if (isOpen) { setIsChatActionsOpened(true); }
-        if (!isOpen) { setTimeout(() => { setIsChatActionsOpened(false); }, 120); }
+        if (!isOpen) { setTimeout(() => { setIsChatActionsOpened(false); }, 200); }
 
         const conf = { duration: 500, easing: Easing.out(Easing.exp) };
         offsetChatActionsShared.value = withTiming(isOpen ? 0 : offsetChatActionsWidth, conf);
@@ -997,10 +997,10 @@ function ThreadDetailScreenComponent({
             <Box style={styles.actionsContainer}>
                 <Animated.View style={[offsetChatActionsStyles]}>
                     <Box
-                        style={{ flex: 1, flexDirection: 'row' }}
+                        style={styles.actionsButtonsGroup}
                         // onLayout={(event) => setOffsetChatActionsWidth(-Math.abs(event?.nativeEvent?.layout?.width || 0))}
                     >
-                        <Box style={[styles.actionsItem]}>
+                        <Box style={[styles.actionItem]}>
                             {/* Open my images picker */}
                             <Button
                                 rounded="none"
@@ -1017,7 +1017,7 @@ function ThreadDetailScreenComponent({
                             </Button>
                         </Box>
 
-                        <Box style={[styles.actionsItem, { marginHorizontal: 0 }]}>
+                        <Box style={[styles.actionItem, { marginHorizontal: 0 }]}>
                             <Button
                                 rounded="none"
                                 variant="unstyle"
@@ -1111,7 +1111,7 @@ function ThreadDetailScreenComponent({
 
                 {
                     !isChatActionsOpened && (
-                        <Box style={{ position: 'absolute', bottom: 8, left: 0 }}>
+                        <Box style={styles.actionChevron}>
                             <Button
                                 leftIcon={<Icon as={Ionicons} name="chevron-forward-outline" size="xl" />}
                                 rounded="none"
@@ -1150,7 +1150,7 @@ function ThreadDetailScreenComponent({
                     textInputStyle={{
                         minHeight: 35,
                         maxHeight: 110,
-                        paddingTop: 9,
+                        paddingTop: 10,
                         paddingHorizontal: 10,
                         marginLeft: 0,
                         borderWidth: 1,
@@ -1269,7 +1269,7 @@ function ThreadDetailScreenComponent({
                 disabled={!props.text}
                 containerStyle={{
                     width: 44,
-                    height: 50,
+                    height: 45,
                     alignItems: 'center',
                     justifyContent: 'center'
                 }}

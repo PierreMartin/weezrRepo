@@ -5,10 +5,20 @@ function getStyles(params: any = {}) {
     return createStyles({
         actionsContainer: {
             flexDirection: 'row',
-            padding: 6
+            paddingHorizontal: 6
         },
-        actionsItem: {
+        actionsButtonsGroup: {
+            flex: 1,
+            flexDirection: 'row',
+            marginBottom: 1
+        },
+        actionItem: {
             marginHorizontal: 9
+        },
+        actionChevron: {
+            position: 'absolute',
+            bottom: 1,
+            left: 4
         }
     });
 }
