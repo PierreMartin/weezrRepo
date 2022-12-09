@@ -1,5 +1,18 @@
 "Martin Technologies | Lookup | Weezr"
 
+Storage in local =>
+  - laisser le code metier coté BE (à cause des lookups)
+  - https://github.com/techfort/LokiJS ??
+  - https://github.com/ammarahm-ed/react-native-mmkv-storage
+  - https://github.com/mrousavy/react-native-mmkv
+  - https://github.com/sunnylqm/react-native-storage
+  - ** https://github.com/Nozbe/WatermelonDB
+  - *** => https://github.com/realm/realm-js  => https://www.mongodb.com/docs/realm/sdk/react-native/quick-start/
+
+si le destinataire ne peut pas le recevoir => stocké sur le server
+Messages Stored On Phone
+deliveredMessages
+
 * Implem Chat
   - improvement => https://github.com/FaridSafi/react-native-gifted-chat/blob/22cc6f70045c2755a4bec6e1e87ce788d7166a8f/example/example-gifted-chat/src/Chats.js
   * Storage in local
