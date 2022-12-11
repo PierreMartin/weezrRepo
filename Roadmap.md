@@ -1,22 +1,10 @@
 "Martin Technologies | Lookup | Weezr"
 
-Storage in local =>
-  - laisser le code metier coté BE (à cause des lookups)
-  - https://github.com/techfort/LokiJS ??
-  - https://github.com/ammarahm-ed/react-native-mmkv-storage
-  - https://github.com/mrousavy/react-native-mmkv
-  - https://github.com/sunnylqm/react-native-storage
-  - ** https://github.com/Nozbe/WatermelonDB
-  - *** => https://github.com/realm/realm-js  => https://www.mongodb.com/docs/realm/sdk/react-native/quick-start/
-
-si le destinataire ne peut pas le recevoir => stocké sur le server
-Messages Stored On Phone
-deliveredMessages
+- implem Database Provider WatermelonDB
 
 * Implem Chat
   - improvement => https://github.com/FaridSafi/react-native-gifted-chat/blob/22cc6f70045c2755a4bec6e1e87ce788d7166a8f/example/example-gifted-chat/src/Chats.js
-  * Storage in local
-  - Switch for delete all messages in one thread
+  - Switch for delete all messages in one thread (use "ignoredBy")
 
 - Mette shadow sur texte in grid.
 - Use react-native-haptic-feedback at refreshControl + onRefresh
@@ -40,6 +28,7 @@ deliveredMessages
 2) Settings - check if email doesn't exist before save + handle fields errors
 
 * Finir settings
+  - Use WatermelonDB for some fields => { key: String, value: Boolean | Any, userId: String } => settings.find({ key: 'enabledNotifications', userId: userMeId })
   - Radio (Picker) (h/f)
   - Wheel (Picker) => https://wix.github.io/react-native-ui-lib
   - Slider (age range)
@@ -243,3 +232,41 @@ update mainFileId => UserPhotoForProfile.findOneAndUpdate({ userId }, { mainFile
 => Get users() + user() + me()                  => faire un populate/lookup sur "userphotoforprofiles" (impact coté back-end seulement)
 => Get threads() + thread()  + userInterXxx()   => faire un populate/lookup sur "userphotoforprofiles" (impact coté back-end seulement)
 NOTE = ON FAIT PAS (au final on double les requêtes + lookup à faire partout)
+
+
+# Storage messages in local:
+  - https://github.com/techfort/LokiJS (for Web only)
+  - https://github.com/ammarahm-ed/react-native-mmkv-storage
+  - https://github.com/mrousavy/react-native-mmkv
+  - https://github.com/sunnylqm/react-native-storage
+  - ** https://github.com/Nozbe/WatermelonDB
+  - ** https://github.com/realm/realm-js
+
+  Si le destinataire ne peut pas le recevoir => stocké sur le serveur
+
+  - ✅ Possibilité 1) Avoir seulement "threadMessage" en localDB & "thread" sur serveur et garder les "latestMessage" sur serveur (dans "threadMessage")
+    - ✅ Problème avec la suppression des threads (swipe) => geré avec "ignoredBy"
+    - ✅ Problème de gestion des updates de "readBy" & "replyBy" 
+      1) Savoir si message has been fetched (= deleted from server) or not 
+      2) re-create temporairement / update les messages modifiés sur le server => TODO gerer ca avec un findXxxAndUpdate() qui fait un AUTO create ??
+    - ✅ unreadMessages => No changes
+    - ✅ Vérifier qu'on a pas deja fetch les messages => no re-fetch same
+      - ✅ Ne pas fetch si deja fetched => {"fetchedBy": notMe}
+    - Display only localMessages in view (don't merge serverMessages + localMessages with state)
+    - ❌ Handle pagination + cache Apollo => Do it with states ?
+    - ✅ Populates data ("author", "request", "readBy.user"), how handle it ? 
+      - ✅ Storage all populate data in hard coded in object with "decorators/json" => update les messages modifiés sur le server pour avoir les populations mises à jour
+      - ❌ OR store in local these entities : "UserInterSendRequest" => Needed for get updated populate data
+
+  Steps when fetch new messages:
+  1) Fetch messages from server 
+     - find({ threadId + fetchedBy: notMe })
+  2) Store messages in localDB
+     - Handle merging messages (two types of messages: "updated (readBy, replyBy)" OR "created (new)")
+  3) Delete messages in server if needed (after then() of created localDB)
+     - If lastParticipant fetched (use "fetchedBy") => canDeleteMessages (We need to look message by message for know if message can be deleted, can't do it by message's group)
+     - If NOT lastParticipant fetched => In server => set {"fetchedBy": userMeId} for messages
+
+  - ❌ Possibilité 2) Avoir seulement threadMessage en local db | thread sur server + Get les latestMessage en local (avec un localMessages.find() en js)
+      localMessages = [{ threadId: '1', latest: {}, messages: [{}] }, {...}];
+      threads.map((thread) => { localMessages.find({ threadId: thread._id }) });

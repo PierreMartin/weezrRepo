@@ -16,6 +16,8 @@ const ThreadMessageSchema = new mongoose.Schema({
         user: { type: String, ref: 'User' },
         at: { type: Date, default: null }
     }],
+    // fetchedBy: [{ user: { type: String } }],
+    ignoredBy: [{ user: { type: String } }],
     replyBy: [{
         author: { type: String, ref: 'User' },
         // content: { type: String, default: '' },
