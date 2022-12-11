@@ -1,7 +1,5 @@
 "Martin Technologies | Lookup | Weezr"
 
-- implem Database Provider WatermelonDB
-
 * Implem Chat
   - improvement => https://github.com/FaridSafi/react-native-gifted-chat/blob/22cc6f70045c2755a4bec6e1e87ce788d7166a8f/example/example-gifted-chat/src/Chats.js
   - Switch for delete all messages in one thread (use "ignoredBy")
