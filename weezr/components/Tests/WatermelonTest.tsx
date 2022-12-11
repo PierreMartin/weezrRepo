@@ -45,7 +45,7 @@ const WatermelonTestComponent = (props: IWatermelonTest) => {
 
                 console.log(res);
 
-                // Get one:
+                // Get one (by ID):
                 // const res2 = await messagesCollection.find(threadId);
             } catch (e) {
                 console.error(e);
