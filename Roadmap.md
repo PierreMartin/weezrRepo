@@ -1,10 +1,10 @@
 "Martin Technologies | Lookup | Weezr"
 
+- If open => do closeRow() before goto detail
+- do animation when deleted => https://github.com/jemise111/react-native-swipe-list-view/blob/master/SwipeListExample/examples/swipe_to_delete.js
+- Flex 1 sur height ?
 - re-tester pagination
-
-* Implem Chat
-  - improvement => https://github.com/FaridSafi/react-native-gifted-chat/blob/22cc6f70045c2755a4bec6e1e87ce788d7166a8f/example/example-gifted-chat/src/Chats.js
-  - Switch for delete all messages in one thread (use "ignoredBy")
+- bug websocket new message !!!
 
 - Mette shadow sur texte in grid.
 - Use react-native-haptic-feedback at refreshControl + onRefresh
@@ -62,6 +62,8 @@
 - ThreadDetail => enable multiple participants in thread (>= 3)
 - Make the Markers move smoothly in react-native-maps
 - Créer automation (Cron) afin de supprimer toutes les interactions des visiteurs de plus de 7j. Pour faire de la place en bbd.
+- Send event websocket when ignoredMessages (for good update seen message)
+- Chat => https://github.com/FaridSafi/react-native-gifted-chat/blob/22cc6f70045c2755a4bec6e1e87ce788d7166a8f/example/example-gifted-chat/src/Chats.js
 
 * Create static website + RGPD + privacy
 * Create logo

@@ -129,6 +129,7 @@ const THREAD_MESSAGES = gql`
                 author
                 sent
                 received
+                ignoredBy
             }
         }
     }
@@ -196,6 +197,7 @@ const CREATE_THREAD_MESSAGE = gql`
                 author
                 threadId
                 createdAt
+                ignoredBy
             }
         }
     }
@@ -552,8 +554,10 @@ function ThreadDetailScreenComponent({
             if (isBetweenTwoUsers && !isAllMessagesSeen) {
                 setMessages((previousMessages: IThreadMessage[]) => {
                     return [...previousMessages].map((message) => {
+                        const isIgnored = !!message?.ignoredBy?.find((ignored: any) => ignored?.user && (ignored.user === realtimeNewSeenMessages.userId));
                         let received = false;
-                        if (message?.author && (message.author === me._id)) {
+
+                        if (message?.author && (message.author === me._id) && !isIgnored) {
                             received = true;
                         }
 

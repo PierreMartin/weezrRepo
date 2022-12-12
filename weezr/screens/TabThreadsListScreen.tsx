@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { StackNavigationProp } from '@react-navigation/stack/src/types';
 import { useFocusEffect } from "@react-navigation/native";
-import { gql, useLazyQuery } from "@apollo/client";
+import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import _ from "lodash";
 import { Text } from '../components';
 import { setCountAllUnreadMessagesAction } from "../reduxActions/notifications";
@@ -70,6 +70,18 @@ const THREADS = gql`
     }
 `;
 
+const SET_MESSAGES_AS_IGNORED = gql`
+    mutation ($filter: ThreadMessage_Filter, $data: ThreadMessage_Data) {
+        setMessagesAsIgnored(filter: $filter, data: $data) {
+            updatedPageInfo {
+                message
+                success
+            }
+            updatedData
+        }
+    }
+`;
+
 function TabThreadsListScreen({
     navigation,
     selectedTab,
@@ -83,12 +95,27 @@ function TabThreadsListScreen({
 }: ITabThreadsListScreen) {
     const [threads, setThreads] = React.useState<IThread[]>([]);
     const [isLoadingMore, setIsLoadingMore] = React.useState<boolean>(false);
+
     const [getThreads, {
         loading: getThreadsLoading,
         data: threadsData,
         error: getThreadsError,
         fetchMore: fetchMoreThreads
     }] = useLazyQuery(THREADS, { fetchPolicy: 'network-only' });
+
+    const [setMessagesAsIgnored, { error: setMessagesAsIgnoredError }] = useMutation(SET_MESSAGES_AS_IGNORED, {
+        update: (cache, data: any) => {
+            const { updatedData } = data?.data?.setMessagesAsIgnored;
+
+            // If deleted:
+            if (updatedData) {
+                cache.evict({ fieldName: 'threads', broadcast: false });
+                cache.evict({ fieldName: 'threadMessages', broadcast: false });
+                cache.gc();
+            }
+        }
+    });
+
     const { isLastPage, isLimitReached } = threadsData?.threads?.pageInfo || {};
 
     const getQueryVariables = () => {
@@ -158,13 +185,38 @@ function TabThreadsListScreen({
         }
     };
 
-    const onDeleteItem = (selectedItemId: string) => {
+    const onDeletedItem = (selectedItemId: string) => {
         if (selectedItemId && threads?.length) {
-            const nextThreads = [...threads];
-            const indexFoundToDelete = threads.findIndex((item: any) => item.id === selectedItemId);
-            nextThreads.splice(indexFoundToDelete, 1);
+            setMessagesAsIgnored({
+                variables: {
+                    filter: {
+                        filterSetAsIgnored: {
+                            threadId: selectedItemId,
+                            'ignoredBy.user': { $ne: me._id }
+                        }
+                    },
+                    data: {
+                        dataSetAsIgnored: {
+                            $push: { ignoredBy: { user: me._id } }
+                        }
+                    }
+                }
+            }).then((res) => {
+                if (res?.data?.setMessagesAsIgnored?.updatedData) {
+                    const nextThreads = [...threads];
+                    const indexFoundToDelete = threads.findIndex((item: IThread) => item._id === selectedItemId);
 
-            setThreads(nextThreads);
+                    if (indexFoundToDelete !== -1) {
+                        nextThreads.splice(indexFoundToDelete, 1);
+                        setThreads(nextThreads);
+                    }
+
+                    // Refresh unread messages:
+                    if (me?._id) {
+                        setCountAllUnreadMessagesActionProps({ userId: me?._id });
+                    }
+                }
+            });
         }
     };
 
@@ -286,6 +338,10 @@ function TabThreadsListScreen({
         return <Center style={styles.container}><Text>Error at loading data...</Text></Center>;
     }
 
+    if (setMessagesAsIgnoredError) {
+        console.error(setMessagesAsIgnoredError);
+    }
+
     const renderFields = (fieldsSource: IThread) => {
         const usersFrontFound = fieldsSource?.participants?.filter((participant: IUser) => participant.id !== me?._id);
         const firstUserFrontFound = usersFrontFound[0] || {};
@@ -360,7 +416,7 @@ function TabThreadsListScreen({
                 onLoadData={loadThreads}
                 onLoadMoreData={onLoadThreadsMore}
                 isSwipeable
-                onDeleteItem={onDeleteItem}
+                onDeletedItem={onDeletedItem}
             />
         </Box>
     );

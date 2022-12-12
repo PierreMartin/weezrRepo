@@ -171,6 +171,11 @@ type CreateThreadMessageResponse {
     updatedData: ThreadMessage
 }
 
+type SetMessagesAsIgnoredResponse {
+    updatedPageInfo: PageInfo
+    updatedData: Boolean
+}
+
 type SetAsSeenResponse {
     updatedPageInfo: PageInfo
     updatedData: Boolean
@@ -207,6 +212,7 @@ type Mutation {
     updateRequest(filter: UserInterSendRequest_Filter, data: UserInterSendRequest_Data): UpdateRequestResponse
     createThread(data: Thread_Data): CreateThreadResponse
     createThreadMessage(data: ThreadMessage_Data): CreateThreadMessageResponse
+    setMessagesAsIgnored(filter: ThreadMessage_Filter, data: ThreadMessage_Data): SetMessagesAsIgnoredResponse
 
     setMessagesAsRead(filter: ThreadMessage_Filter, data: ThreadMessage_Data): SetAsSeenResponse
     setPrimaryNotificationsAsSeen(filter: AllPrimaryNotifications_Filter, data: AllPrimaryNotifications_Data): SetAsSeenResponse

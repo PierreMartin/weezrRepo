@@ -204,6 +204,8 @@ export interface IThreadMessage extends IEntity {
         }];
     }];
 
+    ignoredBy: any[];
+
     isFirstMessageInThread?: boolean; // Generate client side
 }
 

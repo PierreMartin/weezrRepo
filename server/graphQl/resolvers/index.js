@@ -920,6 +920,7 @@ export const resolvers = {
             try {
                 const myBlockedProfiles = await onGetMyBlockedProfiles(context?.userMeId);
                 const filterMyBlockedProfiles = { 'full_participants._id': { $nin: myBlockedProfiles?.data?.myBlockedProfiles || [] } };
+                const filterIgnoredMessages = { 'ignoredBy.user': { $nin: [context?.userMeId] } };
 
                 /*
                 const totalCount = await Thread
@@ -937,6 +938,9 @@ export const resolvers = {
                             "localField": "_id",
                             "foreignField": "threadId",
                             'pipeline': [
+                                {
+                                    $match: filterIgnoredMessages
+                                },
                                 { '$sort': { 'createdAt': -1 } }
                             ],
                             "as": "messages"
@@ -951,7 +955,7 @@ export const resolvers = {
                             "foreignField": "threadId",
                             pipeline: [
                                 {
-                                    $match: filterCountUnread
+                                    $match: { $and: [filterCountUnread, filterIgnoredMessages] }
                                 },
                                 {
                                     "$group": {
@@ -1068,15 +1072,18 @@ export const resolvers = {
             const { filterMain } = filter;
             const { dataMain } = data;
 
+            const filterIgnoredMessages = { 'ignoredBy.user': { $nin: [context?.userMeId] } };
+            const filterAll = { $and: [filterMain, filterIgnoredMessages] };
+
             try {
                 const totalCount = await ThreadMessage
-                    .find(filterMain)
+                    .find(filterAll)
                     .count();
 
                 // console.log(`- totalCount: ${totalCount} - isLastPage ${(offset + limit) >= totalCount} - offset: ${offset}`);
 
                 const rawMessages = await ThreadMessage
-                    .find(filterMain)
+                    .find(filterAll)
                     // .populate('request', '_id senderId receiverId at privatePhotosGranted privatePhotosGrantedAt')
                     .sort({ createdAt: -1 })
                     .skip(offset)
@@ -1851,6 +1858,29 @@ export const resolvers = {
                 return new Error("A error has occurred at creating new message");
             }
         },
+        setMessagesAsIgnored: async (_, body, params) => {
+            const haveGranted = checkHaveGranted(params, { isAuthenticate: true });
+            if (!haveGranted) { return null; }
+
+            const { filter, data } = body;
+            const { filterSetAsIgnored } = filter;
+            const { dataSetAsIgnored } = data;
+
+            try {
+                const threadMessages = await ThreadMessage.updateMany(filterSetAsIgnored, dataSetAsIgnored);
+
+                return {
+                    updatedData: true,
+                    updatedPageInfo: {
+                        message: 'Thread messages successfully set as ignored',
+                        success: true
+                    }
+                };
+            } catch (err) {
+                console.error('Err => ', err);
+                return new Error("A error has occurred at setMessagesAsIgnored");
+            }
+        },
         setMessagesAsRead: async (_, body, params) => {
             const haveGranted = checkHaveGranted(params, { isAuthenticate: true });
             if (!haveGranted) { return null; }
@@ -1859,8 +1889,11 @@ export const resolvers = {
             const { filterSetAsRead } = filter;
             const { dataSetAsRead } = data;
 
+            const filterIgnoredMessages = { 'ignoredBy.user': { $nin: [params?.userMeId] } };
+            const filterAll = { $and: [filterSetAsRead, filterIgnoredMessages] };
+
             try {
-                const threadMessages = await ThreadMessage.updateMany(filterSetAsRead, dataSetAsRead);
+                const threadMessages = await ThreadMessage.updateMany(filterAll, dataSetAsRead);
 
                 return {
                     updatedData: true,

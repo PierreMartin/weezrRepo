@@ -33,7 +33,8 @@ export async function getCountAllUnreadMessages(req, res, next) {
                         {
                             threadId: { $in: threadIds },
                             'readBy.user': { $ne: filter.userId },
-                            author: { $ne: filter.userId }
+                            author: { $ne: filter.userId },
+                            'ignoredBy.user': { $ne: userMeId }
                         }
                 },
                 ...populate(

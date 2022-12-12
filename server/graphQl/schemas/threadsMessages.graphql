@@ -19,6 +19,7 @@ type ThreadMessage {
     createdAt: Date
     sent: Boolean
     received: Boolean
+    ignoredBy: [Object]
 }
 
 # ################################## inputs (group of fields) ##################################
@@ -50,10 +51,12 @@ input ThreadMessage_DataMain {
 input ThreadMessage_Filter {
     filterMain: ThreadMessage_FilterMain
     filterSetAsRead: Object
+    filterSetAsIgnored: Object
 }
 
 input ThreadMessage_Data {
     dataMain: ThreadMessage_DataMain
     dataUserPhoto: Object
     dataSetAsRead: Object
+    dataSetAsIgnored: Object
 }

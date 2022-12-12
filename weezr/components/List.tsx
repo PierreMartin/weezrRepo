@@ -25,12 +25,12 @@ interface IList {
     isDataError?: any;
     hasHeaderHidden?: boolean;
     isSwipeable?: boolean;
-    onDeleteItem?: (selectedItemId: string) => void;
+    onDeletedItem?: (selectedItemId: string) => void;
 }
 
 export const List = ({
     data,
-    onDeleteItem,
+    onDeletedItem,
     renderFields,
     isDataLoadingMore,
     isDataLoading,
@@ -164,7 +164,7 @@ export const List = ({
     // For swipe
     const onDeleteRow = (rowMap: RowMap<any>, rowKey: string) => {
         onCloseRow(rowMap, rowKey);
-        if (onDeleteItem) { onDeleteItem(rowKey); }
+        if (onDeletedItem) { onDeletedItem(rowKey); }
     };
 
     // For swipe
