@@ -6,7 +6,9 @@ const Tab: any = createMaterialTopTabNavigator<any>();
 
 export default function ThreadsListTopTabNavigator(propsParent: any) {
     return (
-        <Tab.Navigator>
+        <Tab.Navigator
+            screenOptions={{ swipeEnabled: false }}
+        >
             <Tab.Screen name="All" options={{ tabBarLabel: 'All' }}>
                 {(props: any) => <TabThreadsListScreen {...props} {...propsParent} selectedTab={null} />}
             </Tab.Screen>

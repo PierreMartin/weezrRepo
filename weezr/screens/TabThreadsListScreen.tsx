@@ -158,6 +158,16 @@ function TabThreadsListScreen({
         }
     };
 
+    const onDeleteItem = (selectedItemId: string) => {
+        if (selectedItemId && threads?.length) {
+            const nextThreads = [...threads];
+            const indexFoundToDelete = threads.findIndex((item: any) => item.id === selectedItemId);
+            nextThreads.splice(indexFoundToDelete, 1);
+
+            setThreads(nextThreads);
+        }
+    };
+
     useFocusEffect(
         React.useCallback(() => {
             // Load all threads:
@@ -349,6 +359,8 @@ function TabThreadsListScreen({
                 isDataError={getThreadsError}
                 onLoadData={loadThreads}
                 onLoadMoreData={onLoadThreadsMore}
+                isSwipeable
+                onDeleteItem={onDeleteItem}
             />
         </Box>
     );

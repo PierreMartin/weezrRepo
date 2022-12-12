@@ -46,6 +46,7 @@
     "react-native-screens": "^3.2.0",
     "react-native-step-indicator": "^1.0.3",
     "react-native-svg": "^12.1.1",
+    "react-native-swipe-list-view": "^3.2.9",
     "react-native-swiper": "^1.6.0",
     "react-native-tab-view": "^3.3.0",
     "react-native-vector-icons": "^9.2.0",

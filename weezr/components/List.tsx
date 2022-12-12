@@ -1,8 +1,9 @@
 // @ts-ignore
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as React from 'react';
-import { FlatList, RefreshControl, TouchableHighlight } from 'react-native';
+import { RefreshControl, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { Box, Center, Icon } from "native-base";
+import { RowMap, SwipeListView } from "react-native-swipe-list-view";
 import { StackNavigationProp } from '@react-navigation/stack/src/types';
 import { Header, Text, View } from '.';
 import { InputSearch } from "./InputSearch";
@@ -23,10 +24,13 @@ interface IList {
     isDataLoadingMore?: boolean;
     isDataError?: any;
     hasHeaderHidden?: boolean;
+    isSwipeable?: boolean;
+    onDeleteItem?: (selectedItemId: string) => void;
 }
 
 export const List = ({
     data,
+    onDeleteItem,
     renderFields,
     isDataLoadingMore,
     isDataLoading,
@@ -34,7 +38,8 @@ export const List = ({
     onLoadData,
     onLoadMoreData,
     navigation,
-    hasHeaderHidden
+    hasHeaderHidden,
+    isSwipeable
 }: IList) => {
     const renderItem = ({ item: fieldsSource, separators }: any) => {
         const fields = renderFields(fieldsSource) || {};
@@ -53,10 +58,11 @@ export const List = ({
                 }}
                 onShowUnderlay={separators.highlight}
                 onHideUnderlay={separators.unhighlight}
+                style={styles.itemRowFrontContainer}
             >
                 <View>
                     {/* Main row: */}
-                    <View style={styles.itemRow}>
+                    <View style={styles.itemRowFront}>
                         <Avatar
                             style={styles.itemPicture}
                             user={fields.avatar}
@@ -101,7 +107,7 @@ export const List = ({
                             if (!customRow) { return null; }
 
                             return (
-                                <View key={index} style={styles.itemRow}>
+                                <View key={index} style={styles.itemRowFront}>
                                     <View style={{ width: 40 }} />
 
                                     <View style={{ flex: 1 }}>
@@ -122,7 +128,7 @@ export const List = ({
         if (hasHeaderHidden) { return null; }
 
         return (
-            <View style={[styles.itemRow, { backgroundColor: '#eeeeee' }]}>
+            <View style={[styles.itemRowFront, { backgroundColor: '#eeeeee' }]}>
                 <InputSearch fieldData={{ placeholder: 'Search' }} />
             </View>
         );
@@ -150,8 +156,36 @@ export const List = ({
         onLoadData();
     };
 
+    // For swipe
+    const onCloseRow = (rowMap: RowMap<any>, rowKey: string) => {
+        if (rowMap && rowMap[rowKey]) { rowMap[rowKey].closeRow(); }
+    };
+
+    // For swipe
+    const onDeleteRow = (rowMap: RowMap<any>, rowKey: string) => {
+        onCloseRow(rowMap, rowKey);
+        if (onDeleteItem) { onDeleteItem(rowKey); }
+    };
+
+    // For swipe
+    const renderHiddenItem = (itemData: any, rowMap: RowMap<any>) => {
+        if (!isSwipeable) { return null; }
+
+        return (
+            <View style={styles.itemRowBackContainer}>
+                <TouchableOpacity
+                    style={styles.backRightBtn}
+                    onPress={() => onDeleteRow(rowMap, itemData.item.id)}
+                >
+                    <Icon as={Ionicons} name="trash-outline" size="md" color="#fff" />
+                </TouchableOpacity>
+            </View>
+        );
+    };
+
     return (
         <Box style={{ flexDirection: 'row', width: '100%' }}>
+            {/*
             <FlatList
                 data={data?.map((d: any, index: number) => ({ ...d, id: (d._id || d.id || index) }))}
                 renderItem={renderItem}
@@ -163,6 +197,23 @@ export const List = ({
                 refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
                 onEndReached={onLoadMoreData}
                 onEndReachedThreshold={0.02}
+            />
+            */}
+
+            <SwipeListView
+                data={data?.map((d: any, index: number) => ({ ...d, id: (d._id || d.id || index) }))}
+                renderItem={renderItem}
+                keyExtractor={(dataParam: any) => dataParam.id?.toString()}
+                ItemSeparatorComponent={renderSeparator}
+                ListHeaderComponent={renderHeader}
+                ListFooterComponent={renderFooter}
+                ListEmptyComponent={renderEmpty}
+                refreshControl={<RefreshControl refreshing={false} onRefresh={onRefresh} />}
+                onEndReached={onLoadMoreData}
+                onEndReachedThreshold={0.02}
+                renderHiddenItem={renderHiddenItem}/* For swipe */
+                disableRightSwipe/* For swipe */
+                rightOpenValue={-75}/* For swipe */
             />
         </Box>
     );
