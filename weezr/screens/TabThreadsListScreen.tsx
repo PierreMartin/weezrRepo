@@ -1,10 +1,13 @@
 // @ts-ignore
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as React from 'react';
+import { TouchableOpacity } from "react-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import { Badge, Box, Center, Icon } from "native-base";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { RowMap } from "react-native-swipe-list-view";
+import { connectActionSheet } from "@expo/react-native-action-sheet";
 import { StackNavigationProp } from '@react-navigation/stack/src/types';
 import { useFocusEffect } from "@react-navigation/native";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
@@ -32,6 +35,7 @@ interface ITabThreadsListScreen extends StackScreenProps<any, 'TabThreadsList'> 
     newMessageActionProps: (data: any) => void;
     setRealtimeNewBlockActionProps: (data: any) => void;
     countAllUnreadMessages?: number;
+    showActionSheetWithOptions: (data: any, callback: (buttonIndex: number) => any) => any;
 }
 
 const THREADS = gql`
@@ -82,7 +86,7 @@ const SET_MESSAGES_AS_IGNORED = gql`
     }
 `;
 
-function TabThreadsListScreen({
+function TabThreadsListScreenComponent({
     navigation,
     selectedTab,
     me,
@@ -90,7 +94,8 @@ function TabThreadsListScreen({
     realtimeNewMessage,
     realtimeNewBlock,
     newMessageActionProps,
-    setRealtimeNewBlockActionProps
+    setRealtimeNewBlockActionProps,
+    showActionSheetWithOptions
     // countAllUnreadMessages
 }: ITabThreadsListScreen) {
     const [threads, setThreads] = React.useState<IThread[]>([]);
@@ -185,7 +190,7 @@ function TabThreadsListScreen({
         }
     };
 
-    const onDeletedItem = (selectedItemId: string) => {
+    const onDeleteThread = (selectedItemId: string) => {
         if (selectedItemId && threads?.length) {
             setMessagesAsIgnored({
                 variables: {
@@ -218,6 +223,54 @@ function TabThreadsListScreen({
                 }
             });
         }
+    };
+
+    // For swipe
+    const onCloseSwipedRow = (rowMap: RowMap<any>, rowKey: string) => {
+        if (rowMap && rowMap[rowKey]) { rowMap[rowKey].closeRow(); }
+    };
+
+    // For swipe
+    const onDeleteRow = (rowMap: RowMap<any>, rowKey: string) => {
+        if (showActionSheetWithOptions) {
+            showActionSheetWithOptions(
+                {
+                    options: ["Cancel", "OK"],
+                    title: 'Supprimer cette conversation ?',
+                    cancelButtonIndex: 0,
+                    destructiveButtonIndex: 1,
+                    userInterfaceStyle: 'dark'
+                },
+                (buttonIndex) => {
+                    switch (buttonIndex) {
+                        case 0:
+                            // Cancel
+                            onCloseSwipedRow(rowMap, rowKey);
+                            break;
+                        case 1:
+                            // OK
+                            onDeleteThread(rowKey);
+                            onCloseSwipedRow(rowMap, rowKey);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            );
+        }
+    };
+
+    const renderHiddenFields = (itemData: any, rowMap: RowMap<any>) => {
+        return (
+            <>
+                <TouchableOpacity
+                    style={styles.backRightBtn}
+                    onPress={() => onDeleteRow(rowMap, itemData.item.id)}
+                >
+                    <Icon as={Ionicons} name="trash-outline" size="md" color="#fff" />
+                </TouchableOpacity>
+            </>
+        );
     };
 
     useFocusEffect(
@@ -416,7 +469,9 @@ function TabThreadsListScreen({
                 onLoadData={loadThreads}
                 onLoadMoreData={onLoadThreadsMore}
                 isSwipeable
-                onDeletedItem={onDeletedItem}
+                swipeListComponentProps={{
+                    renderHiddenFields
+                }}
             />
         </Box>
     );
@@ -438,5 +493,7 @@ function mapDispatchToProps(dispatch: any) {
         setRealtimeNewBlockActionProps: bindActionCreators(setRealtimeNewBlockAction, dispatch)
     };
 }
+
+const TabThreadsListScreen = connectActionSheet(TabThreadsListScreenComponent);
 
 export default connect(mapStateToProps, mapDispatchToProps)(TabThreadsListScreen);

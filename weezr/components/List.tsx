@@ -1,7 +1,7 @@
 // @ts-ignore
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as React from 'react';
-import { RefreshControl, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { RefreshControl, TouchableHighlight } from 'react-native';
 import { Box, Center, Icon } from "native-base";
 import { RowMap, SwipeListView } from "react-native-swipe-list-view";
 import { StackNavigationProp } from '@react-navigation/stack/src/types';
@@ -25,12 +25,17 @@ interface IList {
     isDataError?: any;
     hasHeaderHidden?: boolean;
     isSwipeable?: boolean;
-    onDeletedItem?: (selectedItemId: string) => void;
+    swipeListComponentProps?: {
+        renderHiddenFields: (itemData: any, rowMap: RowMap<any>) => any;
+        disableLeftSwipe?: boolean;
+        disableRightSwipe?: boolean;
+        leftOpenValue?: number;
+        rightOpenValue?: number;
+    }
 }
 
 export const List = ({
     data,
-    onDeletedItem,
     renderFields,
     isDataLoadingMore,
     isDataLoading,
@@ -39,8 +44,11 @@ export const List = ({
     onLoadMoreData,
     navigation,
     hasHeaderHidden,
-    isSwipeable
+    isSwipeable,
+    swipeListComponentProps
 }: IList) => {
+    const [swipedItem, setSwipedItem] = React.useState<string | null>(null);
+
     const renderItem = ({ item: fieldsSource, separators }: any) => {
         const fields = renderFields(fieldsSource) || {};
         const { routeName, paramList } = fields?.navigate || {};
@@ -52,6 +60,8 @@ export const List = ({
                 underlayColor="#DDDDDD"
                 disabled={!fields?.navigate?.routeName}
                 onPress={() => {
+                    if (swipedItem) { return; }
+
                     if (navigation && routeName) {
                         navigation.navigate(routeName, paramList);
                     }
@@ -122,6 +132,17 @@ export const List = ({
         );
     };
 
+    // For swipe
+    const renderHiddenItem = (itemData: any, rowMap: RowMap<any>) => {
+        if (!isSwipeable || !swipeListComponentProps?.renderHiddenFields) { return null; }
+
+        return (
+            <View style={styles.itemRowBackContainer}>
+                {swipeListComponentProps.renderHiddenFields(itemData, rowMap)}
+            </View>
+        );
+    };
+
     const renderSeparator = () => <View style={{ height: 1, backgroundColor: '#d9d9d9' }} />;
 
     const renderHeader = () => {
@@ -156,33 +177,6 @@ export const List = ({
         onLoadData();
     };
 
-    // For swipe
-    const onCloseRow = (rowMap: RowMap<any>, rowKey: string) => {
-        if (rowMap && rowMap[rowKey]) { rowMap[rowKey].closeRow(); }
-    };
-
-    // For swipe
-    const onDeleteRow = (rowMap: RowMap<any>, rowKey: string) => {
-        onCloseRow(rowMap, rowKey);
-        if (onDeletedItem) { onDeletedItem(rowKey); }
-    };
-
-    // For swipe
-    const renderHiddenItem = (itemData: any, rowMap: RowMap<any>) => {
-        if (!isSwipeable) { return null; }
-
-        return (
-            <View style={styles.itemRowBackContainer}>
-                <TouchableOpacity
-                    style={styles.backRightBtn}
-                    onPress={() => onDeleteRow(rowMap, itemData.item.id)}
-                >
-                    <Icon as={Ionicons} name="trash-outline" size="md" color="#fff" />
-                </TouchableOpacity>
-            </View>
-        );
-    };
-
     return (
         <Box style={{ flexDirection: 'row', width: '100%' }}>
             {/*
@@ -214,6 +208,8 @@ export const List = ({
                 renderHiddenItem={renderHiddenItem}/* For swipe */
                 disableRightSwipe/* For swipe */
                 rightOpenValue={-75}/* For swipe */
+                onRowOpen={(selectedItemId: string) => setSwipedItem(selectedItemId)}/* For swipe */
+                onRowClose={() => setSwipedItem(null)}/* For swipe */
             />
         </Box>
     );
