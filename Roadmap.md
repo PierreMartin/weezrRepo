@@ -1,6 +1,5 @@
 "Martin Technologies | Lookup | Weezr"
 
-- Fix count notifs grid & user detail
 - do animation when deleted => https://github.com/jemise111/react-native-swipe-list-view/blob/master/SwipeListExample/examples/swipe_to_delete.js
 - Trads
 - Flex 1 sur height ?

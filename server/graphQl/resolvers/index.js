@@ -228,6 +228,7 @@ export const resolvers = {
 
             const myBlockedProfiles = await onGetMyBlockedProfiles(context?.userMeId);
             const filterMyBlockedProfiles = { _id: { $nin: myBlockedProfiles?.data?.myBlockedProfiles || [] } };
+
             let filterAll = {
                 $and: [
                     filterMain,
@@ -422,8 +423,13 @@ export const resolvers = {
                 const threads = await Thread.find({ participants: { $in: [userMeId] } });
                 const threadIds = threads?.map((thread) => thread?._id) || [];
 
+                const filterThreadIdMessages = { 'threadId': { $in: threadIds } };
+                const filterReadMessages = { 'readBy.user': { $nin: [null, userMeId] } };
+                const filterAuthorMessages = { 'author': { $ne: userMeId } };
+                const filterIgnoredMessages = { 'ignoredBy.user': { $nin: [userMeId] } };
+
                 const threadMessage = await ThreadMessage
-                    .find({ threadId: { $in: threadIds } })
+                    .find({ $and: [filterThreadIdMessages, filterReadMessages, filterAuthorMessages, filterIgnoredMessages] })
                     .sort({ createdAt: -1 })
                     .limit(50);
 
@@ -445,12 +451,14 @@ export const resolvers = {
                             return message?.threadId?.toString() === threadFoundByUser?._id?.toString();
                         })
                         // Get unread messages only:
+                        /*
                         ?.filter((message) => {
                             return (
                                 message?.author?.toString() !== userMeId
                                 && !message.readBy?.find((rb) => rb?.user?.toString() === userMeId)
                             );
                         });
+                        */
 
                     return {
                         ...userToObject,
@@ -489,6 +497,7 @@ export const resolvers = {
             } = filter;
 
             const { _id, coordinates, threadId, userMeId } = filterMain;
+            const filterIgnoredMessages = { 'ignoredBy.user': { $nin: [userMeId] } };
 
             /* Version without MongoDB for query ThreadMessage:
             return User.aggregate([
@@ -560,7 +569,7 @@ export const resolvers = {
                             pipeline: [
                                 {
                                     // Get only unread messages:
-                                    $match: filterCountUnreadMessages
+                                    $match: { $and: [filterCountUnreadMessages, filterIgnoredMessages] }
                                 },
                                 {
                                     "$group": {
