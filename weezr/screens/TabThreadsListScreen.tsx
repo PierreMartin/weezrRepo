@@ -226,12 +226,16 @@ function TabThreadsListScreenComponent({
     };
 
     // For swipe
-    const onCloseSwipedRow = (rowMap: RowMap<any>, rowKey: string) => {
-        if (rowMap && rowMap[rowKey]) { rowMap[rowKey].closeRow(); }
+    const onCloseSwipedRow = (rowMap: RowMap<any>, selectedItemId: string) => {
+        if (rowMap && rowMap[selectedItemId]) { rowMap[selectedItemId].closeRow(); }
     };
 
     // For swipe
-    const onDeleteRow = (rowMap: RowMap<any>, rowKey: string) => {
+    const onDeleteRow = (
+        rowMap: RowMap<any>,
+        selectedItemId: string,
+        performHeightAnimation: (selectedItemId: string) => Promise<boolean>
+    ) => {
         if (showActionSheetWithOptions) {
             showActionSheetWithOptions(
                 {
@@ -245,12 +249,13 @@ function TabThreadsListScreenComponent({
                     switch (buttonIndex) {
                         case 0:
                             // Cancel
-                            onCloseSwipedRow(rowMap, rowKey);
+                            onCloseSwipedRow(rowMap, selectedItemId);
                             break;
                         case 1:
                             // OK
-                            onDeleteThread(rowKey);
-                            onCloseSwipedRow(rowMap, rowKey);
+                            performHeightAnimation(selectedItemId).then(() => {
+                                onDeleteThread(selectedItemId);
+                            });
                             break;
                         default:
                             break;
@@ -260,12 +265,16 @@ function TabThreadsListScreenComponent({
         }
     };
 
-    const renderHiddenFields = (itemData: any, rowMap: RowMap<any>) => {
+    const renderHiddenFields = (
+        itemData: any,
+        rowMap: RowMap<any>,
+        performHeightAnimation: (selectedItemId: string) => Promise<boolean>
+    ) => {
         return (
             <>
                 <TouchableOpacity
                     style={styles.backRightBtn}
-                    onPress={() => onDeleteRow(rowMap, itemData.item.id)}
+                    onPress={() => onDeleteRow(rowMap, itemData.item.id, performHeightAnimation)}
                 >
                     <Icon as={Ionicons} name="trash-outline" size="md" color="#fff" />
                 </TouchableOpacity>
@@ -470,7 +479,8 @@ function TabThreadsListScreenComponent({
                 onLoadMoreData={onLoadThreadsMore}
                 isSwipeable
                 swipeListComponentProps={{
-                    renderHiddenFields
+                    renderHiddenFields,
+                    enabledHeightAnimation: true
                 }}
             />
         </Box>

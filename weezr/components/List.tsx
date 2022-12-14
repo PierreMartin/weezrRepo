@@ -1,7 +1,7 @@
 // @ts-ignore
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as React from 'react';
-import { RefreshControl, TouchableHighlight } from 'react-native';
+import { Animated, RefreshControl, TouchableHighlight } from 'react-native';
 import { Box, Center, Icon } from "native-base";
 import { RowMap, SwipeListView } from "react-native-swipe-list-view";
 import { StackNavigationProp } from '@react-navigation/stack/src/types';
@@ -15,7 +15,7 @@ const styles = getStyles();
 
 interface IList {
     navigation?: StackNavigationProp<any, any>;
-    data: any;
+    data: any[];
     renderFields: (fieldsSource: any) => any;
     customRenderItem?: (fieldsSource: any) => any;
     onLoadData: () => void;
@@ -26,7 +26,12 @@ interface IList {
     hasHeaderHidden?: boolean;
     isSwipeable?: boolean;
     swipeListComponentProps?: {
-        renderHiddenFields: (itemData: any, rowMap: RowMap<any>) => any;
+        renderHiddenFields: (
+            itemData: any,
+            rowMap: RowMap<any>,
+            performHeightAnimation: (selectedItemId: string) => Promise<boolean>
+        ) => any;
+        enabledHeightAnimation?: boolean;
         disableLeftSwipe?: boolean;
         disableRightSwipe?: boolean;
         leftOpenValue?: number;
@@ -48,88 +53,131 @@ export const List = ({
     swipeListComponentProps
 }: IList) => {
     const [swipedItem, setSwipedItem] = React.useState<string | null>(null);
+    const rowTranslateAnimatedValues: any = {};
+
+    if (swipeListComponentProps?.enabledHeightAnimation) {
+        data?.forEach((item: any) => {
+            const id = item?._id || item?.id;
+            if (id) { rowTranslateAnimatedValues[id] = new Animated.Value(1); }
+        });
+    }
+
+    const animationIsRunning = React.useRef<boolean>(false);
 
     const renderItem = ({ item: fieldsSource, separators }: any) => {
         const fields = renderFields(fieldsSource) || {};
         const { routeName, paramList } = fields?.navigate || {};
 
+        let height = 'auto';
+        if (swipeListComponentProps?.enabledHeightAnimation) {
+            if (rowTranslateAnimatedValues && rowTranslateAnimatedValues[fieldsSource.id]) {
+                height = rowTranslateAnimatedValues[fieldsSource.id]
+                    .interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 56] // NOTE: height of a row
+                    });
+            }
+        }
+
         return (
-            <TouchableHighlight
-                key={fieldsSource.id}
-                activeOpacity={0.8}
-                underlayColor="#DDDDDD"
-                disabled={!fields?.navigate?.routeName}
-                onPress={() => {
-                    if (swipedItem) { return; }
+            <Animated.View style={{height}}>
+                <TouchableHighlight
+                    key={fieldsSource.id}
+                    activeOpacity={0.8}
+                    underlayColor="#DDDDDD"
+                    disabled={!fields?.navigate?.routeName}
+                    onPress={() => {
+                        if (swipedItem) { return; }
 
-                    if (navigation && routeName) {
-                        navigation.navigate(routeName, paramList);
-                    }
-                }}
-                onShowUnderlay={separators.highlight}
-                onHideUnderlay={separators.unhighlight}
-                style={styles.itemRowFrontContainer}
-            >
-                <View>
-                    {/* Main row: */}
-                    <View style={styles.itemRowFront}>
-                        <Avatar
-                            style={styles.itemPicture}
-                            user={fields.avatar}
-                            size="sm"
-                        />
-
-                        <View style={{ flex: 1 }}>
-                            <View style={{ flexDirection: 'row' }}>
-                                { fields.isOnline && (<Icon as={Ionicons} name="radio-button-on-outline" size="4" color="#16BF24FF" mr={1} />) }
-                                { (fields.title?.length > 0) && <Text style={styles.itemPrimaryText}>{fields.title}</Text> }
-                            </View>
-
-                            { (fields.content) && <Text style={styles.itemSecondaryText}>{fields.content}</Text> }
-                        </View>
-
-                        {/* Custom container: */}
-                        {
-                            fields.customRenderContainer && (
-                                <View style={{ marginRight: 8 }}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        {fields.customRenderContainer() }
-                                    </View>
-                                </View>
-                            )
+                        if (navigation && routeName) {
+                            navigation.navigate(routeName, paramList);
                         }
+                    }}
+                    onShowUnderlay={separators.highlight}
+                    onHideUnderlay={separators.unhighlight}
+                    style={styles.itemRowFrontContainer}
+                >
+                    <View>
+                        {/* Main row: */}
+                        <View style={styles.itemRowFront}>
+                            <Avatar
+                                style={styles.itemPicture}
+                                user={fields.avatar}
+                                size="sm"
+                            />
 
-                        <View>
-                            <View style={{ flexDirection: 'row' }}>
-                                { fields.at && <Text style={styles.itemSecondaryText}>{fields.at}</Text> }
-                                { fields.checkmark && <Text> {fields.checkmark()}</Text> }
+                            <View style={{ flex: 1 }}>
+                                <View style={{ flexDirection: 'row' }}>
+                                    { fields.isOnline && (<Icon as={Ionicons} name="radio-button-on-outline" size="4" color="#16BF24FF" mr={1} />) }
+                                    { (fields.title?.length > 0) && <Text style={styles.itemPrimaryText}>{fields.title}</Text> }
+                                </View>
+
+                                { (fields.content) && <Text style={styles.itemSecondaryText}>{fields.content}</Text> }
                             </View>
 
-                            <Text style={{ marginTop: 6 }}>
-                                { fields.badge && fields.badge() }
-                            </Text>
-                        </View>
-                    </View>
-
-                    {/* Custom rows: */}
-                    {
-                        fields.customRenderContainerNextRows && fields.customRenderContainerNextRows()?.map((customRow: any, index: number) => {
-                            if (!customRow) { return null; }
-
-                            return (
-                                <View key={index} style={styles.itemRowFront}>
-                                    <View style={{ width: 40 }} />
-
-                                    <View style={{ flex: 1 }}>
-                                        {customRow}
+                            {/* Custom container: */}
+                            {
+                                fields.customRenderContainer && (
+                                    <View style={{ marginRight: 8 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            {fields.customRenderContainer() }
+                                        </View>
                                     </View>
+                                )
+                            }
+
+                            <View>
+                                <View style={{ flexDirection: 'row' }}>
+                                    { fields.at && <Text style={styles.itemSecondaryText}>{fields.at}</Text> }
+                                    { fields.checkmark && <Text> {fields.checkmark()}</Text> }
                                 </View>
-                            );
-                        })
-                    }
-                </View>
-            </TouchableHighlight>
+
+                                <Text style={{ marginTop: 6 }}>
+                                    { fields.badge && fields.badge() }
+                                </Text>
+                            </View>
+                        </View>
+
+                        {/* Custom rows: */}
+                        {
+                            fields.customRenderContainerNextRows && fields.customRenderContainerNextRows()?.map((customRow: any, index: number) => {
+                                if (!customRow) { return null; }
+
+                                return (
+                                    <View key={index} style={styles.itemRowFront}>
+                                        <View style={{ width: 40 }} />
+
+                                        <View style={{ flex: 1 }}>
+                                            {customRow}
+                                        </View>
+                                    </View>
+                                );
+                            })
+                        }
+                    </View>
+                </TouchableHighlight>
+            </Animated.View>
         );
+    };
+
+    // For swipe
+    const performHeightAnimation = (selectedItemId: string): Promise<boolean> => {
+        return new Promise((resolve) => {
+            if (swipeListComponentProps?.enabledHeightAnimation && !animationIsRunning.current && selectedItemId) {
+                animationIsRunning.current = true;
+
+                return Animated.timing(rowTranslateAnimatedValues[selectedItemId], {
+                    toValue: 0,
+                    duration: 200,
+                    useNativeDriver: false
+                }).start(() => {
+                    animationIsRunning.current = false;
+                    resolve(true);
+                });
+            }
+
+            resolve(false);
+        });
     };
 
     // For swipe
@@ -138,7 +186,7 @@ export const List = ({
 
         return (
             <View style={styles.itemRowBackContainer}>
-                {swipeListComponentProps.renderHiddenFields(itemData, rowMap)}
+                { swipeListComponentProps.renderHiddenFields(itemData, rowMap, performHeightAnimation) }
             </View>
         );
     };
@@ -210,6 +258,7 @@ export const List = ({
                 rightOpenValue={-75}/* For swipe */
                 onRowOpen={(selectedItemId: string) => setSwipedItem(selectedItemId)}/* For swipe */
                 onRowClose={() => setSwipedItem(null)}/* For swipe */
+                useNativeDriver={false}
             />
         </Box>
     );
