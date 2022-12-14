@@ -480,8 +480,9 @@ function TabThreadsListScreenComponent({
                 isSwipeable
                 swipeListComponentProps={{
                     renderHiddenFields,
-                    enabledHeightAnimation: true
+                    enabledAnimation: true
                 }}
+                heightRow={58}
             />
         </Box>
     );

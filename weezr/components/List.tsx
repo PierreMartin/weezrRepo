@@ -3,7 +3,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import * as React from 'react';
 import { Animated, RefreshControl, TouchableHighlight } from 'react-native';
 import { Box, Center, Icon } from "native-base";
-import { RowMap, SwipeListView } from "react-native-swipe-list-view";
+import { RowMap, SwipeListView, SwipeRow } from "react-native-swipe-list-view";
 import { StackNavigationProp } from '@react-navigation/stack/src/types';
 import { Header, Text, View } from '.';
 import { InputSearch } from "./InputSearch";
@@ -25,13 +25,14 @@ interface IList {
     isDataError?: any;
     hasHeaderHidden?: boolean;
     isSwipeable?: boolean;
+    heightRow?: number;
     swipeListComponentProps?: {
         renderHiddenFields: (
             itemData: any,
             rowMap: RowMap<any>,
             performHeightAnimation: (selectedItemId: string) => Promise<boolean>
         ) => any;
-        enabledHeightAnimation?: boolean;
+        enabledAnimation?: boolean;
         disableLeftSwipe?: boolean;
         disableRightSwipe?: boolean;
         leftOpenValue?: number;
@@ -41,6 +42,7 @@ interface IList {
 
 export const List = ({
     data,
+    heightRow,
     renderFields,
     isDataLoadingMore,
     isDataLoading,
@@ -52,10 +54,13 @@ export const List = ({
     isSwipeable,
     swipeListComponentProps
 }: IList) => {
-    const [swipedItem, setSwipedItem] = React.useState<string | null>(null);
+    const { renderHiddenFields, enabledAnimation } = swipeListComponentProps || {};
+
+    const [swipedItem, setSwipedItem] = React.useState<SwipeRow<any> | null>(null);
+
     const rowTranslateAnimatedValues: any = {};
 
-    if (swipeListComponentProps?.enabledHeightAnimation) {
+    if (enabledAnimation) {
         data?.forEach((item: any) => {
             const id = item?._id || item?.id;
             if (id) { rowTranslateAnimatedValues[id] = new Animated.Value(1); }
@@ -68,13 +73,13 @@ export const List = ({
         const fields = renderFields(fieldsSource) || {};
         const { routeName, paramList } = fields?.navigate || {};
 
-        let height = 'auto';
-        if (swipeListComponentProps?.enabledHeightAnimation) {
+        let height = heightRow || 'auto';
+        if (enabledAnimation) {
             if (rowTranslateAnimatedValues && rowTranslateAnimatedValues[fieldsSource.id]) {
                 height = rowTranslateAnimatedValues[fieldsSource.id]
                     .interpolate({
                         inputRange: [0, 1],
-                        outputRange: [0, 56] // NOTE: height of a row
+                        outputRange: [0, heightRow] // NOTE: height of a row, type number only
                     });
             }
         }
@@ -87,7 +92,10 @@ export const List = ({
                     underlayColor="#DDDDDD"
                     disabled={!fields?.navigate?.routeName}
                     onPress={() => {
-                        if (swipedItem) { return; }
+                        if (swipedItem) {
+                            swipedItem.closeRow();
+                            return;
+                        }
 
                         if (navigation && routeName) {
                             navigation.navigate(routeName, paramList);
@@ -163,7 +171,11 @@ export const List = ({
     // For swipe
     const performHeightAnimation = (selectedItemId: string): Promise<boolean> => {
         return new Promise((resolve) => {
-            if (swipeListComponentProps?.enabledHeightAnimation && !animationIsRunning.current && selectedItemId) {
+            if (
+                enabledAnimation
+                && !animationIsRunning.current
+                && selectedItemId
+            ) {
                 animationIsRunning.current = true;
 
                 return Animated.timing(rowTranslateAnimatedValues[selectedItemId], {
@@ -182,11 +194,11 @@ export const List = ({
 
     // For swipe
     const renderHiddenItem = (itemData: any, rowMap: RowMap<any>) => {
-        if (!isSwipeable || !swipeListComponentProps?.renderHiddenFields) { return null; }
+        if (!isSwipeable || !renderHiddenFields) { return null; }
 
         return (
             <View style={styles.itemRowBackContainer}>
-                { swipeListComponentProps.renderHiddenFields(itemData, rowMap, performHeightAnimation) }
+                { renderHiddenFields(itemData, rowMap, performHeightAnimation) }
             </View>
         );
     };
@@ -256,9 +268,9 @@ export const List = ({
                 renderHiddenItem={renderHiddenItem}/* For swipe */
                 disableRightSwipe/* For swipe */
                 rightOpenValue={-75}/* For swipe */
-                onRowOpen={(selectedItemId: string) => setSwipedItem(selectedItemId)}/* For swipe */
+                onRowOpen={(key, rows: RowMap<any>) => setSwipedItem(rows && rows[key])}/* For swipe */
                 onRowClose={() => setSwipedItem(null)}/* For swipe */
-                useNativeDriver={false}
+                useNativeDriver={false}/* For swipe */
             />
         </Box>
     );

@@ -4,6 +4,7 @@ import colors from "../styles/colors";
 function getStyles(params: any = {}) {
     return createStyles({
         itemRowFrontContainer: {
+            flex: 1,
             backgroundColor: colors.dark.border
         },
         itemRowFront: {
