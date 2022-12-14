@@ -109,7 +109,7 @@
         "sent_blockedsProfiles": "Blocked users",
         "sent_unblock": "Unblock",
         "sent_unblock_confirm_title": "Unblock this profile?",
-        "sent_unblock_confirm_ok": "To confirm"
+        "sent_unblock_confirm_ok": "Confirm"
       },
       "myRequest": {
         "received": "Made a request for access to private photos",
@@ -168,11 +168,11 @@
         "do": "Block this profile",
         "confirmTitle": "Are you sure you want to block this user?",
         "confirmDescription": "Blocking his profile will prevent you and this user from contacting and seeing each other.",
-        "confirmOk": "To confirm"
+        "confirmOk": "Confirm"
       },
       "report": {
         "do": "Report this profile",
-        "confirmOk": "To confirm"
+        "confirmOk": "Confirm"
       }
     }
   },
@@ -193,5 +193,12 @@
   },
   "audioRecorder": {
     "info": "Hold to record, release to end"
+  },
+  "tabThreadsListScreen": {
+    "onDeleteThread": {
+      "confirmTitle": "Are you sure you want delete this conversation?",
+      "confirmOk": "Confirm",
+      "confirmCancel": "Cancel"
+    }
   }
 }

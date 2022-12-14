@@ -11,6 +11,7 @@ import { connectActionSheet } from "@expo/react-native-action-sheet";
 import { StackNavigationProp } from '@react-navigation/stack/src/types';
 import { useFocusEffect } from "@react-navigation/native";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
+import { useTranslation } from "react-i18next";
 import _ from "lodash";
 import { Text } from '../components';
 import { setCountAllUnreadMessagesAction } from "../reduxActions/notifications";
@@ -100,6 +101,8 @@ function TabThreadsListScreenComponent({
 }: ITabThreadsListScreen) {
     const [threads, setThreads] = React.useState<IThread[]>([]);
     const [isLoadingMore, setIsLoadingMore] = React.useState<boolean>(false);
+
+    const { t } = useTranslation();
 
     const [getThreads, {
         loading: getThreadsLoading,
@@ -239,8 +242,11 @@ function TabThreadsListScreenComponent({
         if (showActionSheetWithOptions) {
             showActionSheetWithOptions(
                 {
-                    options: ["Cancel", "OK"],
-                    title: 'Supprimer cette conversation ?',
+                    options: [
+                        t('tabThreadsListScreen.onDeleteThread.confirmCancel'),
+                        t('tabThreadsListScreen.onDeleteThread.confirmOk')
+                    ],
+                    title: t('tabThreadsListScreen.onDeleteThread.confirmTitle'),
                     cancelButtonIndex: 0,
                     destructiveButtonIndex: 1,
                     userInterfaceStyle: 'dark'

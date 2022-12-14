@@ -1,7 +1,5 @@
 "Martin Technologies | Lookup | Weezr"
 
-- Trads
-- Flex 1 sur height ?
 - re-tester pagination
 - bug websocket new message !!!
 

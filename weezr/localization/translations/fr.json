@@ -193,5 +193,12 @@
   },
   "audioRecorder": {
     "info": "Maintenir pour enregistrer, relâcher pour terminer"
+  },
+  "tabThreadsListScreen": {
+    "onDeleteThread": {
+      "confirmTitle": "Es-tu sûr de vouloir supprimer cette conversation ?",
+      "confirmOk": "Confirmer",
+      "confirmCancel": "Annuler"
+    }
   }
 }
