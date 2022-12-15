@@ -10,6 +10,7 @@ import {
     RefreshControl,
     ImageBackground
 } from 'react-native';
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { Badge, Box, Button, Center, Icon } from "native-base";
 import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack/lib/typescript/src/types';
@@ -21,6 +22,7 @@ import { getUserForwardPhoto, setElementInArrayAtIndex } from "../toolbox/toolbo
 import { Spinner } from "../components/Spinner";
 import { SpinnerIndicator } from "../components/SpinnerIndicator";
 import { InputSearch } from "../components/InputSearch";
+import { hapticOptions } from "../constants/Config";
 import { IUser } from "../entities";
 import { States } from "../reduxReducers/states";
 import getStyles from './TabUsersGridScreen.style';
@@ -477,6 +479,7 @@ function TabUsersGridScreen({
     };
 
     const onRefresh = () => {
+        ReactNativeHapticFeedback.trigger('impactMedium', hapticOptions);
         onLoadUsers();
     };
 

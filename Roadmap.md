@@ -1,7 +1,5 @@
 "Martin Technologies | Lookup | Weezr"
 
-- Use react-native-haptic-feedback at refreshControl + onRefresh
-
 - UserInteractions => handle "replies too" in TabNotificationsCenter
 - Query (Apollo ?) => See why we pass many times in some queries (like users)
 - Fix realtime when create new message at new thread

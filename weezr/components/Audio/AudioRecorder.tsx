@@ -13,15 +13,11 @@ import AudioRecorderPlayer, {
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 // import RNFetchBlob from "rn-fetch-blob";
 import { Box, Button, Icon, Popover, Text } from "native-base";
+import { hapticOptions } from "../../constants/Config";
 import getStyles from "./AudioRecorder.styles";
 
 const styles = getStyles();
 // const dirs = RNFetchBlob.fs.dirs;
-
-const hapticOptions = {
-    enableVibrateFallback: true,
-    ignoreAndroidSystemSettings: true
-};
 
 // For android it is mp4, and for ios it is a m4a
 const audioRecorderPlayer = new AudioRecorderPlayer();

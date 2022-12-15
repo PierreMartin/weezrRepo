@@ -5,10 +5,12 @@ import { Animated, RefreshControl, TouchableHighlight } from 'react-native';
 import { Box, Center, Icon } from "native-base";
 import { RowMap, SwipeListView, SwipeRow } from "react-native-swipe-list-view";
 import { StackNavigationProp } from '@react-navigation/stack/src/types';
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { Header, Text, View } from '.';
 import { InputSearch } from "./InputSearch";
 import { Avatar } from "./Avatar";
 import { SpinnerIndicator } from "./SpinnerIndicator";
+import { hapticOptions } from "../constants/Config";
 import getStyles from "./list.styles";
 
 const styles = getStyles();
@@ -234,6 +236,7 @@ export const List = ({
     };
 
     const onRefresh = () => {
+        ReactNativeHapticFeedback.trigger('impactMedium', hapticOptions);
         onLoadData();
     };
 
