@@ -1,6 +1,5 @@
 "Martin Technologies | Lookup | Weezr"
 
-- Mette shadow sur texte in grid.
 - Use react-native-haptic-feedback at refreshControl + onRefresh
 
 - UserInteractions => handle "replies too" in TabNotificationsCenter

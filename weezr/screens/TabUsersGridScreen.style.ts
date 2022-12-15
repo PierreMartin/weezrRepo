@@ -1,8 +1,6 @@
 import createStyles, { colors } from '../styles/base';
 
 function getStyles(params: any = {}) {
-    const backgroundColor = colors.dark.backgroundOpacity;
-
     return createStyles({
         itemContainer: {
             // flex: 1,
@@ -11,16 +9,21 @@ function getStyles(params: any = {}) {
             marginLeft: params.marginSize,
             marginBottom: params.marginSize
         },
-        userTitle: {
+        userTitleText: {
             color: '#fff',
-            backgroundColor,
             fontWeight: 'bold',
-            fontSize: 11
+            fontSize: 12,
+            ...colors.textShadow
         },
-        userDistance: {
-            marginTop: 8,
-            backgroundColor,
-            color: '#fff'
+        userDistanceIcon: {
+            color: '#fff',
+            ...colors.textShadow
+        },
+        userDistanceText: {
+            color: '#fff',
+            fontWeight: '500',
+            fontSize: 12,
+            ...colors.textShadow
         },
         searchContainer: {
             flexDirection: 'row',

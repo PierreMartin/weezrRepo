@@ -410,28 +410,8 @@ function TabUsersGridScreen({
                     resizeMode="cover"
                     source={{ uri }}
                 >
-                    <Box p={3} style={{ position: 'relative' }}>
-                        { displayName && <Text style={styles.userTitle}>{displayName || 'User'}</Text> }
-
-                        {
-                            isOnline && (
-                                <Icon size="4" color="#16BF24FF" as={<Ionicons name="radio-button-on-outline" />} />
-                            )
-                        }
-
-                        {
-                            distanceComparedToMe >= 0 && (
-                                <Text style={styles.userDistance}>{distanceComparedToMe?.toFixed(2)} Km</Text>
-                            )
-                        }
-
-                        {
-                            likeReceivedIconStr && (
-                                <Icon size="4" color="primary.500" as={<Ionicons name={likeReceivedIconStr} />} />
-                            )
-                        }
-
-                        <Text style={{ position: 'absolute', bottom: -16, right: 8 }}>
+                    <Box p={3} style={{ position: 'relative', flex: 1 }}>
+                        <Text style={{ position: 'absolute', top: 10, right: 10 }}>
                             {(unreadMessages > 0) ? (
                                 <Badge
                                     colorScheme="danger"
@@ -444,6 +424,23 @@ function TabUsersGridScreen({
                                 </Badge>
                             ) : ''}
                         </Text>
+
+                        <Box style={{ position: 'absolute', bottom: 4, left: 4 }}>
+                            {
+                                distanceComparedToMe >= 0 && (
+                                    <Box style={{ flexDirection: 'row', marginBottom: 2 }}>
+                                        <Icon style={styles.userDistanceIcon} as={Ionicons} name="location-outline" size="4" color="#fff" />
+                                        <Text style={styles.userDistanceText}>{distanceComparedToMe?.toFixed(2)} Km</Text>
+                                    </Box>
+                                )
+                            }
+
+                            <Box style={{ flexDirection: 'row' }}>
+                                { isOnline && (<Icon style={{ marginRight: 4 }} as={Ionicons} name="radio-button-on-outline" size="4" color="#16BF24FF" />) }
+                                { likeReceivedIconStr && (<Icon as={Ionicons} name={likeReceivedIconStr} size="4" color="primary.500" />) }
+                                { displayName && <Text style={styles.userTitleText}>{displayName || 'User'}</Text> }
+                            </Box>
+                        </Box>
                     </Box>
                 </ImageBackground>
             </TouchableHighlight>
