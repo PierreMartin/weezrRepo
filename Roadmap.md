@@ -1,7 +1,5 @@
 "Martin Technologies | Lookup | Weezr"
 
-- bug websocket new message !!!
-
 - Mette shadow sur texte in grid.
 - Use react-native-haptic-feedback at refreshControl + onRefresh
 

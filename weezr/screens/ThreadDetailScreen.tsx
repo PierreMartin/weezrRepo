@@ -726,7 +726,7 @@ function ThreadDetailScreenComponent({
             }
 
             if (!hasError) {
-                if (previousMessages?.length === 0) { sentMessageFullFormat.isFirstMessageInThread = true; }
+                if (nextMessages?.length === 0) { sentMessageFullFormat.isFirstMessageInThread = true; }
                 socketEvents.emit.newMessage(sentMessageFullFormat);
             } else {
                 sentMessageFullFormat.sent = false;

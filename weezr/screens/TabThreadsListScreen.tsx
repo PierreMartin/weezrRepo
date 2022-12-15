@@ -13,6 +13,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";
+import { SocketEvents } from "../context/SocketEvents";
 import { Text } from '../components';
 import { setCountAllUnreadMessagesAction } from "../reduxActions/notifications";
 import { Spinner } from "../components/Spinner";
@@ -124,6 +125,8 @@ function TabThreadsListScreenComponent({
         }
     });
 
+    const socketEvents = React.useContext(SocketEvents);
+
     const { isLastPage, isLimitReached } = threadsData?.threads?.pageInfo || {};
 
     const getQueryVariables = () => {
@@ -223,6 +226,8 @@ function TabThreadsListScreenComponent({
                     if (me?._id) {
                         setCountAllUnreadMessagesActionProps({ userId: me?._id });
                     }
+
+                    setTimeout(() => { socketEvents.emit.joinThreads([selectedItemId]); }, 6000);
                 }
             });
         }
@@ -304,7 +309,9 @@ function TabThreadsListScreenComponent({
     useFocusEffect(
         React.useCallback(() => {
             if (realtimeNewMessage) {
-                if (realtimeNewMessage.isFirstMessageInThread) {
+                const threadFound = threads?.find((previousThread: IThread) => previousThread._id === realtimeNewMessage.threadId);
+
+                if (realtimeNewMessage.isFirstMessageInThread || !threadFound?.latestMessage) {
                     // If new thread created - This is the first message in this thread at this state
                     console.log('[socket] newThread');
                     loadThreads();
