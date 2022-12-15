@@ -2,7 +2,6 @@
 
 - UserInteractions => handle "replies too" in TabNotificationsCenter
 - Query (Apollo ?) => See why we pass many times in some queries (like users)
-- Fix realtime when create new message at new thread
 - Fix forward photo in user detail
 - Fix tab unread message => not work at update
 - Fix websocket count unread messages in users grid, sometime stay at 0 
@@ -11,7 +10,7 @@
   - Very slow on device !!
   - Bug, no pagination (on grid)
   - Bug, no profile me on all grid
-- Refaire algo pour les hommes -> afficher pareil
+
 
 1) Refacto Inputs (and handle fields errors)
   - Text | textArea                       => <Form.Item type="text" /> (ou <Input type="text | textArea | password" />)
@@ -25,6 +24,7 @@
   - Slider (age range)
   - 'isOnline' => changer le champ en 'account': { 'lastLoginAt': Date, 'lastActivityAt': Date } => ajouter une icon orange (si lastActivityAt > 15min = on passe en orange, si > 30min, on vire l'icon)
   - send websockets every 15 minutes for update user's location in grid
+  - Refaire algo pour les hommes -> afficher pareil
 
 * mapbox.com
 * Push notification
