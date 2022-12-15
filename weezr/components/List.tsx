@@ -238,6 +238,7 @@ export const List = ({
     };
 
     return (
+        /* NOTE: Don't set { flex: 1 } here, or the height animation at deleting item won't work !! */
         <Box style={{ flexDirection: 'row', width: '100%' }}>
             {/*
             <FlatList
