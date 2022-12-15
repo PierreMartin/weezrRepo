@@ -1001,11 +1001,14 @@ export const resolvers = {
                 });
 
                 // Custom tabs filters:
+                const filterCountForTab = [];
                 if (filterUnread) {
                     aggregate.push({ $match: filterUnread });
+                    filterCountForTab.push(filterUnread);
                 } else if (filterOnline) {
                     // Find if participant 'isOnline':
                     aggregate.push({ $match: filterOnline }); // filterOnline use "full_participants"
+                    filterCountForTab.push(filterOnline);
                 }
 
                 aggregate.push({ $match: filterMyBlockedProfiles });
@@ -1024,6 +1027,10 @@ export const resolvers = {
                 aggregate.push({
                     "$sort": { "latestMessage.createdAt": -1 }
                 });
+
+                const totalCount = await Thread
+                    .find({ $and: [filterMain, filterMyBlockedProfiles, ...filterCountForTab] })
+                    .count();
 
                 const rawThreads = await Thread
                     .aggregate(aggregate)
@@ -1050,8 +1057,6 @@ export const resolvers = {
                 const threads = await Thread.populate(enrichedThreads, { path: 'participants', select: '_id email images displayName isOnline' });
 
                 if (!threads) { return new Error("A error has occurred at the fetching threads"); }
-
-                const totalCount = threads?.length;
 
                 return {
                     data: threads,
@@ -1186,6 +1191,10 @@ export const resolvers = {
                     }
                 ];
 
+                const totalCount = await UserInterSendLike
+                    .find({ $and: [filterAll, filterMyBlockedProfiles] })
+                    .count();
+
                 const likes = await UserInterSendLike
                     .aggregate(pipeline)
                     // .find(filterAll)
@@ -1193,8 +1202,6 @@ export const resolvers = {
                     .sort({ at: -1 })
                     .skip(offset)
                     .limit(limit);
-
-                const totalCount = likes?.length;
 
                 return {
                     data: likes?.map((data) => (
@@ -1270,7 +1277,9 @@ export const resolvers = {
                     }
                 ];
 
-                // console.log(`- totalCount: ${totalCount} - isLastPage ${(offset + limit) >= totalCount} - offset: ${offset}`);
+                const totalCount = await UserInterVisit
+                    .find({ $and: [filterAll, filterMyBlockedProfiles] })
+                    .count();
 
                 const visitorsRes = await UserInterVisit
                     .aggregate(pipeline)
@@ -1279,8 +1288,6 @@ export const resolvers = {
                     .sort({ at: -1 })
                     .skip(offset)
                     .limit(limit);
-
-                const totalCount = visitorsRes?.length;
 
                 return {
                     data: visitorsRes?.map((data) => (
@@ -1395,6 +1402,10 @@ export const resolvers = {
                     }
                 ];
 
+                const totalCount = await UserInterSendRequest
+                    .find({ $and: [filterAll, filterMyBlockedProfiles] })
+                    .count();
+
                 const requestsRes = await UserInterSendRequest
                     .aggregate(pipeline)
                     // .find(filterMain)
@@ -1402,8 +1413,6 @@ export const resolvers = {
                     .sort({ at: -1 })
                     .skip(offset)
                     .limit(limit);
-
-                const totalCount = requestsRes?.length;
 
                 return {
                     data: requestsRes?.map((data) => (
@@ -1441,16 +1450,16 @@ export const resolvers = {
             const { filterMain } = filter;
 
             try {
-                // const totalCountVisit = await UserInterVisit.find(filterMain).count();
-                // const totalCountFollow = await UserInterFollow.find(filterMain).count();
-                // const totalCount = (totalCountVisit || 0) + (totalCountFollow || 0);
-
                 const filterAll = {...filterMain};
                 if (filterMain.senderId) { filterAll.senderId = mongoose.Types.ObjectId(filterMain.senderId) }
                 if (filterMain.receiverId) { filterAll.receiverId = mongoose.Types.ObjectId(filterMain.receiverId) }
 
                 const myBlockedProfiles = await onGetMyBlockedProfiles(context?.userMeId);
                 const filterMyBlockedProfiles = { 'sender._id': { $nin: myBlockedProfiles?.data?.myBlockedProfiles || [] } };
+
+                const totalCountVisit = await UserInterVisit.find({ $and: [filterAll, filterMyBlockedProfiles] }).count();
+                const totalCountFollow = await UserInterFollow.find({ $and: [filterAll, filterMyBlockedProfiles] }).count();
+                const totalCount = (totalCountVisit || 0) + (totalCountFollow || 0);
 
                 const pipeline = [
                     {
@@ -1499,8 +1508,6 @@ export const resolvers = {
                     ...visits.map((data) => ({ ...data, id: data._id, entityName: data.entityName || 'UserInterVisit' })),
                     ...follows.map((data) => ({ ...data, id: data._id, entityName: data.entityName || 'UserInterFollow' }))
                 ].sort((a, b) => new Date(b?.at) - new Date(a?.at));
-
-                const totalCount = mergedData?.length;
 
                 return {
                     data: mergedData,

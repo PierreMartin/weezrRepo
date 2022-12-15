@@ -1,6 +1,5 @@
 "Martin Technologies | Lookup | Weezr"
 
-- re-tester pagination
 - bug websocket new message !!!
 
 - Mette shadow sur texte in grid.
