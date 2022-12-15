@@ -12,7 +12,7 @@ import {
     HStack
 } from 'native-base';
 import { loginAction, signupAction } from '../../reduxActions/authentication';
-import Form from "../../components/Form";
+import Form from "../../components/Forms/Form";
 import { States } from "../../reduxReducers/states";
 // import getStyles from "./LoginScreen.styles";
 

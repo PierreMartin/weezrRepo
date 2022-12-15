@@ -7,7 +7,7 @@ import { RowMap, SwipeListView, SwipeRow } from "react-native-swipe-list-view";
 import { StackNavigationProp } from '@react-navigation/stack/src/types';
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { Header, Text, View } from '.';
-import { InputSearch } from "./InputSearch";
+import { InputSearch } from "./Forms/InputSearch";
 import { Avatar } from "./Avatar";
 import { SpinnerIndicator } from "./SpinnerIndicator";
 import { hapticOptions } from "../constants/Config";

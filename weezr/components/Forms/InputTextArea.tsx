@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Box, TextArea } from "native-base";
-import { Label } from "./index";
+import { Label } from "../index";
 
 interface IInputTextArea {
     fieldData: {

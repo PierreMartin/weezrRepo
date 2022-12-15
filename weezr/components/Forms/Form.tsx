@@ -183,6 +183,7 @@ const Item = ({
 interface IFormProps {
     onSubmit: (formData: any) => void;
     formErrors?: { [name: string]: string | any }; // { email: '...' }
+    children: any;
 }
 
 interface IFormState {
