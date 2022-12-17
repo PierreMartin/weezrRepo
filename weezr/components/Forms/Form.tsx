@@ -1,7 +1,8 @@
 // @ts-ignore
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { ImageStyle, TextStyle, ViewStyle } from "react-native";
 import React, { Component, useEffect, useState } from 'react';
-import { Icon, Input as InputBase, VStack, FormControl, Button } from 'native-base';
+import { Icon, Input as InputBase, VStack, FormControl, Button, TextArea } from 'native-base';
 
 type IFormRulesConfigFormat = null | 'email' | 'url';
 
@@ -12,7 +13,7 @@ interface IFormRulesConfig {
 }
 
 interface IInput {
-    type: 'inputText' | 'inputSearch' | 'inputPassword' | 'inputSelect' | 'button' | 'buttonAsLink' | 'text' | 'submit';
+    type: 'inputText' | 'inputTextArea' | 'inputSearch' | 'inputPassword' | 'inputSelect' | 'button' | 'buttonAsLink' | 'text' | 'submit';
     fieldId: string;
     label?: string;
     placeholder?: string;
@@ -31,8 +32,11 @@ interface IInput {
     onChangeText?: (fieldId: string, value: any) => void;
     onSubmit?: (formData: any) => void;
 
-    formData?: { [fieldId: string]: string | any };
+    formData?: { [fieldId: string]: string | any }; // FormValue
     formErrors?: { [fieldId: string]: string | any };
+
+    styleContainerField?: ViewStyle | TextStyle | ImageStyle;
+    styleInputField?: ViewStyle | TextStyle | ImageStyle;
 }
 
 export const validateField = (
@@ -106,6 +110,7 @@ export const validateField = (
 export const Input = ({
     fieldId,
     // formData: formDataProps,
+    formData,
     formErrors: formErrorsProps,
     rules,
     type,
@@ -116,7 +121,9 @@ export const Input = ({
     onChangeText,
     getRules,
     onSubmit,
-    enabledValidationOnTyping
+    enabledValidationOnTyping,
+    styleContainerField = {},
+    styleInputField = {},
 }: IInput) => {
     // const [formData, setFormData] = useState<{ [fieldId: string]: string | any }>({});
     const [formErrors, setFormErrors] = useState<{ [fieldId: string]: string | any }>({});
@@ -191,8 +198,8 @@ export const Input = ({
         }
     }
 
-    const onChange = (nameParam: string, valueParam: any) => {
-        if (onChangeText) { onChangeText(nameParam, valueParam); }
+    const onChange = (fieldIdParam: string, valueParam: any) => {
+        if (onChangeText) { onChangeText(fieldIdParam, valueParam); }
 
         if (enabledValidationOnTyping) {
             setFormErrors({});
@@ -205,12 +212,13 @@ export const Input = ({
         }
     };
 
-    let inputSearchStyles: any = {};
+    const formValue = (formData && formData[fieldId]) || null;
+    let inputStyles: any = { py: 1, px: 2 };
     let renderInput = null;
 
     switch (type) {
         case "inputSearch":
-            inputSearchStyles = {
+            inputStyles = {
                 width: '100%',
                 background: '#dcdcdc',
                 borderRadius: 10,
@@ -223,9 +231,21 @@ export const Input = ({
                 <InputBase
                     placeholder={placeholder}
                     onChangeText={(value) => onChange(fieldId, value)}
-                    // value={formData[fieldId]}
-                    {...inputSearchStyles}
+                    value={formValue}
+                    {...inputStyles}
                     {...elementInsideInputProps}
+                    style={styleInputField}
+                />
+            );
+            break;
+        case "inputTextArea":
+            renderInput = (
+                <TextArea
+                    type="text"
+                    onChangeText={(value: string) => onChange(fieldId, value)}
+                    value={formValue}
+                    style={styleInputField}
+                    {...{} as any} // Fix Native Base bug
                 />
             );
             break;
@@ -236,6 +256,7 @@ export const Input = ({
                     placeholder={placeholder}
                     onChangeText={(value) => onChange(fieldId, value)}
                     {...elementInsideInputProps}
+                    style={styleInputField}
                 />
             );
             break;
@@ -253,6 +274,7 @@ export const Input = ({
                     onPress={() => {
                         // navigation.replace('ForgetPassword');
                     }}
+                    style={styleInputField}
                 >
                     { contentNode }
                 </Button>
@@ -279,22 +301,30 @@ export const Input = ({
     const isRequired = !!rules?.find((rule: any) => rule.required);
 
     return (
-        <FormControl isRequired={isRequired} isInvalid={formErrors ? !!formErrors[fieldId] : false}>
+        <FormControl
+            isRequired={isRequired}
+            isInvalid={formErrors ? !!formErrors[fieldId] : false}
+            style={[styleContainerField]}
+        >
             { label && <FormControl.Label>{label}</FormControl.Label> }
             { renderInput }
 
-            { formErrors && formErrors[fieldId] ? (
+            { formErrors && formErrors[fieldId] && (
                 <FormControl.ErrorMessage
                     _text={{fontSize: "xs"}}
                     leftIcon={<Icon as={Ionicons} name="alert-circle-outline" size="xs" />}
                 >
                     { formErrors[fieldId] }
                 </FormControl.ErrorMessage>
-            ) : (
-                <FormControl.HelperText>
-                    { ruleToDisplay?.message }
-                </FormControl.HelperText>
             )}
+
+            {
+                ruleToDisplay?.message && (
+                    <FormControl.HelperText>
+                        { ruleToDisplay?.message }
+                    </FormControl.HelperText>
+                )
+            }
         </FormControl>
     );
 };

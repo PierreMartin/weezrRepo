@@ -4,9 +4,8 @@ import { useTranslation } from "react-i18next";
 import { Box, Button, Text } from "native-base";
 import { StackNavigationProp } from "@react-navigation/stack/lib/typescript/src/types";
 import { InputSelect } from "../../components/Forms/InputSelect";
-import { InputText } from "../../components/Forms/InputText";
-import { InputTextArea } from "../../components/Forms/InputTextArea";
 import BlockedsProfiles from "../../components/BlockedsProfiles";
+import { Input } from "../../components/Forms/Form";
 import { IItem } from "../../components/MenuList";
 import { checkIsValidLanguage } from "../../toolbox/toolbox";
 import { ILanguage, IUser } from "../../entities";
@@ -74,21 +73,28 @@ export const getInputField = (
     const { fieldType, data, onFieldChange, onFieldSubmit } = item?.renderScreen || {};
     const { optionsInputSelect } = data || {};
     let renderField = null;
+    let label;
+    let type: any = 'inputText';
+
+    if (item.iconEmoji || item.title) { label = `${item.iconEmoji || ''} ${item.title || ''}`; }
 
     switch (fieldType) {
+        case 'textArea':
+            type = 'inputTextArea';
+        // eslint-disable-next-line no-fallthrough
         case 'text':
             renderField = (
-                <InputText
-                    fieldData={item as any}
-                    onChange={onFieldChange}
-                />
-            );
-            break;
-        case 'textArea':
-            renderField = (
-                <InputTextArea
-                    fieldData={item as any}
-                    onChange={onFieldChange}
+                <Input
+                    type={type}
+                    fieldId={item.id}
+                    label={label}
+                    placeholder={item.placeholder || ''}
+                    formData={{ [item.id]: item.value }}
+                    // formErrors={{ [item.id]: 'Error...' }}
+                    // elementInsideInput={{ type: 'icon', placement: 'left', iconName: item.iconStr }}
+                    onChangeText={(fieldId: string, value: any) => {
+                        if (onFieldChange) { onFieldChange(value, item); }
+                    }}
                 />
             );
             break;

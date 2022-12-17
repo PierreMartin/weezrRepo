@@ -14,6 +14,7 @@ export interface IItem {
     value?: string | any;
     title: string;
     description?: string;
+    placeholder?: string;
     iconStr?: string;
     iconEmoji?: string;
     iconColor?: string;
@@ -23,8 +24,8 @@ export interface IItem {
         data?: {
             optionsInputSelect?: any[];
         }
-        onFieldChange?: (data: any) => void;
-        onFieldSubmit?: (data: any) => void;
+        onFieldChange?: (data: any, item?: IItem) => void;
+        onFieldSubmit?: (data: any, item?: IItem) => void;
     }
 }
 
