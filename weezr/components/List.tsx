@@ -7,7 +7,7 @@ import { RowMap, SwipeListView, SwipeRow } from "react-native-swipe-list-view";
 import { StackNavigationProp } from '@react-navigation/stack/src/types';
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { Header, Text, View } from '.';
-import { InputSearch } from "./Forms/InputSearch";
+import { Input } from "./Forms/Form";
 import { Avatar } from "./Avatar";
 import { SpinnerIndicator } from "./SpinnerIndicator";
 import { hapticOptions } from "../constants/Config";
@@ -212,7 +212,16 @@ export const List = ({
 
         return (
             <View style={[styles.itemRowFront, { backgroundColor: '#eeeeee' }]}>
-                <InputSearch fieldData={{ placeholder: 'Search' }} />
+                <Input
+                    type="inputSearch"
+                    fieldId="search"
+                    placeholder="Search"
+                    elementInsideInput={{ type: 'icon', placement: 'left', iconName: 'ios-search' }}
+                    onChangeText={(key: string, value: any) => {
+                        const nextFormData = { [key]: value };
+                        console.log(nextFormData);
+                    }}
+                />
             </View>
         );
     };

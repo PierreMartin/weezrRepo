@@ -84,7 +84,7 @@ const LoginScreen = ({ navigation, loginActionProps, signupActionProps, route }:
                     formErrors={fieldsErrorsTyping}
                 >
                     <Form.Input
-                        key="email"
+                        fieldId="email"
                         label="Email"
                         type="inputText"
                         placeholder="example@example.com"
@@ -106,7 +106,7 @@ const LoginScreen = ({ navigation, loginActionProps, signupActionProps, route }:
                     />
 
                     <Form.Input
-                        key="password"
+                        fieldId="password"
                         label="Password"
                         type="inputPassword"
                         elementInsideInput={{
@@ -130,7 +130,7 @@ const LoginScreen = ({ navigation, loginActionProps, signupActionProps, route }:
                     {
                         isLogin && (
                             <Form.Input
-                                key="forgetPassword"
+                                fieldId="forgetPassword"
                                 content="Forget Password?"
                                 type="buttonAsLink"
                             />
@@ -140,7 +140,7 @@ const LoginScreen = ({ navigation, loginActionProps, signupActionProps, route }:
                     {
                         !isLogin && (
                             <Form.Input
-                                key="confirmPassword"
+                                fieldId="confirmPassword"
                                 label="Confirm your password"
                                 type="inputPassword"
                                 elementInsideInput={{
@@ -163,13 +163,13 @@ const LoginScreen = ({ navigation, loginActionProps, signupActionProps, route }:
                     }
 
                     <Form.Input
-                        key="forgetPassword"
+                        fieldId="forgetPassword"
                         type="submit"
                         content={isLogin ? 'Login' : 'Signup'}
                     />
 
                     <Form.Input
-                        key="forgetPassword"
+                        fieldId="forgetPassword"
                         type="text"
                         content={() => {
                             return (

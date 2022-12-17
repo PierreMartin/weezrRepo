@@ -12,8 +12,8 @@ interface IFormRulesConfig {
 }
 
 interface IInput {
-    type: 'inputText' | 'inputPassword' | 'inputSelect' | 'button' | 'buttonAsLink' | 'text' | 'submit';
-    key: string;
+    type: 'inputText' | 'inputSearch' | 'inputPassword' | 'inputSelect' | 'button' | 'buttonAsLink' | 'text' | 'submit';
+    fieldId: string;
     label?: string;
     placeholder?: string;
     elementInsideInput?: {
@@ -28,26 +28,26 @@ interface IInput {
     getRules?: (rules: any) => void;
     enabledValidationOnTyping?: boolean;
 
-    onChangeText?: (key: string, value: any) => void;
+    onChangeText?: (fieldId: string, value: any) => void;
     onSubmit?: (formData: any) => void;
 
-    formData?: { [key: string]: string | any };
-    formErrors?: { [key: string]: string | any };
+    formData?: { [fieldId: string]: string | any };
+    formErrors?: { [fieldId: string]: string | any };
 }
 
 export const validateField = (
-    formData: { [key: string]: string },
-    formRules: { [key: string]: IFormRulesConfig[] },
+    formData: { [fieldId: string]: string },
+    formRules: { [fieldId: string]: IFormRulesConfig[] },
     setState?: (formErrors: any) => void
 ) => {
     const regexForEmail = RegExp(/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/gi);
     const regexForUrl = RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi);
     let isValidate = true;
 
-    for (const key in formRules) {
-        if (formRules.hasOwnProperty(key)) {
-            const fieldRule: any = formRules[key];
-            const fieldValue = formData[key];
+    for (const fieldId in formRules) {
+        if (formRules.hasOwnProperty(fieldId)) {
+            const fieldRule: any = formRules[fieldId];
+            const fieldValue = formData[fieldId];
 
             for (let i = 0; i < fieldRule?.length; i++) {
                 const rule = fieldRule[i];
@@ -56,14 +56,14 @@ export const validateField = (
                 // Check if required:
                 const required = rule.required;
                 if (required && !fieldValue) {
-                    if (setState) { setState({ [key]: message }); }
+                    if (setState) { setState({ [fieldId]: message }); }
                     isValidate = false;
                 }
 
                 // Check if confirmPassword match with password:
                 const matchWith = rule.matchWith;
                 if (matchWith && formData[matchWith] !== fieldValue) {
-                    if (setState) { setState({ [key]: message }); }
+                    if (setState) { setState({ [fieldId]: message }); }
                     isValidate = false;
                 }
 
@@ -73,13 +73,13 @@ export const validateField = (
                     switch (format) {
                         case 'email':
                             if (fieldValue && !regexForEmail.test(fieldValue?.toLowerCase())) {
-                                if (setState) { setState({ [key]: message }); }
+                                if (setState) { setState({ [fieldId]: message }); }
                                 isValidate = false;
                             }
                             break;
                         case 'url':
                             if (fieldValue && !regexForUrl.test(fieldValue)) {
-                                if (setState) { setState({ [key]: message }); }
+                                if (setState) { setState({ [fieldId]: message }); }
                                 isValidate = false;
                             }
                             break;
@@ -92,7 +92,7 @@ export const validateField = (
                 const pattern = rule.pattern;
                 if (pattern) {
                     if (fieldValue && !pattern.test(fieldValue)) {
-                        if (setState) { setState({ [key]: message }); }
+                        if (setState) { setState({ [fieldId]: message }); }
                         isValidate = false;
                     }
                 }
@@ -104,7 +104,7 @@ export const validateField = (
 };
 
 export const Input = ({
-    key,
+    fieldId,
     // formData: formDataProps,
     formErrors: formErrorsProps,
     rules,
@@ -118,8 +118,8 @@ export const Input = ({
     onSubmit,
     enabledValidationOnTyping
 }: IInput) => {
-    // const [formData, setFormData] = useState<{ [key: string]: string | any }>({});
-    const [formErrors, setFormErrors] = useState<{ [key: string]: string | any }>({});
+    // const [formData, setFormData] = useState<{ [fieldId: string]: string | any }>({});
+    const [formErrors, setFormErrors] = useState<{ [fieldId: string]: string | any }>({});
 
     /*
     useEffect(() => {
@@ -137,13 +137,13 @@ export const Input = ({
 
     useEffect(() => {
         if (getRules) {
-            const object = { [key]: rules?.filter((rule: any) => rule) };
+            const object = { [fieldId]: rules?.filter((rule: any) => rule) };
 
-            /* // when 'key' is like 'field.subField':
+            /* // when 'fieldId' is like 'field.subField':
             getNestedObjectByStringifyKeys()
-            if (key.includes('.')) {
-                delete object[key];
-                _.set(object, key, rules?.filter((rule: any) => rule)); // mute object here
+            if (fieldId.includes('.')) {
+                delete object[fieldId];
+                _.set(object, fieldId, rules?.filter((rule: any) => rule)); // mute object here
             }
             */
 
@@ -198,21 +198,33 @@ export const Input = ({
             setFormErrors({});
 
             validateField(
-                { [key]: valueParam },
-                { [key]: rules?.filter((rule: any) => rule) || [] },
+                { [fieldId]: valueParam },
+                { [fieldId]: rules?.filter((rule: any) => rule) || [] },
                 setFormErrors
             );
         }
     };
 
+    let inputSearchStyles: any = {};
     let renderInput = null;
+
     switch (type) {
+        case "inputSearch":
+            inputSearchStyles = {
+                width: '100%',
+                background: '#dcdcdc',
+                borderRadius: 10,
+                py: 1,
+                px: 2
+            };
+        // eslint-disable-next-line no-fallthrough
         case "inputText":
             renderInput = (
                 <InputBase
                     placeholder={placeholder}
-                    onChangeText={(value) => onChange(key, value)}
-                    // value={formData[key]}
+                    onChangeText={(value) => onChange(fieldId, value)}
+                    // value={formData[fieldId]}
+                    {...inputSearchStyles}
                     {...elementInsideInputProps}
                 />
             );
@@ -221,7 +233,8 @@ export const Input = ({
             renderInput = (
                 <InputBase
                     type="password"
-                    onChangeText={(value) => onChange(key, value)}
+                    placeholder={placeholder}
+                    onChangeText={(value) => onChange(fieldId, value)}
                     {...elementInsideInputProps}
                 />
             );
@@ -266,16 +279,16 @@ export const Input = ({
     const isRequired = !!rules?.find((rule: any) => rule.required);
 
     return (
-        <FormControl isRequired={isRequired} isInvalid={formErrors ? !!formErrors[key] : false}>
+        <FormControl isRequired={isRequired} isInvalid={formErrors ? !!formErrors[fieldId] : false}>
             { label && <FormControl.Label>{label}</FormControl.Label> }
             { renderInput }
 
-            { formErrors && formErrors[key] ? (
+            { formErrors && formErrors[fieldId] ? (
                 <FormControl.ErrorMessage
                     _text={{fontSize: "xs"}}
                     leftIcon={<Icon as={Ionicons} name="alert-circle-outline" size="xs" />}
                 >
-                    { formErrors[key] }
+                    { formErrors[fieldId] }
                 </FormControl.ErrorMessage>
             ) : (
                 <FormControl.HelperText>
@@ -288,14 +301,14 @@ export const Input = ({
 
 interface IFormProps {
     onSubmit: (formData: any) => void;
-    formErrors?: { [key: string]: string | any }; // { email: '...' }
+    formErrors?: { [fieldId: string]: string | any }; // { email: '...' }
     children: any;
 }
 
 interface IFormState {
-    formData: { [key: string]: string | any }; // { email: '...' }
-    formErrors: { [key: string]: string | any }; // { email: '...' }
-    formRules: { [key: string]: IFormRulesConfig[] }; // { email: [{ required: true, message: '...' }, { format: 'url', message: '...' }] }
+    formData: { [fieldId: string]: string | any }; // { email: '...' }
+    formErrors: { [fieldId: string]: string | any }; // { email: '...' }
+    formRules: { [fieldId: string]: IFormRulesConfig[] }; // { email: [{ required: true, message: '...' }, { format: 'url', message: '...' }] }
 }
 
 export default class Form extends Component<IFormProps, IFormState> {
@@ -347,14 +360,14 @@ export default class Form extends Component<IFormProps, IFormState> {
             }
         };
 
-        const onChangeText = (key: string, value: any) => {
-            const object = { [key]: value };
+        const onChangeText = (fieldId: string, value: any) => {
+            const object = { [fieldId]: value };
 
             /* // for keys like 'field.subField':
             getNestedObjectByStringifyKeys()
-            if (key.includes('.')) {
-                delete object[key];
-                _.set(object, key, value); // mute object here
+            if (fieldId.includes('.')) {
+                delete object[fieldId];
+                _.set(object, fieldId, value); // mute object here
             }
             */
 
