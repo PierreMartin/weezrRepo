@@ -30,9 +30,9 @@ interface IInput {
     enabledValidationOnTyping?: boolean;
 
     onChangeText?: (fieldId: string, value: any) => void;
-    onSubmit?: (formData: any) => void;
+    onSubmit?: (formValues: any) => void;
 
-    formData?: { [fieldId: string]: string | any }; // FormValue
+    formValues?: { [fieldId: string]: string | any };
     formErrors?: { [fieldId: string]: string | any };
 
     styleContainerField?: ViewStyle | TextStyle | ImageStyle;
@@ -40,7 +40,7 @@ interface IInput {
 }
 
 export const validateField = (
-    formData: { [fieldId: string]: string },
+    formValues: { [fieldId: string]: string },
     formRules: { [fieldId: string]: IFormRulesConfig[] },
     setState?: (formErrors: any) => void
 ) => {
@@ -51,7 +51,7 @@ export const validateField = (
     for (const fieldId in formRules) {
         if (formRules.hasOwnProperty(fieldId)) {
             const fieldRule: any = formRules[fieldId];
-            const fieldValue = formData[fieldId];
+            const fieldValue = formValues[fieldId];
 
             for (let i = 0; i < fieldRule?.length; i++) {
                 const rule = fieldRule[i];
@@ -66,7 +66,7 @@ export const validateField = (
 
                 // Check if confirmPassword match with password:
                 const matchWith = rule.matchWith;
-                if (matchWith && formData[matchWith] !== fieldValue) {
+                if (matchWith && formValues[matchWith] !== fieldValue) {
                     if (setState) { setState({ [fieldId]: message }); }
                     isValidate = false;
                 }
@@ -109,8 +109,8 @@ export const validateField = (
 
 export const Input = ({
     fieldId,
-    // formData: formDataProps,
-    formData,
+    formValues,
+    // formValues: formValuesProps,
     formErrors: formErrorsProps,
     rules,
     type,
@@ -125,15 +125,15 @@ export const Input = ({
     styleContainerField = {},
     styleInputField = {},
 }: IInput) => {
-    // const [formData, setFormData] = useState<{ [fieldId: string]: string | any }>({});
+    // const [formValues, setFormValues] = useState<{ [fieldId: string]: string | any }>({});
     const [formErrors, setFormErrors] = useState<{ [fieldId: string]: string | any }>({});
 
     /*
     useEffect(() => {
-        if (formDataProps) {
-            setFormData(formDataProps);
+        if (formValuesProps) {
+            setFormValues(formValuesProps);
         }
-    }, [formDataProps]);
+    }, [formValuesProps]);
     */
 
     useEffect(() => {
@@ -212,7 +212,7 @@ export const Input = ({
         }
     };
 
-    const formValue = (formData && formData[fieldId]) || null;
+    const formValue = (formValues && formValues[fieldId]) || null;
     let inputStyles: any = { py: 1, px: 2 };
     let renderInput = null;
 
@@ -330,13 +330,13 @@ export const Input = ({
 };
 
 interface IFormProps {
-    onSubmit: (formData: any) => void;
+    onSubmit: (formValues: any) => void;
     formErrors?: { [fieldId: string]: string | any }; // { email: '...' }
     children: any;
 }
 
 interface IFormState {
-    formData: { [fieldId: string]: string | any }; // { email: '...' }
+    formValues: { [fieldId: string]: string | any }; // { email: '...' }
     formErrors: { [fieldId: string]: string | any }; // { email: '...' }
     formRules: { [fieldId: string]: IFormRulesConfig[] }; // { email: [{ required: true, message: '...' }, { format: 'url', message: '...' }] }
 }
@@ -348,7 +348,7 @@ export default class Form extends Component<IFormProps, IFormState> {
         super(props);
 
         this.state = {
-            formData: {},
+            formValues: {},
             formErrors: props.formErrors || {},
             formRules: {}
         };
@@ -371,11 +371,11 @@ export default class Form extends Component<IFormProps, IFormState> {
         } = this.props;
 
         const onSubmit = () => {
-            const { formData } = this.state;
+            const { formValues } = this.state;
             this.setState({ formErrors: {} });
 
             const isValidate = validateField(
-                formData,
+                formValues,
                 this.state.formRules,
                 (nextError) => {
                     this.setState((prevState) => {
@@ -385,7 +385,7 @@ export default class Form extends Component<IFormProps, IFormState> {
             );
 
             if (isValidate) {
-                const nextFormData = { ...formData };
+                const nextFormData = { ...formValues };
                 onSubmitProps(nextFormData);
             }
         };
@@ -402,7 +402,7 @@ export default class Form extends Component<IFormProps, IFormState> {
             */
 
             this.setState((prevState) => {
-                return { formData: { ...prevState.formData, ...object } };
+                return { formValues: { ...prevState.formValues, ...object } };
             });
         };
 
@@ -414,7 +414,7 @@ export default class Form extends Component<IFormProps, IFormState> {
 
         const props = {
             formErrors: this.state?.formErrors,
-            // formData: this.state?.formData, // For controlled input, but not used currently
+            // formValues: this.state?.formValues, // For controlled input, but not used currently
             onChangeText,
             getRules,
             onSubmit

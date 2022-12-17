@@ -89,7 +89,7 @@ export const getInputField = (
                     fieldId={item.id}
                     label={label}
                     placeholder={item.placeholder || ''}
-                    formData={{ [item.id]: item.value }}
+                    formValues={{ [item.id]: item.value }}
                     // formErrors={{ [item.id]: 'Error...' }}
                     // elementInsideInput={{ type: 'icon', placement: 'left', iconName: item.iconStr }}
                     onChangeText={(fieldId: string, value: any) => {
