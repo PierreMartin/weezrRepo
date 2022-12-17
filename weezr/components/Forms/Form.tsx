@@ -13,7 +13,7 @@ interface IFormRulesConfig {
 
 interface IInput {
     type: 'inputText' | 'inputPassword' | 'inputSelect' | 'button' | 'buttonAsLink' | 'text' | 'submit';
-    name: string; // TODO key
+    key: string;
     label?: string;
     placeholder?: string;
     elementInsideInput?: {
@@ -31,23 +31,23 @@ interface IInput {
     onChangeText?: (key: string, value: any) => void;
     onSubmit?: (formData: any) => void;
 
-    formData?: { [name: string]: string | any };
-    formErrors?: { [name: string]: string | any };
+    formData?: { [key: string]: string | any };
+    formErrors?: { [key: string]: string | any };
 }
 
 export const validateField = (
-    formData: { [name: string]: string },
-    formRules: { [name: string]: IFormRulesConfig[] },
+    formData: { [key: string]: string },
+    formRules: { [key: string]: IFormRulesConfig[] },
     setState?: (formErrors: any) => void
 ) => {
     const regexForEmail = RegExp(/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/gi);
     const regexForUrl = RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi);
     let isValidate = true;
 
-    for (const name in formRules) {
-        if (formRules.hasOwnProperty(name)) {
-            const fieldRule: any = formRules[name];
-            const fieldValue = formData[name];
+    for (const key in formRules) {
+        if (formRules.hasOwnProperty(key)) {
+            const fieldRule: any = formRules[key];
+            const fieldValue = formData[key];
 
             for (let i = 0; i < fieldRule?.length; i++) {
                 const rule = fieldRule[i];
@@ -56,14 +56,14 @@ export const validateField = (
                 // Check if required:
                 const required = rule.required;
                 if (required && !fieldValue) {
-                    if (setState) { setState({ [name]: message }); }
+                    if (setState) { setState({ [key]: message }); }
                     isValidate = false;
                 }
 
                 // Check if confirmPassword match with password:
                 const matchWith = rule.matchWith;
                 if (matchWith && formData[matchWith] !== fieldValue) {
-                    if (setState) { setState({ [name]: message }); }
+                    if (setState) { setState({ [key]: message }); }
                     isValidate = false;
                 }
 
@@ -73,13 +73,13 @@ export const validateField = (
                     switch (format) {
                         case 'email':
                             if (fieldValue && !regexForEmail.test(fieldValue?.toLowerCase())) {
-                                if (setState) { setState({ [name]: message }); }
+                                if (setState) { setState({ [key]: message }); }
                                 isValidate = false;
                             }
                             break;
                         case 'url':
                             if (fieldValue && !regexForUrl.test(fieldValue)) {
-                                if (setState) { setState({ [name]: message }); }
+                                if (setState) { setState({ [key]: message }); }
                                 isValidate = false;
                             }
                             break;
@@ -92,7 +92,7 @@ export const validateField = (
                 const pattern = rule.pattern;
                 if (pattern) {
                     if (fieldValue && !pattern.test(fieldValue)) {
-                        if (setState) { setState({ [name]: message }); }
+                        if (setState) { setState({ [key]: message }); }
                         isValidate = false;
                     }
                 }
@@ -104,7 +104,7 @@ export const validateField = (
 };
 
 export const Input = ({
-    name,
+    key,
     // formData: formDataProps,
     formErrors: formErrorsProps,
     rules,
@@ -118,8 +118,8 @@ export const Input = ({
     onSubmit,
     enabledValidationOnTyping
 }: IInput) => {
-    // const [formData, setFormData] = useState<{ [name: string]: string | any }>({});
-    const [formErrors, setFormErrors] = useState<{ [name: string]: string | any }>({});
+    // const [formData, setFormData] = useState<{ [key: string]: string | any }>({});
+    const [formErrors, setFormErrors] = useState<{ [key: string]: string | any }>({});
 
     /*
     useEffect(() => {
@@ -137,13 +137,13 @@ export const Input = ({
 
     useEffect(() => {
         if (getRules) {
-            const object = { [name]: rules?.filter((rule: any) => rule) };
+            const object = { [key]: rules?.filter((rule: any) => rule) };
 
-            /* // when 'name' is like 'field.subField':
+            /* // when 'key' is like 'field.subField':
             getNestedObjectByStringifyKeys()
-            if (name.includes('.')) {
-                delete object[name];
-                _.set(object, name, rules?.filter((rule: any) => rule)); // mute object here
+            if (key.includes('.')) {
+                delete object[key];
+                _.set(object, key, rules?.filter((rule: any) => rule)); // mute object here
             }
             */
 
@@ -198,8 +198,8 @@ export const Input = ({
             setFormErrors({});
 
             validateField(
-                { [name]: valueParam },
-                { [name]: rules?.filter((rule: any) => rule) },
+                { [key]: valueParam },
+                { [key]: rules?.filter((rule: any) => rule) || [] },
                 setFormErrors
             );
         }
@@ -211,8 +211,8 @@ export const Input = ({
             renderInput = (
                 <InputBase
                     placeholder={placeholder}
-                    onChangeText={(value) => onChange(name, value)}
-                    // value={formData[name]}
+                    onChangeText={(value) => onChange(key, value)}
+                    // value={formData[key]}
                     {...elementInsideInputProps}
                 />
             );
@@ -221,7 +221,7 @@ export const Input = ({
             renderInput = (
                 <InputBase
                     type="password"
-                    onChangeText={(value) => onChange(name, value)}
+                    onChangeText={(value) => onChange(key, value)}
                     {...elementInsideInputProps}
                 />
             );
@@ -266,16 +266,16 @@ export const Input = ({
     const isRequired = !!rules?.find((rule: any) => rule.required);
 
     return (
-        <FormControl isRequired={isRequired} isInvalid={formErrors ? !!formErrors[name] : false}>
+        <FormControl isRequired={isRequired} isInvalid={formErrors ? !!formErrors[key] : false}>
             { label && <FormControl.Label>{label}</FormControl.Label> }
             { renderInput }
 
-            { formErrors && formErrors[name] ? (
+            { formErrors && formErrors[key] ? (
                 <FormControl.ErrorMessage
                     _text={{fontSize: "xs"}}
                     leftIcon={<Icon as={Ionicons} name="alert-circle-outline" size="xs" />}
                 >
-                    { formErrors[name] }
+                    { formErrors[key] }
                 </FormControl.ErrorMessage>
             ) : (
                 <FormControl.HelperText>
@@ -288,14 +288,14 @@ export const Input = ({
 
 interface IFormProps {
     onSubmit: (formData: any) => void;
-    formErrors?: { [name: string]: string | any }; // { email: '...' }
+    formErrors?: { [key: string]: string | any }; // { email: '...' }
     children: any;
 }
 
 interface IFormState {
-    formData: { [name: string]: string | any }; // { email: '...' }
-    formErrors: { [name: string]: string | any }; // { email: '...' }
-    formRules: { [name: string]: IFormRulesConfig[] }; // { email: [{ required: true, message: '...' }, { format: 'url', message: '...' }] }
+    formData: { [key: string]: string | any }; // { email: '...' }
+    formErrors: { [key: string]: string | any }; // { email: '...' }
+    formRules: { [key: string]: IFormRulesConfig[] }; // { email: [{ required: true, message: '...' }, { format: 'url', message: '...' }] }
 }
 
 export default class Form extends Component<IFormProps, IFormState> {

@@ -454,7 +454,7 @@ function TabUsersGridScreen({
             <Box style={[styles.searchContainer]}>
                 <Input
                     type="inputText"
-                    name="search"
+                    key="search"
                     placeholder="Search"
                     elementInsideInput={{ type: 'icon', placement: 'left', iconName: 'ios-search' }}
                     onChangeText={(key: string, value: any) => {
