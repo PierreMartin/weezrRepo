@@ -213,15 +213,23 @@ export const Input = ({
     };
 
     const formValue = (formValues && formValues[fieldId]) || null;
-    let inputStyles: any = { py: 1, px: 2 };
     let renderInput = null;
+
+    let inputStyles: any = {
+        py: 1,
+        px: 2,
+        focusOutlineColor: '#616161',
+        _focus: { bg: 'transparent' },
+        _invalid: { borderColor: 'red.500', borderWidth: 1.5 }
+    };
 
     switch (type) {
         case "inputSearch":
             inputStyles = {
+                ...inputStyles,
                 width: '100%',
                 background: '#dcdcdc',
-                borderRadius: 10,
+                variant: 'rounded',
                 py: 1,
                 px: 2
             };
@@ -232,8 +240,8 @@ export const Input = ({
                     placeholder={placeholder}
                     onChangeText={(value) => onChange(fieldId, value)}
                     value={formValue}
-                    {...inputStyles}
                     {...elementInsideInputProps}
+                    {...inputStyles}
                     style={styleInputField}
                 />
             );
@@ -244,6 +252,7 @@ export const Input = ({
                     type="text"
                     onChangeText={(value: string) => onChange(fieldId, value)}
                     value={formValue}
+                    {...inputStyles}
                     style={styleInputField}
                     {...{} as any} // Fix Native Base bug
                 />
@@ -256,6 +265,7 @@ export const Input = ({
                     placeholder={placeholder}
                     onChangeText={(value) => onChange(fieldId, value)}
                     {...elementInsideInputProps}
+                    {...inputStyles}
                     style={styleInputField}
                 />
             );
