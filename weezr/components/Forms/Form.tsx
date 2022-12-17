@@ -1,20 +1,19 @@
 // @ts-ignore
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import React, { Component, useEffect } from 'react';
-import { Icon, Input, VStack, FormControl, Button } from 'native-base';
+import React, { Component, useEffect, useState } from 'react';
+import { Icon, Input as InputBase, VStack, FormControl, Button } from 'native-base';
 
 type IFormRulesConfigFormat = null | 'email' | 'url';
 
 interface IFormRulesConfig {
-    required: boolean;
+    required?: boolean;
     message: string;
-    format: IFormRulesConfigFormat;
+    format?: IFormRulesConfigFormat;
 }
 
-interface IMenuItem {
+interface IInput {
     type: 'inputText' | 'inputPassword' | 'inputSelect' | 'button' | 'buttonAsLink' | 'text' | 'submit';
-    name: string;
-    rules?: IFormRulesConfig[];
+    name: string; // TODO key
     label?: string;
     placeholder?: string;
     elementInsideInput?: {
@@ -23,26 +22,118 @@ interface IMenuItem {
         iconName?: string;
     };
     content?: any;
-    state?: any;
-    onChangeText?: (key: string, value: any) => void;
+
+    // handling valid:
+    rules?: IFormRulesConfig[];
     getRules?: (rules: any) => void;
+    enabledValidationOnTyping?: boolean;
+
+    onChangeText?: (key: string, value: any) => void;
     onSubmit?: (formData: any) => void;
+
+    formData?: { [name: string]: string | any };
+    formErrors?: { [name: string]: string | any };
 }
 
-const Item = ({
+export const validateField = (
+    formData: { [name: string]: string },
+    formRules: { [name: string]: IFormRulesConfig[] },
+    setState?: (formErrors: any) => void
+) => {
+    const regexForEmail = RegExp(/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/gi);
+    const regexForUrl = RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi);
+    let isValidate = true;
+
+    for (const name in formRules) {
+        if (formRules.hasOwnProperty(name)) {
+            const fieldRule: any = formRules[name];
+            const fieldValue = formData[name];
+
+            for (let i = 0; i < fieldRule?.length; i++) {
+                const rule = fieldRule[i];
+                const message = rule.message || 'An error has occurred';
+
+                // Check if required:
+                const required = rule.required;
+                if (required && !fieldValue) {
+                    if (setState) { setState({ [name]: message }); }
+                    isValidate = false;
+                }
+
+                // Check if confirmPassword match with password:
+                const matchWith = rule.matchWith;
+                if (matchWith && formData[matchWith] !== fieldValue) {
+                    if (setState) { setState({ [name]: message }); }
+                    isValidate = false;
+                }
+
+                // Check if right format:
+                const format = rule.format as IFormRulesConfigFormat;
+                if (format) {
+                    switch (format) {
+                        case 'email':
+                            if (fieldValue && !regexForEmail.test(fieldValue?.toLowerCase())) {
+                                if (setState) { setState({ [name]: message }); }
+                                isValidate = false;
+                            }
+                            break;
+                        case 'url':
+                            if (fieldValue && !regexForUrl.test(fieldValue)) {
+                                if (setState) { setState({ [name]: message }); }
+                                isValidate = false;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                // Check if right custom format:
+                const pattern = rule.pattern;
+                if (pattern) {
+                    if (fieldValue && !pattern.test(fieldValue)) {
+                        if (setState) { setState({ [name]: message }); }
+                        isValidate = false;
+                    }
+                }
+            }
+        }
+    }
+
+    return isValidate;
+};
+
+export const Input = ({
     name,
+    // formData: formDataProps,
+    formErrors: formErrorsProps,
     rules,
     type,
     label,
     placeholder,
     content,
     elementInsideInput,
-    state,
     onChangeText,
     getRules,
-    onSubmit
-}: IMenuItem) => {
-    const formErrors = state?.formErrors as { [name: string]: string | any };
+    onSubmit,
+    enabledValidationOnTyping
+}: IInput) => {
+    // const [formData, setFormData] = useState<{ [name: string]: string | any }>({});
+    const [formErrors, setFormErrors] = useState<{ [name: string]: string | any }>({});
+
+    /*
+    useEffect(() => {
+        if (formDataProps) {
+            setFormData(formDataProps);
+        }
+    }, [formDataProps]);
+    */
+
+    useEffect(() => {
+        if (formErrorsProps) {
+            setFormErrors(formErrorsProps);
+        }
+    }, [formErrorsProps]);
 
     useEffect(() => {
         if (getRules) {
@@ -100,22 +191,37 @@ const Item = ({
         }
     }
 
+    const onChange = (nameParam: string, valueParam: any) => {
+        if (onChangeText) { onChangeText(nameParam, valueParam); }
+
+        if (enabledValidationOnTyping) {
+            setFormErrors({});
+
+            validateField(
+                { [name]: valueParam },
+                { [name]: rules?.filter((rule: any) => rule) },
+                setFormErrors
+            );
+        }
+    };
+
     let renderInput = null;
     switch (type) {
         case "inputText":
             renderInput = (
-                <Input
+                <InputBase
                     placeholder={placeholder}
-                    onChangeText={(value) => onChangeText && onChangeText(name, value)}
+                    onChangeText={(value) => onChange(name, value)}
+                    // value={formData[name]}
                     {...elementInsideInputProps}
                 />
             );
             break;
         case "inputPassword":
             renderInput = (
-                <Input
+                <InputBase
                     type="password"
-                    onChangeText={(value) => onChangeText && onChangeText(name, value)}
+                    onChangeText={(value) => onChange(name, value)}
                     {...elementInsideInputProps}
                 />
             );
@@ -193,7 +299,7 @@ interface IFormState {
 }
 
 export default class Form extends Component<IFormProps, IFormState> {
-    static Item: any;
+    static Input: any;
 
     constructor(props: IFormProps) {
         super(props);
@@ -221,91 +327,21 @@ export default class Form extends Component<IFormProps, IFormState> {
             onSubmit: onSubmitProps
         } = this.props;
 
-        const validate = (formData: { [name: string]: string }) => {
-            const regexForEmail = RegExp(/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/gi);
-            const regexForUrl = RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi);
-            const { formRules } = this.state;
-            let isValidate = true;
-
-            for (const name in formRules) {
-                if (formRules.hasOwnProperty(name)) {
-                    const fieldRule: any = formRules[name];
-                    const fieldValue = formData[name];
-
-                    for (let i = 0; i < fieldRule?.length; i++) {
-                        const rule = fieldRule[i];
-                        const message = rule.message || 'An error has occurred';
-
-                        // Check if required:
-                        const required = rule.required;
-                        if (required && !fieldValue) {
-                            this.setState((prevState) => {
-                                return { formErrors: { ...prevState.formErrors, [name]: message } };
-                            });
-
-                            isValidate = false;
-                        }
-
-                        // Check if confirmPassword match with password:
-                        const matchWith = rule.matchWith;
-                        if (matchWith && formData[matchWith] !== fieldValue) {
-                            this.setState((prevState) => {
-                                return { formErrors: { ...prevState.formErrors, [name]: message } };
-                            });
-
-                            isValidate = false;
-                        }
-
-                        // Check if right format:
-                        const format = rule.format as IFormRulesConfigFormat;
-                        if (format) {
-                            switch (format) {
-                                case 'email':
-                                    if (fieldValue && !regexForEmail.test(fieldValue?.toLowerCase())) {
-                                        this.setState((prevState) => {
-                                            return { formErrors: { ...prevState.formErrors, [name]: message } };
-                                        });
-
-                                        isValidate = false;
-                                    }
-                                    break;
-                                case 'url':
-                                    if (fieldValue && !regexForUrl.test(fieldValue)) {
-                                        this.setState((prevState) => {
-                                            return { formErrors: { ...prevState.formErrors, [name]: message } };
-                                        });
-
-                                        isValidate = false;
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-
-                        // Check if right custom format:
-                        const pattern = rule.pattern;
-                        if (pattern) {
-                            if (fieldValue && !pattern.test(fieldValue)) {
-                                this.setState((prevState) => {
-                                    return { formErrors: { ...prevState.formErrors, [name]: message } };
-                                });
-
-                                isValidate = false;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return isValidate;
-        };
-
         const onSubmit = () => {
             const { formData } = this.state;
             this.setState({ formErrors: {} });
 
-            if (validate(formData)) {
+            const isValidate = validateField(
+                formData,
+                this.state.formRules,
+                (nextError) => {
+                    this.setState((prevState) => {
+                        return { formErrors: { ...prevState.formErrors, ...nextError } };
+                    });
+                }
+            );
+
+            if (isValidate) {
                 const nextFormData = { ...formData };
                 onSubmitProps(nextFormData);
             }
@@ -334,7 +370,8 @@ export default class Form extends Component<IFormProps, IFormState> {
         };
 
         const props = {
-            state: this.state,
+            formErrors: this.state?.formErrors,
+            // formData: this.state?.formData, // For controlled input, but not used currently
             onChangeText,
             getRules,
             onSubmit
@@ -356,4 +393,4 @@ export default class Form extends Component<IFormProps, IFormState> {
     }
 }
 
-Form.Item = Item;
+Form.Input = Input;

@@ -21,7 +21,7 @@ import { setRealtimeNewLikeAction, newMessageAction } from "../reduxActions/real
 import { getUserForwardPhoto, setElementInArrayAtIndex } from "../toolbox/toolbox";
 import { Spinner } from "../components/Spinner";
 import { SpinnerIndicator } from "../components/SpinnerIndicator";
-import { InputSearch } from "../components/Forms/InputSearch";
+import { Input } from "../components/Forms/Form";
 import { hapticOptions } from "../constants/Config";
 import { IUser } from "../entities";
 import { States } from "../reduxReducers/states";
@@ -452,9 +452,15 @@ function TabUsersGridScreen({
     const renderHeader = () => {
         return (
             <Box style={[styles.searchContainer]}>
-                <InputSearch
-                    fieldData={{ placeholder: 'Search' }}
-                    onChange={(value: string) => console.log(value)}
+                <Input
+                    type="inputText"
+                    name="search"
+                    placeholder="Search"
+                    elementInsideInput={{ type: 'icon', placement: 'left', iconName: 'ios-search' }}
+                    onChangeText={(key: string, value: any) => {
+                        const nextFormData = { [key]: value };
+                        console.log(nextFormData);
+                    }}
                 />
             </Box>
         );

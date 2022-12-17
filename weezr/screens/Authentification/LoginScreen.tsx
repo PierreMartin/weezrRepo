@@ -83,7 +83,7 @@ const LoginScreen = ({ navigation, loginActionProps, signupActionProps, route }:
                     onSubmit={isLogin ? onSubmitLogin : onSubmitSignup}
                     formErrors={fieldsErrorsTyping}
                 >
-                    <Form.Item
+                    <Form.Input
                         name="email"
                         label="Email"
                         type="inputText"
@@ -105,7 +105,7 @@ const LoginScreen = ({ navigation, loginActionProps, signupActionProps, route }:
                         ]}
                     />
 
-                    <Form.Item
+                    <Form.Input
                         name="password"
                         label="Password"
                         type="inputPassword"
@@ -129,7 +129,7 @@ const LoginScreen = ({ navigation, loginActionProps, signupActionProps, route }:
 
                     {
                         isLogin && (
-                            <Form.Item
+                            <Form.Input
                                 name="forgetPassword"
                                 content="Forget Password?"
                                 type="buttonAsLink"
@@ -139,7 +139,7 @@ const LoginScreen = ({ navigation, loginActionProps, signupActionProps, route }:
 
                     {
                         !isLogin && (
-                            <Form.Item
+                            <Form.Input
                                 name="confirmPassword"
                                 label="Confirm your password"
                                 type="inputPassword"
@@ -162,13 +162,13 @@ const LoginScreen = ({ navigation, loginActionProps, signupActionProps, route }:
                         )
                     }
 
-                    <Form.Item
+                    <Form.Input
                         name="forgetPassword"
                         type="submit"
                         content={isLogin ? 'Login' : 'Signup'}
                     />
 
-                    <Form.Item
+                    <Form.Input
                         name="forgetPassword"
                         type="text"
                         content={() => {

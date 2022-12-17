@@ -13,7 +13,7 @@
 
 
 1) Refacto Inputs (and handle fields errors)
-  - Text | textArea                       => <Form.Item type="text" /> (ou <Input type="text | textArea | password" />)
+  - Text | textArea                       => <Form.Input type="text" /> (ou <Input type="text | textArea | password" />)
   - Select | Wheel | Radio | Checkbox     => <Picker type="checkbox" canMultipleSelect={bool} data={[]} />   (ex: if type="date" => automatically in modal | if type="checkbox" => automatically in inline)
 2) Settings - check if email doesn't exist before save + handle fields errors
 
@@ -227,7 +227,7 @@ update mainFileId => UserPhotoForProfile.findOneAndUpdate({ userId }, { mainFile
 NOTE = ON FAIT PAS (au final on double les requêtes + lookup à faire partout)
 
 
-# Storage messages in local:
+# Storage messages in local (end to end encryption):
   - https://github.com/techfort/LokiJS (for Web only)
   - https://github.com/ammarahm-ed/react-native-mmkv-storage
   - https://github.com/mrousavy/react-native-mmkv
