@@ -6,14 +6,14 @@ import { Icon, Input as InputBase, VStack, FormControl, Button, TextArea } from 
 
 type IFormRulesConfigFormat = null | 'email' | 'url';
 
-interface IFormRulesConfig {
+export interface IFormRulesConfig {
     required?: boolean;
     message: string;
     format?: IFormRulesConfigFormat;
 }
 
 interface IInput {
-    type: 'inputText' | 'inputTextArea' | 'inputSearch' | 'inputPassword' | 'inputSelect' | 'button' | 'buttonAsLink' | 'text' | 'submit';
+    type: 'inputText' | 'inputTextArea' | 'inputSearch' | 'inputPassword' | 'button' | 'buttonAsLink' | 'text' | 'submit';
     fieldId: string;
     label?: string;
     placeholder?: string;

@@ -1,17 +1,5 @@
 "Martin Technologies | Lookup | Weezr"
 
-- UserInteractions => handle "replies too" in TabNotificationsCenter
-- Query (Apollo ?) => See why we pass many times in some queries (like users)
-- Fix forward photo in user detail
-- Fix tab unread message => not work at update
-- Fix websocket count unread messages in users grid, sometime stay at 0 
-- Change wording in back-end by keys of trad
-- Android => 
-  - Very slow on device !!
-  - Bug, no pagination (on grid)
-  - Bug, no profile me on all grid
-
-
 1) Refacto Inputs (and handle fields errors)
   - Select | Wheel | Radio | Checkbox     => <Picker type="checkbox" canMultipleSelect={bool} data={[]} />   (ex: if type="date" => automatically in modal | if type="checkbox" => automatically in inline)
 2) Settings - check if email doesn't exist before save + handle fields errors
@@ -24,6 +12,18 @@
   - 'isOnline' => changer le champ en 'account': { 'lastLoginAt': Date, 'lastActivityAt': Date } => ajouter une icon orange (si lastActivityAt > 15min = on passe en orange, si > 30min, on vire l'icon)
   - send websockets every 15 minutes for update user's location in grid
   - Refaire algo pour les hommes -> afficher pareil
+
+- UserInteractions => handle "replies too" in TabNotificationsCenter
+- Query (Apollo ?) => See why we pass many times in some queries (like users)
+- Fix forward photo in user detail
+- Fix tab unread message => not work at update
+- Fix websocket count unread messages in users grid, sometime stay at 0
+- Change wording in back-end by keys of trad
+- Android =>
+    - Very slow on device !!
+    - Bug, no pagination (on grid)
+    - Bug, no profile me on all grid
+
 
 * mapbox.com
 * Push notification
