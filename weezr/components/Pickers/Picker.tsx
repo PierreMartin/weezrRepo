@@ -86,6 +86,7 @@ export const Picker = ({
         py: 1,
         px: 2,
         focusOutlineColor: '#616161',
+        minWidth: "100%",
         _focus: { bg: 'transparent' },
         _invalid: { borderColor: 'red.500', borderWidth: 1.5 },
         _selectedItem: {
@@ -104,7 +105,6 @@ export const Picker = ({
             renderInput = (
                 <Select
                     selectedValue={formValue}
-                    minWidth="200"
                     placeholder={placeholder}
                     onValueChange={(value: string) => onChangeVal && onChangeVal(fieldId, value)}
                     {...pickerStyles}

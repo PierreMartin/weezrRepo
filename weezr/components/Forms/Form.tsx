@@ -218,6 +218,7 @@ export const Input = ({
     let inputStyles: any = {
         py: 1,
         px: 2,
+        width: "100%",
         focusOutlineColor: '#616161',
         _focus: { bg: 'transparent' },
         _invalid: { borderColor: 'red.500', borderWidth: 1.5 }

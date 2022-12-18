@@ -1,5 +1,7 @@
 "Martin Technologies | Lookup | Weezr"
 
+- When canMultipleSelect=false => Do auto submit after onChange
+
 1) Refacto Inputs (and handle fields errors)
   - Select | Wheel | Radio | Checkbox     => <Picker type="checkbox" canMultipleSelect={bool} data={[]} />   (ex: if type="date" => automatically in modal | if type="checkbox" => automatically in inline)
 2) Settings - check if email doesn't exist before save + handle fields errors
