@@ -66,8 +66,6 @@ export const Picker = ({
     const onChangeVal = (fieldIdParam: string, valueParam: any) => {
         setFormValues({ [fieldIdParam]: valueParam });
 
-        if (onChange) { onChange(fieldIdParam, valueParam); }
-
         if (enabledValidationOnTyping) {
             setFormErrors({});
 
@@ -77,6 +75,8 @@ export const Picker = ({
                 setFormErrors
             );
         }
+
+        if (onChange) { onChange(fieldIdParam, valueParam); }
     };
 
     const formValue = (formValues && formValues[fieldId]) || null;

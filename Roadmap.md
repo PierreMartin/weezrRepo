@@ -1,5 +1,6 @@
 "Martin Technologies | Lookup | Weezr"
 
+- Picker trop lourd !!! créer plusieurs components (PickerInputSelect, PickerSelect, PickerDate)
 - When canMultipleSelect=false => Do auto submit after onChange
 
 1) Refacto Inputs (and handle fields errors)

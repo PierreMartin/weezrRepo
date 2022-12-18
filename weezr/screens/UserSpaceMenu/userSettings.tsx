@@ -6,6 +6,7 @@ import { StackNavigationProp } from "@react-navigation/stack/lib/typescript/src/
 import BlockedsProfiles from "../../components/BlockedsProfiles";
 import { Input } from "../../components/Forms/Form";
 import { Picker } from "../../components/Pickers/Picker";
+import { InputSelect } from "../../components/Forms/inputSelect";
 import { IItem } from "../../components/MenuList";
 import { checkIsValidLanguage } from "../../toolbox/toolbox";
 import { ILanguage, IUser } from "../../entities";
@@ -100,6 +101,7 @@ export const getInputField = (
             break;
         case 'select':
             renderField = (
+                /*
                 <Picker
                     type="inputSelect"
                     fieldId={item.id}
@@ -111,12 +113,18 @@ export const getInputField = (
                     onChange={(fieldId: string, value: any) => {
                         if (onFieldChange) { onFieldChange(value, item); }
                     }}
-                    /*
-                    onSubmit={(formValues: any) => {
-                        const value = (formValues && formValues[item.id]) || null;
-                        if (onFieldChange) { onFieldChange(value, item); }
-                    }}
-                    */
+                    // onSubmit={(formValues: any) => {
+                        // const value = (formValues && formValues[item.id]) || null;
+                        // if (onFieldChange) { onFieldChange(value, item); }
+                    // }}
+                />
+                */
+
+                // TODO use <PickerInputSelect />
+                <InputSelect
+                    fieldData={item as any}
+                    options={optionsInputSelect || []}
+                    onChange={onFieldChange}
                 />
             );
             break;

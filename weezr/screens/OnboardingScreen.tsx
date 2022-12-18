@@ -105,6 +105,7 @@ const OnboardingScreen = ({
     const [indexes, setIndexes] = React.useState<IIndexes>({ indexGroup: 0, indexPage: 0, indexPageAccumulated: 0 });
     const [formData, setFormData] = React.useState<{ [name: string]: any }>({}); // Nested objects for local state (ex: 'career: { job }')
     const [formDataToUpdate, setFormDataToUpdate] = React.useState<{ [name: string]: any }>({}); // Dot notation for MongoDB updating (ex: 'career.job')
+
     const [updateUser, { error: updateUserError }] = useMutation(UPDATE_USER);
     const refSwiper = React.useRef(null);
     const { t } = useTranslation();
@@ -478,6 +479,8 @@ const OnboardingScreen = ({
                 prevButton={renderNavigationButton('chevron-back-outline', 'prev')}
                 nextButton={renderNavigationButton('chevron-forward-outline', 'next')}
                 onIndexChanged={(index) => setIndexes(getIndexes(index))}
+                loadMinimal
+                loadMinimalSize={1}
             >
                 {
                     groupsPage
