@@ -1,14 +1,11 @@
 "Martin Technologies | Lookup | Weezr"
 
-- PickerModal 
-  - style: 'input' | 'button' | 'link'
-  - mode: bottomSheet | modal
-
-- PickerInline
-  - style: 'block' | 'line' | 'dot'
-
-- PickerDate 
-  - mode: inline | bottomSheet (or wheel) | modal
+- DataPicker 
+  - type: 'modal' | 'bottomSheet' | 'inline' 
+  - layout: {
+      opening: 'none' | 'input' | 'button' | 'link',
+      dataList: 'block' | 'list' | 'dot'
+  }
 
 - When canMultipleSelect=false => Do auto submit after onChange
 

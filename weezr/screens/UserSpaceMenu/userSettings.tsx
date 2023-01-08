@@ -5,7 +5,7 @@ import { Box, Button, Text } from "native-base";
 import { StackNavigationProp } from "@react-navigation/stack/lib/typescript/src/types";
 import BlockedsProfiles from "../../components/BlockedsProfiles";
 import { Input } from "../../components/Forms/Form";
-import { PickerInputSelect } from "../../components/Pickers/PickerInputSelect";
+import { DataBottomSheetPicker } from "../../components/Pickers/DataBottomSheetPicker";
 // eslint-disable-next-line import/no-cycle
 import { IItem } from "../../components/MenuList";
 import { checkIsValidLanguage } from "../../toolbox/toolbox";
@@ -71,7 +71,7 @@ export const getInputField = (
     item: IItem,
     navigation?: StackNavigationProp<any, any>
 ) => {
-    const { fieldType, data, onFieldChange, onFieldSubmit } = item?.renderScreen || {};
+    const { fieldType, pickerType, data, onFieldChange, onFieldSubmit } = item?.renderScreen || {};
     const { optionsInputSelect } = data || {};
     let renderField = null;
     let label;
@@ -99,38 +99,51 @@ export const getInputField = (
                 />
             );
             break;
-        case 'select': // TODO pickerInputSelect
-            renderField = (
-                <PickerInputSelect
-                    data={optionsInputSelect}
-                    label={label}
-                    placeholder={item.placeholder || ''}
-                    value={item.value}
-                    // error="Error..."
-                    onChange={(value: any) => {
-                        if (onFieldChange) { onFieldChange(value, item); }
-                    }}
-                    /*
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please input your E-mail!',
-                        }
-                    ]}
-                    enabledValidationOnTyping
-                    onSubmit={(value: any) => {
-                        if (onFieldChange) { onFieldChange(value, item); }
-                    }}
-                    */
-                />
-            );
+        case 'dataPicker':
+            switch (pickerType?.type) {
+                case undefined:
+                case null:
+                case 'bottomSheet':
+                    renderField = (
+                        <DataBottomSheetPicker
+                            data={optionsInputSelect}
+                            label={label}
+                            placeholder={item.placeholder || ''}
+                            value={item.value}
+                            // error="Error..."
+                            onChange={(value: any) => {
+                                if (onFieldChange) { onFieldChange(value, item); }
+                            }}
+                            layout={pickerType?.layout}
+                            /*
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input your E-mail!',
+                                }
+                            ]}
+                            enabledValidationOnTyping
+                            onSubmit={(value: any) => {
+                                if (onFieldChange) { onFieldChange(value, item); }
+                            }}
+                            */
+                        />
+                    );
+                    break;
+                // TODO
+                // case 'inline':
+                //     renderField = <DataInlinePicker />
+                //     break;
+                // case 'modal':
+                //     renderField = <DataModalPicker />
+                //     break;
+                default:
+                    break;
+            }
+
             break;
-        case 'radio':
-            renderField = (
-                <Box style={{ display: 'flex' }} w="100%">
-                    <Text>{`${item.iconEmoji || ''} ${item.title}`}</Text>
-                </Box>
-            );
+        case 'datePicker':
+            // TODO renderField = <DatePicker />;
             break;
         case 'file':
             const props = { navigation, marginsAroundContainer: 20, tab: "public" } as any;
@@ -173,7 +186,11 @@ const userSettings = {
                 title: t('user.preferencesFilter.desiredGender'),
                 iconEmoji: '🔍',
                 renderScreen: {
-                    fieldType: 'select',
+                    fieldType: 'dataPicker',
+                    pickerType: {
+                        type: 'bottomSheet',
+                        layout: { opening: 'input' }
+                    },
                     data: {
                         optionsInputSelect: [
                             {
@@ -200,7 +217,11 @@ const userSettings = {
                 title: t('user.preferencesFilter.desiredAgeRange'),
                 iconEmoji: '🔍',
                 renderScreen: {
-                    fieldType: 'select',
+                    fieldType: 'dataPicker',
+                    pickerType: {
+                        type: 'bottomSheet',
+                        layout: { opening: 'input' }
+                    },
                     data: {
                         optionsInputSelect: [
                             {
@@ -223,7 +244,11 @@ const userSettings = {
                 title: t('user.preferencesFilter.profileWithPhotoOnly'),
                 iconEmoji: '🔍',
                 renderScreen: {
-                    fieldType: 'select',
+                    fieldType: 'dataPicker',
+                    pickerType: {
+                        type: 'bottomSheet',
+                        layout: { opening: 'input' }
+                    },
                     data: {
                         optionsInputSelect: [
                             {
@@ -249,7 +274,11 @@ const userSettings = {
                 iconEmoji: '🧑',
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
-                    fieldType: 'select',
+                    fieldType: 'dataPicker',
+                    pickerType: {
+                        type: 'bottomSheet',
+                        layout: { opening: 'input' }
+                    },
                     data: {
                         optionsInputSelect: [
                             {
@@ -272,7 +301,11 @@ const userSettings = {
                 title: t('user.birthAt'),
                 iconEmoji: '🎂',
                 renderScreen: {
-                    fieldType: 'select',
+                    fieldType: 'dataPicker',
+                    pickerType: {
+                        type: 'bottomSheet',
+                        layout: { opening: 'input' }
+                    },
                     routeNameIfNavigable: 'FieldsForm',
                     data: {
                         optionsInputSelect: [
@@ -349,7 +382,11 @@ const userSettings = {
                 iconEmoji: '💕️',
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
-                    fieldType: 'select',
+                    fieldType: 'dataPicker',
+                    pickerType: {
+                        type: 'bottomSheet',
+                        layout: { opening: 'input' }
+                    },
                     data: {
                         optionsInputSelect: [
                             {
@@ -377,7 +414,11 @@ const userSettings = {
                 iconEmoji: '🧑‍🤝‍🧑',
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
-                    fieldType: 'select',
+                    fieldType: 'dataPicker',
+                    pickerType: {
+                        type: 'bottomSheet',
+                        layout: { opening: 'input' }
+                    },
                     data: {
                         optionsInputSelect: [
                             {
@@ -403,7 +444,11 @@ const userSettings = {
                 iconEmoji: '📏️',
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
-                    fieldType: 'select',
+                    fieldType: 'dataPicker',
+                    pickerType: {
+                        type: 'bottomSheet',
+                        layout: { opening: 'input' }
+                    },
                     data: {
                         optionsInputSelect: optionsHeight
                     },
@@ -418,7 +463,11 @@ const userSettings = {
                 iconEmoji: '⚖️',
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
-                    fieldType: 'select',
+                    fieldType: 'dataPicker',
+                    pickerType: {
+                        type: 'bottomSheet',
+                        layout: { opening: 'input' }
+                    },
                     data: {
                         optionsInputSelect: optionsWeight
                     },
@@ -447,7 +496,11 @@ const userSettings = {
                 iconEmoji: '📏',
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
-                    fieldType: 'select',
+                    fieldType: 'dataPicker',
+                    pickerType: {
+                        type: 'bottomSheet',
+                        layout: { opening: 'input' }
+                    },
                     data: {
                         optionsInputSelect: [
                             {
@@ -471,7 +524,11 @@ const userSettings = {
                 iconEmoji: '🗣️',
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
-                    fieldType: 'select',
+                    fieldType: 'dataPicker',
+                    pickerType: {
+                        type: 'bottomSheet',
+                        layout: { opening: 'input' }
+                    },
                     data: {
                         optionsInputSelect: [
                             {

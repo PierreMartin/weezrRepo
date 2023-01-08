@@ -123,7 +123,7 @@ const OnboardingScreen = ({
                 return { ...prevFormData, [item.id]: value };
             });
 
-            if (item.renderScreen.fieldType === 'select') {
+            if (item.renderScreen.fieldType?.toLowerCase()?.includes('picker')) {
                 // Do auto next:
                 const { indexGroup, indexPage } = indexes;
                 const isLastGroup = indexGroup === groupsPage.length - 1;

@@ -20,7 +20,14 @@ export interface IItem {
     iconColor?: string;
     renderScreen: {
         routeNameIfNavigable?: string;
-        fieldType?: 'text' | 'textArea' | 'select' | 'checkbox' | 'radio' | 'file' | 'onSubmit' | 'blockedsProfilesList';
+        fieldType?: 'text' | 'textArea' | 'dataPicker' | 'datePicker' | 'file' | 'onSubmit' | 'blockedsProfilesList';
+        pickerType?: {
+            type: 'inline' | 'bottomSheet' | 'modal';
+            layout?: {
+                opening?: 'none' | 'input' | 'button' | 'link';
+                dataList?: 'block' | 'list' | 'dot';
+            }
+        }
         data?: {
             optionsInputSelect?: any[];
         }

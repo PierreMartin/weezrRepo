@@ -13,7 +13,7 @@ interface IData {
     value: any;
 }
 
-interface IPickerInputSelect {
+interface IDataBottomSheetPicker {
     // fieldId: string;
     label?: string;
     placeholder?: string;
@@ -30,11 +30,12 @@ interface IPickerInputSelect {
     value?: string | any;
     error?: string | any;
 
+    layout?: any;
     styleContainerField?: IStyles;
     styleInputField?: IStyles;
 }
 
-export const PickerInputSelect = ({
+export const DataBottomSheetPicker = ({
     data,
     value: valueProps,
     error: errorProps,
@@ -46,7 +47,7 @@ export const PickerInputSelect = ({
     enabledValidationOnTyping,
     styleContainerField = {},
     // styleInputField = {},
-}: IPickerInputSelect) => {
+}: IDataBottomSheetPicker) => {
     const [value, setValue] = useState<string | any>(null);
     const [error, setError] = useState<string | any>(null);
 
