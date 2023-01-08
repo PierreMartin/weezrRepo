@@ -156,7 +156,7 @@ const OnboardingScreen = ({
                         isRequired: true
                     },
                     style: {
-                        backgroundColor: "primary.500"
+                        backgroundColor: colors.bg.main
                     },
                     items: [
                         userSettings.getItems(formData, onFieldChange)['gender']
@@ -169,7 +169,7 @@ const OnboardingScreen = ({
                         isRequired: true
                     },
                     style: {
-                        backgroundColor: "primary.800"
+                        backgroundColor: colors.bg.main
                     },
                     items: [
                         userSettings.getItems(formData, onFieldChange)['birthAt']
@@ -182,7 +182,7 @@ const OnboardingScreen = ({
                         isRequired: true
                     },
                     style: {
-                        backgroundColor: "primary.500"
+                        backgroundColor: colors.bg.main
                     },
                     items: [
                         userSettings.getItems(formData, onFieldChange)['about.desiredMeetingType']
@@ -193,7 +193,7 @@ const OnboardingScreen = ({
                         renderHeader: t('user.displayName')
                     },
                     style: {
-                        backgroundColor: "primary.800"
+                        backgroundColor: colors.bg.main
                     },
                     items: [
                         userSettings.getItems(formData, onFieldChange)['displayName']
@@ -204,7 +204,7 @@ const OnboardingScreen = ({
                         renderHeader: t('user.about.aboutMe')
                     },
                     style: {
-                        backgroundColor: "primary.500"
+                        backgroundColor: colors.bg.main
                     },
                     items: [
                         userSettings.getItems(formData, onFieldChange)['about.aboutMe']
@@ -215,7 +215,7 @@ const OnboardingScreen = ({
                         renderHeader: t('user.career.job')
                     },
                     style: {
-                        backgroundColor: "primary.800"
+                        backgroundColor: colors.bg.main
                     },
                     items: [
                         userSettings.getItems(formData, onFieldChange)['career.job']
@@ -237,7 +237,7 @@ const OnboardingScreen = ({
                         renderHeader: t('user.physicalAppearance.height')
                     },
                     style: {
-                        backgroundColor: "secondary.500"
+                        backgroundColor: colors.bg.main
                     },
                     items: [
                         userSettings.getItems(formData, onFieldChange)['physicalAppearance.height']
@@ -248,7 +248,7 @@ const OnboardingScreen = ({
                         renderHeader: t('user.physicalAppearance.weight')
                     },
                     style: {
-                        backgroundColor: "secondary.800"
+                        backgroundColor: colors.bg.main
                     },
                     items: [
                         userSettings.getItems(formData, onFieldChange)['physicalAppearance.weight']
@@ -270,7 +270,7 @@ const OnboardingScreen = ({
                         renderHeader: t('user.preferencesFilter._groupTitle')
                     },
                     style: {
-                        backgroundColor: "tertiary.500"
+                        backgroundColor: colors.bg.main
                     },
                     items: [
                         userSettings.getItems(formData, onFieldChange)['preferencesFilter.desiredGender'],
@@ -295,7 +295,7 @@ const OnboardingScreen = ({
                         renderDescription: t('user.images_desc'),
                     },
                     style: {
-                        backgroundColor: "primary.500"
+                        backgroundColor: colors.bg.main
                     },
                     items: [
                         userSettings.getItems(formData)['images']
@@ -306,7 +306,7 @@ const OnboardingScreen = ({
                         renderHeader: t('onboarding.pagesContent.lastPage.header')
                     },
                     style: {
-                        backgroundColor: "primary.800"
+                        backgroundColor: colors.bg.main
                     },
                     items: [
                         userSettings.getItems(formData, null, onDone)['_onSubmit']

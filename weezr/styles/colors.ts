@@ -25,6 +25,16 @@ const colors = {
     secondary: '#254B5A',
     tertiary: '#5DA6A7',
 
+    bg: {
+        main: '#1a1b20',
+        variant1: '#2c2d32',
+        variant2: '#18191d',
+    },
+
+    text: {
+        main: '#b4b4b4'
+    },
+
     textShadow: {
         textShadowColor: 'rgba(0, 0, 0, 0.75)',
         textShadowOffset: { width: 1, height: 1 },

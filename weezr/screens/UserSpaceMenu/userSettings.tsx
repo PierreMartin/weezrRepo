@@ -5,8 +5,8 @@ import { Box, Button, Text } from "native-base";
 import { StackNavigationProp } from "@react-navigation/stack/lib/typescript/src/types";
 import BlockedsProfiles from "../../components/BlockedsProfiles";
 import { Input } from "../../components/Forms/Form";
-import { Picker } from "../../components/Pickers/Picker";
-import { InputSelect } from "../../components/Forms/inputSelect";
+import { PickerInputSelect } from "../../components/Pickers/PickerInputSelect";
+// eslint-disable-next-line import/no-cycle
 import { IItem } from "../../components/MenuList";
 import { checkIsValidLanguage } from "../../toolbox/toolbox";
 import { ILanguage, IUser } from "../../entities";
@@ -99,32 +99,29 @@ export const getInputField = (
                 />
             );
             break;
-        case 'select':
+        case 'select': // TODO pickerInputSelect
             renderField = (
-                /*
-                <Picker
-                    type="inputSelect"
-                    fieldId={item.id}
+                <PickerInputSelect
                     data={optionsInputSelect}
                     label={label}
                     placeholder={item.placeholder || ''}
-                    formValues={{ [item.id]: item.value }}
-                    // formErrors={{ [item.id]: 'Error...' }}
-                    onChange={(fieldId: string, value: any) => {
+                    value={item.value}
+                    // error="Error..."
+                    onChange={(value: any) => {
                         if (onFieldChange) { onFieldChange(value, item); }
                     }}
-                    // onSubmit={(formValues: any) => {
-                        // const value = (formValues && formValues[item.id]) || null;
-                        // if (onFieldChange) { onFieldChange(value, item); }
-                    // }}
-                />
-                */
-
-                // TODO use <PickerInputSelect />
-                <InputSelect
-                    fieldData={item as any}
-                    options={optionsInputSelect || []}
-                    onChange={onFieldChange}
+                    /*
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please input your E-mail!',
+                        }
+                    ]}
+                    enabledValidationOnTyping
+                    onSubmit={(value: any) => {
+                        if (onFieldChange) { onFieldChange(value, item); }
+                    }}
+                    */
                 />
             );
             break;

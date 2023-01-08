@@ -7,9 +7,11 @@ import { Icon, Input as InputBase, VStack, FormControl, Button, TextArea } from 
 type IFormRulesConfigFormat = null | 'email' | 'url';
 
 export interface IFormRulesConfig {
-    required?: boolean;
     message: string;
+    required?: boolean;
     format?: IFormRulesConfigFormat;
+    matchWith?: string;
+    pattern?: any;
 }
 
 interface IInput {
@@ -40,66 +42,91 @@ interface IInput {
 }
 
 export const validateField = (
-    formValues: { [fieldId: string]: string },
-    formRules: { [fieldId: string]: IFormRulesConfig[] },
-    setState?: (formErrors: any) => void
+    formValues: any,
+    formRules: any,
+    setState?: (formErrors: any) => void,
+    hasSingleInput?: boolean
 ) => {
     const regexForEmail = RegExp(/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/gi);
     const regexForUrl = RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi);
     let isValidate = true;
 
-    for (const fieldId in formRules) {
-        if (formRules.hasOwnProperty(fieldId)) {
-            const fieldRule: any = formRules[fieldId];
-            const fieldValue = formValues[fieldId];
+    const checkIfFieldValidate = (
+        fieldValue: any,
+        fieldRule: IFormRulesConfig[],
+        cb?: (message: string) => any
+    ) => {
+        for (let i = 0; i < fieldRule?.length; i++) {
+            const rule = fieldRule[i];
+            const message = rule.message || 'An error has occurred';
 
-            for (let i = 0; i < fieldRule?.length; i++) {
-                const rule = fieldRule[i];
-                const message = rule.message || 'An error has occurred';
+            // Check if required:
+            const required = rule.required;
+            if (required && !fieldValue) {
+                if (cb) { cb(message); }
+                isValidate = false;
+            }
 
-                // Check if required:
-                const required = rule.required;
-                if (required && !fieldValue) {
-                    if (setState) { setState({ [fieldId]: message }); }
+            // Check if confirmPassword match with password:
+            const matchWith = rule.matchWith;
+            if (matchWith && formValues[matchWith] !== fieldValue) {
+                if (cb) { cb(message); }
+                isValidate = false;
+            }
+
+            // Check if right format:
+            const format = rule.format as IFormRulesConfigFormat;
+            if (format) {
+                switch (format) {
+                    case 'email':
+                        if (fieldValue && !regexForEmail.test(fieldValue?.toLowerCase())) {
+                            if (cb) { cb(message); }
+                            isValidate = false;
+                        }
+                        break;
+                    case 'url':
+                        if (fieldValue && !regexForUrl.test(fieldValue)) {
+                            if (cb) { cb(message); }
+                            isValidate = false;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Check if right custom format:
+            const pattern = rule.pattern;
+            if (pattern) {
+                if (fieldValue && !pattern.test(fieldValue)) {
+                    if (cb) { cb(message); }
                     isValidate = false;
                 }
+            }
+        }
+    };
 
-                // Check if confirmPassword match with password:
-                const matchWith = rule.matchWith;
-                if (matchWith && formValues[matchWith] !== fieldValue) {
-                    if (setState) { setState({ [fieldId]: message }); }
-                    isValidate = false;
-                }
+    if (hasSingleInput) {
+        checkIfFieldValidate(
+            formValues,
+            formRules,
+            (message: string) => {
+                if (setState) { setState(message); }
+            }
+        );
+    } else {
+        for (const fieldId in formRules) {
+            if (formRules.hasOwnProperty(fieldId)) {
+                const fieldValue = formValues[fieldId];
+                const fieldRule = formRules[fieldId];
 
-                // Check if right format:
-                const format = rule.format as IFormRulesConfigFormat;
-                if (format) {
-                    switch (format) {
-                        case 'email':
-                            if (fieldValue && !regexForEmail.test(fieldValue?.toLowerCase())) {
-                                if (setState) { setState({ [fieldId]: message }); }
-                                isValidate = false;
-                            }
-                            break;
-                        case 'url':
-                            if (fieldValue && !regexForUrl.test(fieldValue)) {
-                                if (setState) { setState({ [fieldId]: message }); }
-                                isValidate = false;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-                // Check if right custom format:
-                const pattern = rule.pattern;
-                if (pattern) {
-                    if (fieldValue && !pattern.test(fieldValue)) {
+                checkIfFieldValidate(
+                    fieldValue,
+                    fieldRule,
+                    (message: string) => {
                         if (setState) { setState({ [fieldId]: message }); }
-                        isValidate = false;
                     }
-                }
+                );
             }
         }
     }

@@ -1,6 +1,15 @@
 "Martin Technologies | Lookup | Weezr"
 
-- Picker trop lourd !!! créer plusieurs components (PickerInputSelect, PickerSelect, PickerDate)
+- PickerModal 
+  - style: 'input' | 'button' | 'link'
+  - mode: bottomSheet | modal
+
+- PickerInline
+  - style: 'block' | 'line' | 'dot'
+
+- PickerDate 
+  - mode: inline | bottomSheet (or wheel) | modal
+
 - When canMultipleSelect=false => Do auto submit after onChange
 
 1) Refacto Inputs (and handle fields errors)
@@ -31,6 +40,10 @@
 * mapbox.com
 * Push notification
 * Dark mode
+* Improvement authentication + { SMS OTP | SMS gateway | send token via mail || lien cliquable via mail || captcha} + remove AsyncStorage.getItem()
+  - Use Recaptcha https://www.google.com/recaptcha/about/
+  - Implem authent with Facebook, Apple, Google
+  - Forget password
 
 - Créer un composent générique pour les vues (pageInfo, isLoading, haveError)
 - Handle delete file on cloud
@@ -41,7 +54,6 @@
 - Vérifier le rendu des emojis sur Android
 - splashscreen
 - react-native-swipe-list-view sur les items list
-* Improvement authentication + { SMS OTP | SMS gateway | send token via mail || lien cliquable via mail || captcha} + remove AsyncStorage.getItem()
 - refacto pour generiser InputText & InputTextArea ?
 - Convention name "data" => "dataGql"
 - MEP:
