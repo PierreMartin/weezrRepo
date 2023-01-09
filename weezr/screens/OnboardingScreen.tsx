@@ -152,6 +152,7 @@ const OnboardingScreen = ({
                 {
                     config: {
                         renderHeader: t('user.gender'),
+                        renderHeaderEmoji: '⚥',
                         renderDescription: t('user.gender_desc'),
                         isRequired: true
                     },
@@ -159,12 +160,13 @@ const OnboardingScreen = ({
                         backgroundColor: colors.bg.main
                     },
                     items: [
-                        userSettings.getItems(formData, onFieldChange)['gender']
+                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: true })['gender']
                     ] as IItem[]
                 },
                 {
                     config: {
                         renderHeader: t('user.birthAt'),
+                        renderHeaderEmoji: '🎂',
                         renderDescription: t('user.birthAt_desc'),
                         isRequired: true
                     },
@@ -172,12 +174,13 @@ const OnboardingScreen = ({
                         backgroundColor: colors.bg.main
                     },
                     items: [
-                        userSettings.getItems(formData, onFieldChange)['birthAt']
+                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: true })['birthAt']
                     ] as IItem[]
                 },
                 {
                     config: {
                         renderHeader: t('user.about.desiredMeetingType'),
+                        renderHeaderEmoji: '👀',
                         renderDescription: t('user.about.desiredMeetingType_desc'),
                         isRequired: true
                     },
@@ -185,7 +188,7 @@ const OnboardingScreen = ({
                         backgroundColor: colors.bg.main
                     },
                     items: [
-                        userSettings.getItems(formData, onFieldChange)['about.desiredMeetingType']
+                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: true })['about.desiredMeetingType']
                     ] as IItem[]
                 },
                 {
@@ -196,7 +199,7 @@ const OnboardingScreen = ({
                         backgroundColor: colors.bg.main
                     },
                     items: [
-                        userSettings.getItems(formData, onFieldChange)['displayName']
+                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: true })['displayName']
                     ] as IItem[]
                 },
                 {
@@ -207,7 +210,7 @@ const OnboardingScreen = ({
                         backgroundColor: colors.bg.main
                     },
                     items: [
-                        userSettings.getItems(formData, onFieldChange)['about.aboutMe']
+                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: true })['about.aboutMe']
                     ] as IItem[]
                 },
                 {
@@ -218,7 +221,7 @@ const OnboardingScreen = ({
                         backgroundColor: colors.bg.main
                     },
                     items: [
-                        userSettings.getItems(formData, onFieldChange)['career.job']
+                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: true })['career.job']
                     ] as IItem[]
                 }
             ],
@@ -240,7 +243,7 @@ const OnboardingScreen = ({
                         backgroundColor: colors.bg.main
                     },
                     items: [
-                        userSettings.getItems(formData, onFieldChange)['physicalAppearance.height']
+                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: true })['physicalAppearance.height']
                     ] as IItem[]
                 },
                 {
@@ -251,7 +254,7 @@ const OnboardingScreen = ({
                         backgroundColor: colors.bg.main
                     },
                     items: [
-                        userSettings.getItems(formData, onFieldChange)['physicalAppearance.weight']
+                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: true })['physicalAppearance.weight']
                     ] as IItem[]
                 },
             ],
@@ -408,7 +411,9 @@ const OnboardingScreen = ({
         return (
             <Box key={`${indexGroup}-${indexPage}`} style={[styles.pageContentContainer]} backgroundColor={style.backgroundColor}>
                 <Center>
-                    <Heading color="#fff">{config?.renderHeader || ''}</Heading>
+                    <Heading color={colors.primary}>
+                        { config?.renderHeaderEmoji || '' } {config?.renderHeader || ''}
+                    </Heading>
                     <Text color="#fff">{config?.renderDescription || ''}</Text>
                 </Center>
 

@@ -15,7 +15,7 @@ type ThemeProps = {
 export type TextProps = ThemeProps & { style?: any, children?: any };
 export type ViewProps = ThemeProps & { style?: any, children?: any };
 export type HeaderProps = ThemeProps & { style?: any, children?: any };
-export type LabelProps = ThemeProps & { style?: any, children?: any };
+export type LabelProps = ThemeProps & { style?: any, children?: any, isRequired?: boolean };
 export type LinkProps = ThemeProps & { style?: any, children?: any, navigate: () => any };
 export type InputSearchProps = ThemeProps & { style?: any, children?: any, placeholder?: string, onChangeText?: (value: string) => void, width?: any };
 
@@ -58,7 +58,7 @@ export function Text(props: TextProps) {
 }
 
 export function Label(props: LabelProps) {
-    const { style, lightColor, darkColor, ...otherProps } = props;
+    const { style, lightColor, darkColor, isRequired, ...otherProps } = props;
     // const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
     const defaultStyles = {
         fontSize: 13,
@@ -68,7 +68,10 @@ export function Label(props: LabelProps) {
     };
 
     return (
-        <DefaultText style={[defaultStyles, style]} {...otherProps} />
+        <DefaultText style={{ flexDirection: 'row' }}>
+            <DefaultText style={[defaultStyles, style]} {...otherProps} />
+            { isRequired && <DefaultText style={{ color: 'red' }}> *</DefaultText> }
+        </DefaultText>
     );
 }
 

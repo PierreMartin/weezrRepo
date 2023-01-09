@@ -9,6 +9,7 @@ const styles = getStyles();
 export interface IItemGroup {
     config?: {
         renderHeader?: string;
+        renderHeaderEmoji?: string;
         renderDescription?: string;
         isRequired?: boolean;
     };

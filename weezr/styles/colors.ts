@@ -21,7 +21,7 @@ const colors = {
 */
 
 const colors = {
-    primary: '#ef4444',
+    primary: '#ff0055',
     secondary: '#254B5A',
     tertiary: '#5DA6A7',
 

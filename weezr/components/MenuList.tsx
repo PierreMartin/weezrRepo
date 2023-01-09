@@ -18,14 +18,15 @@ export interface IItem {
     iconStr?: string;
     iconEmoji?: string;
     iconColor?: string;
+    hideLabel?: boolean;
     renderScreen: {
         routeNameIfNavigable?: string;
         fieldType?: 'text' | 'textArea' | 'dataPicker' | 'datePicker' | 'file' | 'onSubmit' | 'blockedsProfilesList';
-        pickerType?: {
+        pickerConf?: {
             type: 'inline' | 'bottomSheet' | 'modal';
             layout?: {
                 opening?: 'none' | 'input' | 'button' | 'link';
-                dataList?: 'block' | 'list' | 'dot';
+                dataList?: 'row' | 'column';
             }
         }
         data?: {

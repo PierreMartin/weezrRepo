@@ -1,12 +1,5 @@
 "Martin Technologies | Lookup | Weezr"
 
-- DataPicker 
-  - type: 'modal' | 'bottomSheet' | 'inline' 
-  - layout: {
-      opening: 'none' | 'input' | 'button' | 'link',
-      dataList: 'block' | 'list' | 'dot'
-  }
-
 - When canMultipleSelect=false => Do auto submit after onChange
 
 1) Refacto Inputs (and handle fields errors)

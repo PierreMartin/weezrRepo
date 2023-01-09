@@ -1,11 +1,12 @@
 /* eslint-disable quote-props */
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Button, Text } from "native-base";
+import { Button } from "native-base";
 import { StackNavigationProp } from "@react-navigation/stack/lib/typescript/src/types";
 import BlockedsProfiles from "../../components/BlockedsProfiles";
 import { Input } from "../../components/Forms/Form";
 import { DataBottomSheetPicker } from "../../components/Pickers/DataBottomSheetPicker";
+import { DataInlinePicker } from "../../components/Pickers/DataInlinePicker";
 // eslint-disable-next-line import/no-cycle
 import { IItem } from "../../components/MenuList";
 import { checkIsValidLanguage } from "../../toolbox/toolbox";
@@ -71,13 +72,15 @@ export const getInputField = (
     item: IItem,
     navigation?: StackNavigationProp<any, any>
 ) => {
-    const { fieldType, pickerType, data, onFieldChange, onFieldSubmit } = item?.renderScreen || {};
+    const { fieldType, pickerConf, data, onFieldChange, onFieldSubmit } = item?.renderScreen || {};
     const { optionsInputSelect } = data || {};
     let renderField = null;
     let label;
     let type: any = 'inputText';
 
-    if (item.iconEmoji || item.title) { label = `${item.iconEmoji || ''} ${item.title || ''}`; }
+    if (!item.hideLabel && (item.iconEmoji || item.title)) {
+        label = `${item.iconEmoji || ''} ${item.title || ''}`;
+    }
 
     switch (fieldType) {
         case 'textArea':
@@ -100,7 +103,7 @@ export const getInputField = (
             );
             break;
         case 'dataPicker':
-            switch (pickerType?.type) {
+            switch (pickerConf?.type) {
                 case undefined:
                 case null:
                 case 'bottomSheet':
@@ -114,7 +117,7 @@ export const getInputField = (
                             onChange={(value: any) => {
                                 if (onFieldChange) { onFieldChange(value, item); }
                             }}
-                            layout={pickerType?.layout}
+                            layout={pickerConf?.layout}
                             /*
                             rules={[
                                 {
@@ -130,10 +133,21 @@ export const getInputField = (
                         />
                     );
                     break;
-                // TODO
-                // case 'inline':
-                //     renderField = <DataInlinePicker />
-                //     break;
+                case 'inline':
+                    renderField = (
+                        <DataInlinePicker
+                            data={optionsInputSelect}
+                            label={label}
+                            placeholder={item.placeholder || ''}
+                            value={item.value}
+                            // error="Error..."
+                            onChange={(value: any) => {
+                                if (onFieldChange) { onFieldChange(value, item); }
+                            }}
+                            layout={pickerConf?.layout}
+                        />
+                    );
+                    break;
                 // case 'modal':
                 //     renderField = <DataModalPicker />
                 //     break;
@@ -174,7 +188,8 @@ const userSettings = {
     getItems: (
         valuesFormData: any,
         onFieldChange?: ((value: any, optionalData?: IItem) => void) | null,
-        onFieldSubmit?: ((fields?: any) => Promise<any>) | null
+        onFieldSubmit?: ((fields?: any) => Promise<any>) | null,
+        customConf = {}
     ) => {
         const { t, i18n } = useTranslation();
 
@@ -185,9 +200,10 @@ const userSettings = {
                 value: valuesFormData.preferencesFilter?.desiredGender || '',
                 title: t('user.preferencesFilter.desiredGender'),
                 iconEmoji: '🔍',
+                ...customConf,
                 renderScreen: {
                     fieldType: 'dataPicker',
-                    pickerType: {
+                    pickerConf: {
                         type: 'bottomSheet',
                         layout: { opening: 'input' }
                     },
@@ -216,9 +232,10 @@ const userSettings = {
                 value: valuesFormData.preferencesFilter?.desiredAgeRange || '',
                 title: t('user.preferencesFilter.desiredAgeRange'),
                 iconEmoji: '🔍',
+                ...customConf,
                 renderScreen: {
                     fieldType: 'dataPicker',
-                    pickerType: {
+                    pickerConf: {
                         type: 'bottomSheet',
                         layout: { opening: 'input' }
                     },
@@ -243,9 +260,10 @@ const userSettings = {
                 value: valuesFormData.preferencesFilter?.profileWithPhotoOnly,
                 title: t('user.preferencesFilter.profileWithPhotoOnly'),
                 iconEmoji: '🔍',
+                ...customConf,
                 renderScreen: {
                     fieldType: 'dataPicker',
-                    pickerType: {
+                    pickerConf: {
                         type: 'bottomSheet',
                         layout: { opening: 'input' }
                     },
@@ -271,22 +289,25 @@ const userSettings = {
                 id: 'gender',
                 value: valuesFormData.gender,
                 title: t('user.gender'),
-                iconEmoji: '🧑',
+                iconEmoji: '⚥',
+                ...customConf,
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
                     fieldType: 'dataPicker',
-                    pickerType: {
-                        type: 'bottomSheet',
-                        layout: { opening: 'input' }
+                    pickerConf: {
+                        type: 'inline',
+                        layout: { opening: 'none', dataList: 'row' }
                     },
                     data: {
                         optionsInputSelect: [
                             {
                                 label: t('user.gender_m'),
+                                icon: 'male-outline',
                                 value: 'm'
                             },
                             {
                                 label: t('user.gender_f'),
+                                icon: 'female-outline',
                                 value: 'f'
                             }
                         ],
@@ -300,9 +321,10 @@ const userSettings = {
                 value: valuesFormData.birthAt,
                 title: t('user.birthAt'),
                 iconEmoji: '🎂',
+                ...customConf,
                 renderScreen: {
                     fieldType: 'dataPicker',
-                    pickerType: {
+                    pickerConf: {
                         type: 'bottomSheet',
                         layout: { opening: 'input' }
                     },
@@ -336,6 +358,7 @@ const userSettings = {
                 value: valuesFormData.displayName,
                 title: t('user.displayName'),
                 iconEmoji: '👀',
+                ...customConf,
                 renderScreen: {
                     fieldType: 'text',
                     onFieldChange,
@@ -347,6 +370,7 @@ const userSettings = {
                 value: valuesFormData.about?.aboutMe || '',
                 title: t('user.about.aboutMe'),
                 iconEmoji: '✍️',
+                ...customConf,
                 renderScreen: {
                     fieldType: 'textArea',
                     onFieldChange,
@@ -358,6 +382,7 @@ const userSettings = {
                 value: valuesFormData.career?.job || '',
                 title: t('user.career.job'),
                 iconEmoji: '️️💼',
+                ...customConf,
                 renderScreen: {
                     fieldType: 'text',
                     onFieldChange,
@@ -369,6 +394,7 @@ const userSettings = {
                 value: valuesFormData.career?.employer || '',
                 title: t('user.career.employer'),
                 iconEmoji: '🏢️',
+                ...customConf,
                 renderScreen: {
                     fieldType: 'text',
                     onFieldChange,
@@ -380,10 +406,11 @@ const userSettings = {
                 value: valuesFormData.about?.desiredMeetingType || '',
                 title: t('user.about.desiredMeetingType'),
                 iconEmoji: '💕️',
+                ...customConf,
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
                     fieldType: 'dataPicker',
-                    pickerType: {
+                    pickerConf: {
                         type: 'bottomSheet',
                         layout: { opening: 'input' }
                     },
@@ -412,10 +439,11 @@ const userSettings = {
                 value: valuesFormData.about?.relationship || '',
                 title: t('user.about.relationship'),
                 iconEmoji: '🧑‍🤝‍🧑',
+                ...customConf,
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
                     fieldType: 'dataPicker',
-                    pickerType: {
+                    pickerConf: {
                         type: 'bottomSheet',
                         layout: { opening: 'input' }
                     },
@@ -442,10 +470,11 @@ const userSettings = {
                 value: valuesFormData.physicalAppearance?.height || '',
                 title: t('user.physicalAppearance.height'),
                 iconEmoji: '📏️',
+                ...customConf,
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
                     fieldType: 'dataPicker',
-                    pickerType: {
+                    pickerConf: {
                         type: 'bottomSheet',
                         layout: { opening: 'input' }
                     },
@@ -461,10 +490,11 @@ const userSettings = {
                 value: valuesFormData.physicalAppearance?.weight || '',
                 title: t('user.physicalAppearance.weight'),
                 iconEmoji: '⚖️',
+                ...customConf,
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
                     fieldType: 'dataPicker',
-                    pickerType: {
+                    pickerConf: {
                         type: 'bottomSheet',
                         layout: { opening: 'input' }
                     },
@@ -482,6 +512,7 @@ const userSettings = {
                 value: valuesFormData.email || '',
                 title: t('user.email'),
                 iconEmoji: '✉️',
+                ...customConf,
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
                     fieldType: 'text',
@@ -494,10 +525,11 @@ const userSettings = {
                 value: valuesFormData.preferenceAccount?.unitSystem || '',
                 title: t('user.preferenceAccount.unitSystem'),
                 iconEmoji: '📏',
+                ...customConf,
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
                     fieldType: 'dataPicker',
-                    pickerType: {
+                    pickerConf: {
                         type: 'bottomSheet',
                         layout: { opening: 'input' }
                     },
@@ -522,10 +554,11 @@ const userSettings = {
                 value: valuesFormData.preferenceAccount?.language || '',
                 title: t('user.preferenceAccount.language'),
                 iconEmoji: '🗣️',
+                ...customConf,
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
                     fieldType: 'dataPicker',
-                    pickerType: {
+                    pickerConf: {
                         type: 'bottomSheet',
                         layout: { opening: 'input' }
                     },
@@ -564,6 +597,7 @@ const userSettings = {
                 value: valuesFormData.images || '',
                 title: t('user.images'),
                 iconEmoji: '🖼️',
+                ...customConf,
                 renderScreen: {
                     fieldType: 'file'
                 }
@@ -572,6 +606,7 @@ const userSettings = {
                 id: 'blockedsProfiles',
                 title: t('user.userInteractions.myBlock.sent_blockedsProfiles'),
                 iconEmoji: '🚫',
+                ...customConf,
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
                     fieldType: 'blockedsProfilesList'
@@ -581,6 +616,7 @@ const userSettings = {
                 id: 'xxx',
                 title: t('user.xxx'),
                 iconEmoji: '✅',
+                ...customConf,
                 renderScreen: {
                     fieldType: 'text',
                     onFieldSubmit
@@ -592,6 +628,7 @@ const userSettings = {
                 id: '_onSubmit',
                 title: t('onboarding.lastStep.title'),
                 iconEmoji: '✅',
+                ...customConf,
                 renderScreen: {
                     fieldType: 'onSubmit',
                     onFieldSubmit

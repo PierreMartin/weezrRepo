@@ -11,6 +11,7 @@ type IStyles = ViewStyle | TextStyle | ImageStyle;
 interface IData {
     label: string;
     value: any;
+    icon?: string;
 }
 
 interface IDataBottomSheetPicker {
