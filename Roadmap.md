@@ -1,10 +1,13 @@
 "Martin Technologies | Lookup | Weezr"
 
-- When canMultipleSelect=false => Do auto submit after onChange
+- DO canMultipleSelect  (When canMultipleSelect=false => Do auto submit after onChange)
+- DO Date Picker
 
 1) Refacto Inputs (and handle fields errors)
   - Select | Wheel | Radio | Checkbox     => <Picker type="checkbox" canMultipleSelect={bool} data={[]} />   (ex: if type="date" => automatically in modal | if type="checkbox" => automatically in inline)
 2) Settings - check if email doesn't exist before save + handle fields errors
+
+- Onboarding => Mettre dots pagination en haut
 
 * Finir settings
   - Use WatermelonDB for some fields => { key: String, value: Boolean | Any, userId: String } => settings.find({ key: 'enabledNotifications', userId: userMeId })
@@ -14,6 +17,7 @@
   - 'isOnline' => changer le champ en 'account': { 'lastLoginAt': Date, 'lastActivityAt': Date } => ajouter une icon orange (si lastActivityAt > 15min = on passe en orange, si > 30min, on vire l'icon)
   - send websockets every 15 minutes for update user's location in grid
   - Refaire algo pour les hommes -> afficher pareil
+  - "fun" => "short relationship" ?
 
 - UserInteractions => handle "replies too" in TabNotificationsCenter
 - Query (Apollo ?) => See why we pass many times in some queries (like users)

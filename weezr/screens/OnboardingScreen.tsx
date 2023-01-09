@@ -199,18 +199,8 @@ const OnboardingScreen = ({
                         backgroundColor: colors.bg.main
                     },
                     items: [
-                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: true })['displayName']
-                    ] as IItem[]
-                },
-                {
-                    config: {
-                        renderHeader: t('user.about.aboutMe')
-                    },
-                    style: {
-                        backgroundColor: colors.bg.main
-                    },
-                    items: [
-                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: true })['about.aboutMe']
+                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: false })['displayName'],
+                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: false })['about.aboutMe']
                     ] as IItem[]
                 },
                 {
@@ -243,20 +233,10 @@ const OnboardingScreen = ({
                         backgroundColor: colors.bg.main
                     },
                     items: [
-                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: true })['physicalAppearance.height']
+                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: false })['physicalAppearance.height'],
+                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: false })['physicalAppearance.weight']
                     ] as IItem[]
-                },
-                {
-                    config: {
-                        renderHeader: t('user.physicalAppearance.weight')
-                    },
-                    style: {
-                        backgroundColor: colors.bg.main
-                    },
-                    items: [
-                        userSettings.getItems(formData, onFieldChange, null, { hideLabel: true })['physicalAppearance.weight']
-                    ] as IItem[]
-                },
+                }
             ],
             pagination: {
                 label: t('onboarding.pagination.groupAppearance'),

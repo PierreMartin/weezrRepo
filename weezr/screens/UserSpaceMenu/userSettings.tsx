@@ -73,7 +73,7 @@ export const getInputField = (
     navigation?: StackNavigationProp<any, any>
 ) => {
     const { fieldType, pickerConf, data, onFieldChange, onFieldSubmit } = item?.renderScreen || {};
-    const { optionsInputSelect } = data || {};
+    const { optionsInputSelect, canMultipleSelect } = data || {};
     let renderField = null;
     let label;
     let type: any = 'inputText';
@@ -114,6 +114,7 @@ export const getInputField = (
                             placeholder={item.placeholder || ''}
                             value={item.value}
                             // error="Error..."
+                            canMultipleSelect={canMultipleSelect}
                             onChange={(value: any) => {
                                 if (onFieldChange) { onFieldChange(value, item); }
                             }}
@@ -141,6 +142,7 @@ export const getInputField = (
                             placeholder={item.placeholder || ''}
                             value={item.value}
                             // error="Error..."
+                            canMultipleSelect={canMultipleSelect}
                             onChange={(value: any) => {
                                 if (onFieldChange) { onFieldChange(value, item); }
                             }}
@@ -411,24 +413,28 @@ const userSettings = {
                     routeNameIfNavigable: 'FieldsForm',
                     fieldType: 'dataPicker',
                     pickerConf: {
-                        type: 'bottomSheet',
-                        layout: { opening: 'input' }
+                        type: 'inline',
+                        layout: { opening: 'none', dataList: 'row' }
                     },
                     data: {
                         optionsInputSelect: [
                             {
                                 label: t('user.about.desiredMeetingType_friends'),
+                                icon: 'beer-outline',
                                 value: 'friends'
                             },
                             {
                                 label: t('user.about.desiredMeetingType_loveRelationship'),
+                                icon: 'heart-outline',
                                 value: 'loveRelationship'
                             },
                             {
                                 label: t('user.about.desiredMeetingType_fun'),
+                                icon: 'thermometer-outline',
                                 value: 'fun'
                             }
                         ],
+                        canMultipleSelect: true
                     },
                     onFieldChange,
                     onFieldSubmit

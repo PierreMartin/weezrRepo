@@ -50,7 +50,7 @@ export const DataInlinePicker = ({
     layout,
     styleContainerField = {}
 }: IDataInlinePicker) => {
-    const [value, setValue] = useState<string | any>(null);
+    const [value, setValue] = useState<string | any>(null); // TODO array ?? for canMultipleSelect
     const [error, setError] = useState<string | any>(null);
 
     useEffect(() => {
@@ -67,6 +67,8 @@ export const DataInlinePicker = ({
 
     const onChangeVal = (valueParam: any) => {
         setValue(valueParam);
+
+        // TODO handle when "canMultipleSelect"
 
         if (enabledValidationOnTyping) {
             setError(null);

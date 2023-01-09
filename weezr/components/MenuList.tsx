@@ -31,6 +31,7 @@ export interface IItem {
         }
         data?: {
             optionsInputSelect?: any[];
+            canMultipleSelect?: boolean;
         }
         onFieldChange?: (data: any, item?: IItem) => void;
         onFieldSubmit?: (data: any, item?: IItem) => void;
