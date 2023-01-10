@@ -140,7 +140,7 @@ export const getInputField = (
                             data={optionsInputSelect}
                             label={label}
                             placeholder={item.placeholder || ''}
-                            value={item.value}
+                            values={item.value}
                             // error="Error..."
                             canMultipleSelect={canMultipleSelect}
                             onChange={(value: any) => {

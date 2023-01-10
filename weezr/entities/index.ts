@@ -97,7 +97,7 @@ export interface IUser extends IEntity {
         spokenLanguages?: string;
         children?: string;
         relationship?: 'single' | 'married';
-        desiredMeetingType?: 'meetings' | 'friends' | 'loveRelationship';
+        desiredMeetingType?: ['meetings' | 'friends' | 'loveRelationship'];
     };
     basedLocation?: string; // City or country
     currentLocation: ILocation;

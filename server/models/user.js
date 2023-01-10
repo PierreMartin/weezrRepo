@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema({
     isOnboardingNeverUsed: { type: Boolean, default: true },
     about: {
         aboutMe: String,
-        desiredMeetingType: String,
+        desiredMeetingType: [String],
         sexualOrientation: String,
         relationship: String,
         spokenLanguages: String,

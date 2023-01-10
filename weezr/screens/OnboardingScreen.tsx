@@ -133,8 +133,9 @@ const OnboardingScreen = ({
                 const page = groupsPage[indexGroup];
                 const pageContent = page.pagesContent[indexPage];
                 const isMultipleFields = pageContent.items?.length > 1;
+                const isMultipleSelect = pageContent.items?.some((it) => it?.renderScreen?.data?.canMultipleSelect);
 
-                if (!isLast && !isMultipleFields && refSwiper?.current) {
+                if (!isLast && !isMultipleFields && !isMultipleSelect && refSwiper?.current) {
                     (refSwiper.current as any)?.scrollBy(1);
                 }
             }
@@ -371,7 +372,7 @@ const OnboardingScreen = ({
         if (isCurrentPageRequired) {
             for (let i = 0; i < fieldIdsInCurrentPage?.length; i++) {
                 const fieldId = fieldIdsInCurrentPage[i];
-                if (!formDataToUpdate[fieldId]) {
+                if (!formDataToUpdate[fieldId]?.length) {
                     isAFieldIsEmptyInCurrentPage = true;
                     break;
                 }

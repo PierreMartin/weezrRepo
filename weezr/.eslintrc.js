@@ -100,7 +100,8 @@ module.exports = {
     "import/no-unresolved": "off",
     "import/extensions": "off",
     "global-require": "off",
-    "no-case-declarations": "off"
+    "no-case-declarations": "off",
+    "no-continue": "off"
   }
   // extends: '@react-native-community', // use prettier
 };

@@ -42,7 +42,7 @@ for (let i = 0; i < 5; i++) {
         about: {
             aboutMe: faker.lorem.lines(2),
             relationship: 'single',
-            desiredMeetingType: 'friends',
+            desiredMeetingType: ['friends'],
             spokenLanguages: 'French, English'
         },
         distanceComparedToMe,

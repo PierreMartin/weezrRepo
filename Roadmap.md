@@ -1,6 +1,6 @@
 "Martin Technologies | Lookup | Weezr"
 
-- DO canMultipleSelect  (When canMultipleSelect=false => Do auto submit after onChange)
+- Change "desiredMeetingType" to array
 - DO Date Picker
 
 1) Refacto Inputs (and handle fields errors)

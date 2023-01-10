@@ -60,6 +60,25 @@ export const validateField = (
             const rule = fieldRule[i];
             const message = rule.message || 'An error has occurred';
 
+            // If fieldValue is an array:
+            if (fieldValue && Array.isArray(fieldValue)) {
+                // Check if required:
+                const required = rule.required;
+                if (required && !fieldValue.length) {
+                    if (cb) { cb(message); }
+                    isValidate = false;
+                }
+
+                /*
+                for (let j = 0; j < fieldValue?.length; j++) {
+                    const valueInArr = fieldValue[j];
+                    // Do specific conditions for array here... maybe put each condition in func
+                }
+                */
+
+                continue;
+            }
+
             // Check if required:
             const required = rule.required;
             if (required && !fieldValue) {

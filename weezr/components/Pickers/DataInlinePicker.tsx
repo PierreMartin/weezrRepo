@@ -27,12 +27,12 @@ interface IDataInlinePicker {
     rules?: IFormRulesConfig[];
     enabledValidationOnTyping?: boolean;
 
-    onChange?: (value: string | any) => void;
-    onSubmit?: (value: string | any) => void;
+    onChange?: (values: any[]) => void;
+    onSubmit?: (values: any[]) => void;
 
     data?: IData[];
-    value?: string | any;
-    error?: string | any;
+    values?: any[];
+    error?: any;
 
     layout?: any;
     styleContainerField?: IStyles;
@@ -40,8 +40,9 @@ interface IDataInlinePicker {
 
 export const DataInlinePicker = ({
     data,
-    value: valueProps,
+    values: valuesProps,
     error: errorProps,
+    canMultipleSelect,
     rules,
     label,
     onChange,
@@ -50,14 +51,14 @@ export const DataInlinePicker = ({
     layout,
     styleContainerField = {}
 }: IDataInlinePicker) => {
-    const [value, setValue] = useState<string | any>(null); // TODO array ?? for canMultipleSelect
-    const [error, setError] = useState<string | any>(null);
+    const [values, setValues] = useState<any | undefined[]>([]);
+    const [error, setError] = useState<any>(null);
 
     useEffect(() => {
-        if (valueProps) {
-            setValue(valueProps);
+        if (valuesProps) {
+            setValues(valuesProps);
         }
-    }, [valueProps]);
+    }, [valuesProps]);
 
     useEffect(() => {
         if (errorProps) {
@@ -65,27 +66,44 @@ export const DataInlinePicker = ({
         }
     }, [errorProps]);
 
-    const onChangeVal = (valueParam: any) => {
-        setValue(valueParam);
+    const onChangeVal = (nextValue: any) => {
+        setValues((prevValues: any[]) => {
+            let nextValues = [...prevValues];
 
-        // TODO handle when "canMultipleSelect"
+            if (canMultipleSelect) {
+                // Multiple select:
+                const indexFoundToDelete = prevValues?.findIndex((val) => val === nextValue);
+                if (indexFoundToDelete !== -1) {
+                    // Handle unselect:
+                    nextValues.splice(indexFoundToDelete, 1);
+                } else {
+                    // Handle select:
+                    nextValues.push(nextValue);
+                }
+            } else {
+                // Mono select:
+                nextValues = [nextValue];
+            }
 
-        if (enabledValidationOnTyping) {
-            setError(null);
+            if (enabledValidationOnTyping) {
+                setError(null);
 
-            const isValidate = validateField(
-                valueParam,
-                rules?.filter((rule: any) => rule) || [],
-                setError,
-                true
-            );
+                const isValidate = validateField(
+                    nextValues,
+                    rules?.filter((rule: any) => rule) || [],
+                    setError,
+                    true
+                );
 
-            if (onChange && isValidate) { onChange(valueParam); }
+                if (onChange && isValidate) { onChange(nextValues); }
 
-            return;
-        }
+                return;
+            }
 
-        if (onChange) { onChange(valueParam); }
+            if (onChange) { onChange(nextValues); }
+
+            return nextValues;
+        });
     };
 
     const ruleToDisplay = rules?.find((rule: any) => rule.displayMessageAsInfo);
@@ -113,7 +131,7 @@ export const DataInlinePicker = ({
             <Box style={{ flexDirection: layout.dataList, ...styles.itemsContainer }}>
                 {
                     data?.map((option, index) => {
-                        const isSelectedItem = (value && value === option?.value);
+                        const isSelectedItem = (values?.length && values.includes(option?.value));
 
                         let selectedItemStyles: any = {};
                         if (isSelectedItem) {
@@ -187,14 +205,14 @@ export const DataInlinePicker = ({
                             setError(null);
 
                             const isValidate = validateField(
-                                value,
+                                values,
                                 rules?.filter((rule: any) => rule) || [],
                                 setError,
                                 true
                             );
 
                             if (isValidate) {
-                                onSubmit(value);
+                                onSubmit(values);
                             }
                         }}
                     >
