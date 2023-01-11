@@ -1,6 +1,5 @@
 "Martin Technologies | Lookup | Weezr"
 
-- Change "desiredMeetingType" to array
 - DO Date Picker
 
 1) Refacto Inputs (and handle fields errors)
