@@ -27,8 +27,8 @@ interface IDataInlinePicker {
     rules?: IFormRulesConfig[];
     enabledValidationOnTyping?: boolean;
 
-    onChange?: (values: any[]) => void;
-    onSubmit?: (values: any[]) => void;
+    onChange?: (values: any[], isInvalid?: boolean) => void;
+    onSubmit?: (values: any[], isInvalid?: boolean) => void;
 
     data?: IData[];
     values?: any[];
@@ -88,15 +88,15 @@ export const DataInlinePicker = ({
             if (enabledValidationOnTyping) {
                 setError(null);
 
-                /* const isValidate = */validateField(
+                const isValidate = validateField(
                     nextValues,
                     rules?.filter((rule: any) => rule) || [],
                     setError,
                     true
                 );
 
-                // if (onChange && isValidate) { onChange(nextValues); }
-                // return nextValues;
+                if (onChange /* && isValidate */) { onChange(nextValues, !isValidate); }
+                return nextValues;
             }
 
             if (onChange) { onChange(nextValues); }

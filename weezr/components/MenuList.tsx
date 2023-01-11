@@ -39,8 +39,8 @@ export interface IItem {
             optionsInputSelect?: any[];
             canMultipleSelect?: boolean;
         }
-        onFieldChange?: (data: any, item?: IItem) => void;
-        onFieldSubmit?: (data: any, item?: IItem) => void;
+        onFieldChange?: (data: any, item?: IItem, isInvalid?: boolean) => void;
+        onFieldSubmit?: (data: any, item?: IItem, isInvalid?: boolean) => void;
     }
 }
 

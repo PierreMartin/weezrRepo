@@ -24,12 +24,12 @@ interface IDataBottomSheetPicker {
     rules?: IFormRulesConfig[];
     enabledValidationOnTyping?: boolean;
 
-    onChange?: (value: string | any) => void;
-    onSubmit?: (value: string | any) => void;
+    onChange?: (value: any, isInvalid?: boolean) => void;
+    onSubmit?: (value: any, isInvalid?: boolean) => void;
 
     data?: IData[];
-    value?: string | any;
-    error?: string | any;
+    value?: any;
+    error?: any;
 
     layout?: any;
     styleContainerField?: IStyles;
@@ -49,8 +49,8 @@ export const DataBottomSheetPicker = ({
     styleContainerField = {},
     // styleInputField = {},
 }: IDataBottomSheetPicker) => {
-    const [value, setValue] = useState<string | any>(null);
-    const [error, setError] = useState<string | any>(null);
+    const [value, setValue] = useState<any>(null);
+    const [error, setError] = useState<any>(null);
 
     useEffect(() => {
         if (valueProps) {
@@ -77,7 +77,7 @@ export const DataBottomSheetPicker = ({
                 true
             );
 
-            if (onChange && isValidate) { onChange(valueParam); }
+            if (onChange /* && isValidate */) { onChange(valueParam, !isValidate); }
 
             return;
         }

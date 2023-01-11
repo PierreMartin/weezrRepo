@@ -133,8 +133,8 @@ export const getInputField = (
                             value={item.value}
                             // error="Error..."
                             canMultipleSelect={canMultipleSelect}
-                            onChange={(value: any) => {
-                                if (onFieldChange) { onFieldChange(value, item); }
+                            onChange={(value: any, isInvalid?: boolean) => {
+                                if (onFieldChange) { onFieldChange(value, item, isInvalid); }
                             }}
                             layout={pickerConf?.layout}
                             {...validationConf}
@@ -155,8 +155,8 @@ export const getInputField = (
                             values={item.value}
                             // error="Error..."
                             canMultipleSelect={canMultipleSelect}
-                            onChange={(value: any) => {
-                                if (onFieldChange) { onFieldChange(value, item); }
+                            onChange={(value: any, isInvalid?: boolean) => {
+                                if (onFieldChange) { onFieldChange(value, item, isInvalid); }
                             }}
                             layout={pickerConf?.layout}
                             {...validationConf}

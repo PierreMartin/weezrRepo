@@ -24,6 +24,7 @@ function FieldsFormScreen(props: IFieldsFormScreen) {
     const menuItem = route?.params as IItem || {};
     const [formData, setFormData] = React.useState<{ [name: string]: string | any }>({}); // Nested objects for local state (ex: 'career: { job }')
     const [formDataToUpdate, setFormDataToUpdate] = React.useState<{ [name: string]: any }>({}); // Dot notation for MongoDB updating (ex: 'career.job')
+    const [isDisabled, setIsDisabled] = React.useState<boolean>(false);
     const haveSaveButton = !!menuItem?.renderScreen?.onFieldSubmit;
 
     React.useLayoutEffect(() => {
@@ -63,7 +64,9 @@ function FieldsFormScreen(props: IFieldsFormScreen) {
         selectedValue = getValueInNestedObjectByStringifyKeys(menuItem.id, formData);
     }
 
-    const onFieldChange = (value: any, menuItemParam?: IItem) => {
+    const onFieldChange = (value: any, menuItemParam?: IItem, isInvalid?: boolean) => {
+        setIsDisabled(!!isInvalid);
+
         if (setFormData && menuItemParam?.id) {
             setFormData((prevFormData) => {
                 let object = { ...prevFormData, [menuItemParam.id]: value };
@@ -118,6 +121,7 @@ function FieldsFormScreen(props: IFieldsFormScreen) {
                                         navigation.goBack();
                                     }
                                 }}
+                                isDisabled={isDisabled}
                             >
                                 🚀 Save
                             </Button>
