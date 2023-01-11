@@ -4,6 +4,7 @@ import { FlatList, TouchableHighlight, LogBox } from 'react-native';
 import { Label, View } from "./index";
 import { defaultRenderValue, getInputField } from "../screens/UserSpaceMenu/userSettings";
 import { MenuItem } from "./MenuItem";
+import { IFormRulesConfig } from "./Forms/Form";
 import { colors } from "../styles/base";
 import getStyles from "./MenuList.styles";
 
@@ -28,6 +29,10 @@ export interface IItem {
                 opening?: 'none' | 'input' | 'button' | 'link';
                 dataList?: 'row' | 'column';
             }
+        }
+        validationConf?: {
+            rules: IFormRulesConfig[];
+            enabledValidationOnTyping?: boolean;
         }
         data?: {
             optionsInputSelect?: any[];

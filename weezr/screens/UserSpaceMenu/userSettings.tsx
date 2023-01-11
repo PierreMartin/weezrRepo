@@ -72,8 +72,20 @@ export const getInputField = (
     item: IItem,
     navigation?: StackNavigationProp<any, any>
 ) => {
-    const { fieldType, pickerConf, data, onFieldChange, onFieldSubmit } = item?.renderScreen || {};
-    const { optionsInputSelect, canMultipleSelect } = data || {};
+    const {
+        fieldType,
+        pickerConf,
+        validationConf = {},
+        data,
+        onFieldChange,
+        onFieldSubmit
+    } = item?.renderScreen || {};
+
+    const {
+        optionsInputSelect,
+        canMultipleSelect
+    } = data || {};
+
     let renderField = null;
     let label;
     let type: any = 'inputText';
@@ -99,6 +111,7 @@ export const getInputField = (
                     onChangeText={(fieldId: string, value: any) => {
                         if (onFieldChange) { onFieldChange(value, item); }
                     }}
+                    {...validationConf}
                 />
             );
             break;
@@ -119,14 +132,8 @@ export const getInputField = (
                                 if (onFieldChange) { onFieldChange(value, item); }
                             }}
                             layout={pickerConf?.layout}
+                            {...validationConf}
                             /*
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Please input your E-mail!',
-                                }
-                            ]}
-                            enabledValidationOnTyping
                             onSubmit={(value: any) => {
                                 if (onFieldChange) { onFieldChange(value, item); }
                             }}
@@ -147,6 +154,7 @@ export const getInputField = (
                                 if (onFieldChange) { onFieldChange(value, item); }
                             }}
                             layout={pickerConf?.layout}
+                            {...validationConf}
                         />
                     );
                     break;
@@ -435,6 +443,15 @@ const userSettings = {
                             }
                         ],
                         canMultipleSelect: true
+                    },
+                    validationConf: {
+                        rules: [
+                            {
+                                required: true,
+                                message: 'Please enter at least one value'
+                            }
+                        ],
+                        enabledValidationOnTyping: true
                     },
                     onFieldChange,
                     onFieldSubmit

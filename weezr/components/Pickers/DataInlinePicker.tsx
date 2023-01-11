@@ -56,7 +56,7 @@ export const DataInlinePicker = ({
 
     useEffect(() => {
         if (valuesProps) {
-            setValues(valuesProps);
+            setValues(valuesProps || []);
         }
     }, [valuesProps]);
 
@@ -88,16 +88,15 @@ export const DataInlinePicker = ({
             if (enabledValidationOnTyping) {
                 setError(null);
 
-                const isValidate = validateField(
+                /* const isValidate = */validateField(
                     nextValues,
                     rules?.filter((rule: any) => rule) || [],
                     setError,
                     true
                 );
 
-                if (onChange && isValidate) { onChange(nextValues); }
-
-                return;
+                // if (onChange && isValidate) { onChange(nextValues); }
+                // return nextValues;
             }
 
             if (onChange) { onChange(nextValues); }
