@@ -20,6 +20,10 @@ export interface IItem {
     iconEmoji?: string;
     iconColor?: string;
     hideLabel?: boolean;
+    validationConf?: {
+        rules: IFormRulesConfig[];
+        enabledValidationOnTyping?: boolean;
+    }
     renderScreen: {
         routeNameIfNavigable?: string;
         fieldType?: 'text' | 'textArea' | 'dataPicker' | 'datePicker' | 'file' | 'onSubmit' | 'blockedsProfilesList';
@@ -29,10 +33,6 @@ export interface IItem {
                 opening?: 'none' | 'input' | 'button' | 'link';
                 dataList?: 'row' | 'column';
             }
-        }
-        validationConf?: {
-            rules: IFormRulesConfig[];
-            enabledValidationOnTyping?: boolean;
         }
         data?: {
             optionsInputSelect?: any[];

@@ -73,13 +73,17 @@ export const getInputField = (
     navigation?: StackNavigationProp<any, any>
 ) => {
     const {
+        validationConf = {},
+        renderScreen = {}
+    } = item;
+
+    const {
         fieldType,
         pickerConf,
-        validationConf = {},
         data,
         onFieldChange,
         onFieldSubmit
-    } = item?.renderScreen || {};
+    } = renderScreen;
 
     const {
         optionsInputSelect,
@@ -417,6 +421,15 @@ const userSettings = {
                 title: t('user.about.desiredMeetingType'),
                 iconEmoji: '💕️',
                 ...customConf,
+                validationConf: {
+                    rules: [
+                        {
+                            required: true,
+                            message: 'Please enter at least one value'
+                        }
+                    ],
+                    enabledValidationOnTyping: true
+                },
                 renderScreen: {
                     routeNameIfNavigable: 'FieldsForm',
                     fieldType: 'dataPicker',
@@ -443,15 +456,6 @@ const userSettings = {
                             }
                         ],
                         canMultipleSelect: true
-                    },
-                    validationConf: {
-                        rules: [
-                            {
-                                required: true,
-                                message: 'Please enter at least one value'
-                            }
-                        ],
-                        enabledValidationOnTyping: true
                     },
                     onFieldChange,
                     onFieldSubmit
