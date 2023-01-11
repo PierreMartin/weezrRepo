@@ -219,8 +219,8 @@ const userSettings = {
                 renderScreen: {
                     fieldType: 'dataPicker',
                     pickerConf: {
-                        type: 'bottomSheet',
-                        layout: { opening: 'input' }
+                        type: 'inline',
+                        layout: { opening: 'none', dataList: 'row' }
                     },
                     data: {
                         optionsInputSelect: [
@@ -251,8 +251,8 @@ const userSettings = {
                 renderScreen: {
                     fieldType: 'dataPicker',
                     pickerConf: {
-                        type: 'bottomSheet',
-                        layout: { opening: 'input' }
+                        type: 'inline',
+                        layout: { opening: 'none', dataList: 'row' }
                     },
                     data: {
                         optionsInputSelect: [
@@ -279,8 +279,8 @@ const userSettings = {
                 renderScreen: {
                     fieldType: 'dataPicker',
                     pickerConf: {
-                        type: 'bottomSheet',
-                        layout: { opening: 'input' }
+                        type: 'inline',
+                        layout: { opening: 'none', dataList: 'row' }
                     },
                     data: {
                         optionsInputSelect: [
