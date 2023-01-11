@@ -42,6 +42,7 @@ const UPDATE_USER = gql`
 function UserPreferencesMenuScreen({ navigation, route, me, updateUserActionProps }: IUserPreferencesMenuScreen) {
     const [formData, setFormData] = React.useState<{ [name: string]: any }>({}); // Nested objects for local state (ex: 'career: { job }')
     const [formDataToUpdate, setFormDataToUpdate] = React.useState<{ [name: string]: any }>({}); // Dot notation for MongoDB updating (ex: 'career.job')
+
     const [updateUser, { error: updateUsrError }] = useMutation(UPDATE_USER, {
         update: (cache, data: any) => {
             const { updatedData } = data?.data?.updateUser;
@@ -54,6 +55,7 @@ function UserPreferencesMenuScreen({ navigation, route, me, updateUserActionProp
             }
         }
     });
+
     const formDataToUpdateRef: any = React.useRef();
 
     useFocusEffect(
