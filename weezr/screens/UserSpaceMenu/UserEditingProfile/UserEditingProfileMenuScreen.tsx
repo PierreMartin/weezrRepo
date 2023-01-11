@@ -154,7 +154,7 @@ function UserEditingProfileMenuScreen({ navigation, route, me, updateUserActionP
             renderHeader: 'Infos'
         },
         items: [
-            userSettings.getItems(formData, onFieldChange, onFieldSubmit)['about.desiredMeetingType'],
+            userSettings.getItems(formData, onFieldChange, onFieldSubmit, { hideLabel: true })['about.desiredMeetingType'],
             userSettings.getItems(formData, onFieldChange, onFieldSubmit)['about.relationship']
         ] as IItem[]
     };

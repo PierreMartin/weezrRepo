@@ -3,6 +3,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import * as React from "react";
 import { Text } from "native-base";
 import { IItem } from "./MenuList";
+import { defaultRenderValueInMenu } from "../screens/UserSpaceMenu/userSettings";
 import { Label, View } from "./index";
 import getStyles from "./MenuItem.styles";
 
@@ -10,14 +11,20 @@ const styles = getStyles();
 
 interface IMenuItem {
     menuItem: IItem;
-    renderColumnValue?: (menuItem: IItem) => any;
 }
 
 export const MenuItem = (props: IMenuItem) => {
     const {
-        menuItem,
-        renderColumnValue
+        menuItem
     } = props;
+
+    const renderValueInMenu = (item: IItem) => {
+        if (item.renderValueInMenu) {
+            return item.renderValueInMenu();
+        }
+
+        return defaultRenderValueInMenu(item);
+    };
 
     return (
         <>
@@ -34,10 +41,10 @@ export const MenuItem = (props: IMenuItem) => {
             </View>
 
             {
-                (renderColumnValue && renderColumnValue(menuItem)?.length > 0) && (
+                (renderValueInMenu && renderValueInMenu(menuItem)?.length > 0) && (
                     <View style={[styles.itemColumnContainer, { paddingBottom: 5 }]}>
                         <Text style={styles.secondaryText}>
-                            { renderColumnValue(menuItem) }
+                            { renderValueInMenu(menuItem) }
                         </Text>
                     </View>
                 )

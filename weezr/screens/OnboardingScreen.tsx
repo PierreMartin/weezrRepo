@@ -106,6 +106,9 @@ const OnboardingScreen = ({
     const [formData, setFormData] = React.useState<{ [name: string]: any }>({}); // Nested objects for local state (ex: 'career: { job }')
     const [formDataToUpdate, setFormDataToUpdate] = React.useState<{ [name: string]: any }>({}); // Dot notation for MongoDB updating (ex: 'career.job')
 
+    // console.log('formData ', formData);
+    // console.log('formDataToUpdate ', formDataToUpdate);
+
     const [updateUser, { error: updateUserError }] = useMutation(UPDATE_USER);
     const refSwiper = React.useRef(null);
     const { t } = useTranslation();

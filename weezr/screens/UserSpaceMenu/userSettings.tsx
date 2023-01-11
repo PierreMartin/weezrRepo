@@ -31,8 +31,9 @@ const weightValues: number[] = [];
 for (let i = 40; i < 160; i++) { weightValues.push(i); }
 const optionsWeight = weightValues.map((weight) => ({ label: weight.toString(), value: weight }));
 
-export const defaultRenderValue = (menuItemParam: IItem) => {
-    return menuItemParam?.value?.toString()?.substr(0, 22);
+// For renderValueInMenu:
+export const defaultRenderValueInMenu = (menuItem: IItem) => {
+    return menuItem?.value?.toString()?.substr(0, 22);
 };
 
 export const onUpdateUserSettings = ({
@@ -420,6 +421,15 @@ const userSettings = {
                 value: valuesFormData.about?.desiredMeetingType || '',
                 title: t('user.about.desiredMeetingType'),
                 iconEmoji: '💕️',
+                renderValueInMenu: () => {
+                    const fullTrad = [];
+                    for (let i = 0; i < valuesFormData.about?.desiredMeetingType?.length; i++) {
+                        const type = valuesFormData.about.desiredMeetingType[i];
+                        if (type) { fullTrad.push(t(`user.about.desiredMeetingType_${type}`)); }
+                    }
+
+                    return fullTrad.join(', ');
+                },
                 ...customConf,
                 validationConf: {
                     rules: [

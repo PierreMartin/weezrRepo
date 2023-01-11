@@ -2,7 +2,7 @@ import React from 'react';
 import { StackNavigationProp } from "@react-navigation/stack/lib/typescript/src/types";
 import { FlatList, TouchableHighlight, LogBox } from 'react-native';
 import { Label, View } from "./index";
-import { defaultRenderValue, getInputField } from "../screens/UserSpaceMenu/userSettings";
+import { getInputField } from "../screens/UserSpaceMenu/userSettings";
 import { MenuItem } from "./MenuItem";
 import { IFormRulesConfig } from "./Forms/Form";
 import { colors } from "../styles/base";
@@ -20,6 +20,7 @@ export interface IItem {
     iconEmoji?: string;
     iconColor?: string;
     hideLabel?: boolean;
+    renderValueInMenu?: (values?: any) => any;
     validationConf?: {
         rules: IFormRulesConfig[];
         enabledValidationOnTyping?: boolean;
@@ -98,7 +99,7 @@ export function MenuList(props: IMenuListProps) {
                 onHideUnderlay={separators.unhighlight}
             >
                 <View style={styles.itemRowContainer}>
-                    <MenuItem menuItem={menuItem} renderColumnValue={defaultRenderValue} />
+                    <MenuItem menuItem={menuItem} />
                 </View>
             </TouchableHighlight>
         );
